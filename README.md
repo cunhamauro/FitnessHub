@@ -5,8 +5,9 @@ Developed as the final project for the Technology & Information Systems Programm
 
 <img src="https://github.com/user-attachments/assets/a44cbab4-602f-4d97-9b96-6c8a02070e46" style="width: 50%">
 
-## In collaboration with:
+## Developed by:
 <ul>
+<li><a href="https://github.com/cunhamauro">Mauro Cunha</a></li>
 <li><a href="https://github.com/nunosalg">Nuno Salgueiro</a></li>
 <li><a href="https://github.com/dsanlez">Diogo Sanlez</a></li>
 </ul>
