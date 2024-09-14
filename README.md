@@ -2,7 +2,7 @@
 Integrated gym management system for the **FitnessHub Global Network**.<br><br>
 A comprehensive software solution designed to streamline and optimize all aspects of the gym experience and fitness center management, including client services, class scheduling, business operations and many additional services...<br><br>
 
-<img src="https://github.com/user-attachments/assets/7f63de35-3fac-4896-be91-78ce81ac7067" style="width: 50%">
+<img src="https://github.com/user-attachments/assets/cfb7f316-4544-49ce-a6e5-c8b451550767">
 
 <br><br>
 _Developed as the final project for the Technology & Information Systems Programming Technical Specialization._
