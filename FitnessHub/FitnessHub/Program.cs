@@ -1,3 +1,8 @@
+using FitnessHub.Data;
+using FitnessHub.Data.Entities.Users;
+using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
+
 namespace FitnessHub
 {
     public class Program
@@ -5,6 +10,8 @@ namespace FitnessHub
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddDbContext<DataContext>(config => config.UseSqlServer("name=LocalConnection"));
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
