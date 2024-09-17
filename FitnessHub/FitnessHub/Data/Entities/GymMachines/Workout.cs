@@ -2,7 +2,7 @@
 
 namespace FitnessHub.Data.Entities.GymMachines
 {
-    public class Workout
+    public class Workout : IEntity
     {
         public int Id { get; set; }
 
@@ -10,6 +10,6 @@ namespace FitnessHub.Data.Entities.GymMachines
 
         public Instructor Instructor { get; set; }
 
-        public List<Exercise> ListExercises { get; set; }
+        public List<Exercise> Exercise { get; set; }
     }
 }
