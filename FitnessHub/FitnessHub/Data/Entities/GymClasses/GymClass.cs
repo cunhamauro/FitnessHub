@@ -12,6 +12,6 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public DateTime DateEnd { get; set; }
 
-        public List<Client> ListClients { get; set; }
+        public List<Client> Client { get; set; }
     }
 }

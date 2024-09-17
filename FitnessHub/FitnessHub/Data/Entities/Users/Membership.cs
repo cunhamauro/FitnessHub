@@ -2,7 +2,7 @@
 
 namespace FitnessHub.Data.Entities.Users
 {
-    public class Membership
+    public class Membership : IEntity
     {
         public int Id { get; set; }
 
