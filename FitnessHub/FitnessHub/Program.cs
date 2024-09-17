@@ -1,7 +1,12 @@
 using FitnessHub.Data;
 using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Repositories;
+using FitnessHub.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace FitnessHub
 {
@@ -11,12 +16,77 @@ namespace FitnessHub
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            IConfiguration configuration = builder.Configuration;
+
+            builder.Services.AddIdentity<User, IdentityRole>(cfg =>
+            {
+                // Token Configuration
+                cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+                cfg.SignIn.RequireConfirmedEmail = true;
+
+                // Password Configuration
+                cfg.User.RequireUniqueEmail = true;
+                cfg.Password.RequireDigit = true;
+                cfg.Password.RequiredUniqueChars = 1;
+                cfg.Password.RequireUppercase = true;
+                cfg.Password.RequireLowercase = true;
+                cfg.Password.RequireNonAlphanumeric = false;
+                cfg.Password.RequiredLength = 8;
+
+                // Lockout Configuration
+                cfg.Lockout.MaxFailedAccessAttempts = 3;
+                cfg.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                cfg.Lockout.AllowedForNewUsers = true;
+            })
+             .AddDefaultTokenProviders()
+             .AddEntityFrameworkStores<DataContext>();
+
+            builder.Services.AddAuthentication()
+                .AddCookie()
+                .AddJwtBearer(cfg =>
+                {
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = configuration["Tokens:Issuer"],
+                        ValidAudience = configuration["Tokens:Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(configuration["Tokens:Key"]))
+                    };
+                });
+
             builder.Services.AddDbContext<DataContext>(config => config.UseSqlServer("name=LocalConnection"));
+
+            builder.Services.AddTransient<SeedDb>();
+
+            // Helpers
+            builder.Services.AddScoped<IUserHelper, UserHelper>();
+
+            // Repositories
+            builder.Services.AddScoped<IClassRepository, ClassRepository>();
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
+            builder.Services.AddScoped<IGymRepository, GymRepository>();
+            builder.Services.AddScoped<IClassRepository, ClassRepository>();
+            builder.Services.AddScoped<IMachineRepository, MachineRepository>();
+            builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
+            builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
+
+            //builder.Services.ConfigureApplicationCookie(options =>
+            //{
+            //    options.LoginPath = "/Account/NotAuthorized";
+            //    options.AccessDeniedPath = "/Account/NotAuthorized";
+            //});
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var seeder = scope.ServiceProvider.GetRequiredService<SeedDb>();
+                seeder.SeedAsync().Wait();
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -26,11 +96,14 @@ namespace FitnessHub
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/Home/Error");
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Controllers\API\" />
     <Folder Include="Data\Classes\" />
-    <Folder Include="Helpers\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

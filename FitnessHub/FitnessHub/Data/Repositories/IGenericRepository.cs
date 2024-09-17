@@ -1,4 +1,4 @@
-﻿namespace FitnessHub.Data
+﻿namespace FitnessHub.Data.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {
@@ -8,12 +8,12 @@
 
         Task<T?> GetByIdTrackAsync(int id);
 
-        Task CreateAsync (T entity);
+        Task CreateAsync(T entity);
 
-        Task UpdateAsync (T entity);
+        Task UpdateAsync(T entity);
 
-        Task DeleteAsync (T entity);
+        Task DeleteAsync(T entity);
 
-        Task<bool> ExistsAsync (int id);
+        Task<bool> ExistsAsync(int id);
     }
 }

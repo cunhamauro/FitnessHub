@@ -1,7 +1,7 @@
 ﻿using FitnessHub.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FitnessHub.Data
+namespace FitnessHub.Data.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class, IEntity
     {
@@ -37,9 +37,9 @@ namespace FitnessHub.Data
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Set<T>().AnyAsync(e => e.Id  == id);
+            return await _context.Set<T>().AnyAsync(e => e.Id == id);
         }
-       
+
         public async Task<T?> GetByIdAsync(int id)
         {
             return await _context.Set<T>()
@@ -52,10 +52,10 @@ namespace FitnessHub.Data
             return await _context.Set<T>()
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
-       
+
         private async Task<bool> SaveAllAsync()
         {
             return await _context.SaveChangesAsync() > 0;
-        }       
+        }
     }
 }
