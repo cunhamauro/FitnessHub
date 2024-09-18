@@ -21,7 +21,7 @@ namespace FitnessHub.Data
         {
             await _context.Database.EnsureCreatedAsync();
 
-            await _userHelper.CheckRoleAsync("MasterAdmin");
+            await _userHelper.CheckRoleAsync("MasterAdmin"); // Only one role exists: MasterAdmin, to differentiate normal Admin users from the MasterAdmin
 
             var user = await _userHelper.GetUserByEmailAsync(_configuration["MasterAdmin:Email"]);
 
