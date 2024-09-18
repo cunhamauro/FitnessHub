@@ -2,6 +2,6 @@
 {
     public class Employee : User
     {
-        public Gym Gym { get; set; }
+        public Gym? Gym { get; set; }
     }
 }
