@@ -1,6 +1,7 @@
-﻿using FitnessHub.Data.Entities.Users;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using FitnessHub.Data.Entities.Users;
+using FitnessHub.Models;
 
 namespace FitnessHub.Helpers
 {
@@ -29,11 +30,11 @@ namespace FitnessHub.Helpers
             return await _userManager.FindByEmailAsync(email);
         }
 
-        //public async Task<SignInResult> LoginAsync(LoginViewModel model)
-        //{
-        //    return await _signInManager.PasswordSignInAsync(
-        //        model.Username, model.Password, model.RememberMe, false);
-        //}
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
+        {
+            return await _signInManager.PasswordSignInAsync(
+                model.Username, model.Password, model.RememberMe, false);
+        }
 
         public async Task LogoutAsync()
         {

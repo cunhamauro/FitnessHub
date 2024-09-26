@@ -1,6 +1,7 @@
-﻿using FitnessHub.Data.Entities.Users;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
+using FitnessHub.Data.Entities.Users;
+using FitnessHub.Models;
 
 namespace FitnessHub.Helpers
 {
@@ -10,7 +11,7 @@ namespace FitnessHub.Helpers
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
-        //Task<SignInResult> LoginAsync(LoginViewModel model);
+        Task<SignInResult> LoginAsync(LoginViewModel model);
 
         Task LogoutAsync();
 
