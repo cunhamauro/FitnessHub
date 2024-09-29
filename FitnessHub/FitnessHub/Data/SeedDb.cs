@@ -1,6 +1,5 @@
 ﻿using FitnessHub.Data.Entities.Users;
 using FitnessHub.Helpers;
-using SQLitePCL;
 
 namespace FitnessHub.Data
 {
@@ -10,7 +9,10 @@ namespace FitnessHub.Data
         private readonly IConfiguration _configuration;
         private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context, IConfiguration configuration, IUserHelper userHelper)
+        public SeedDb(
+            DataContext context, 
+            IConfiguration configuration, 
+            IUserHelper userHelper)
         {
             _context = context;
             _configuration = configuration;
@@ -22,6 +24,10 @@ namespace FitnessHub.Data
             await _context.Database.EnsureCreatedAsync();
 
             await _userHelper.CheckRoleAsync("MasterAdmin"); // Only one role exists: MasterAdmin, to differentiate normal Admin users from the MasterAdmin
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Employee");
+            await _userHelper.CheckRoleAsync("Instructor");
+            await _userHelper.CheckRoleAsync("Client");
 
             var user = await _userHelper.GetUserByEmailAsync(_configuration["MasterAdmin:Email"]);
 
