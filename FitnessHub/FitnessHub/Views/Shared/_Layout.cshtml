@@ -5,45 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - FitnessHub</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/FitnessHub.styles.css" asp-append-version="true" />
-</head>
+     <link rel="stylesheet" href="~/FitnessHub.styles.css" asp-append-version="true" />
+ </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">FitnessHub</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+        <nav class="navbar navbar-expand-lg navbar-toggleable-sm box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" style="margin-right: 0" asp-area="" asp-controller="Home" asp-action="Index"><img class="img-fluid" src="~/img/logo.png" style="width: 30vh"/></a>
+                <button class="navbar-toggler toggleBtn" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                    <span style="margin-top: 1.2px" class="fa-solid fa-bars toggleIcon" id="toggleIcon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="navbar-collapse collapse d-lg-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 d-flex" style="gap: 3%; margin-right:auto !important; margin-left: 3% !important">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy"><span>Gyms</span></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy"><span>Memberships</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy"><span>Classes</span></a>
+                        </li>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right" style="margin-left: 2%">
+                        <li class="nav-item text-nowrap  signupLi">
+                            <a class="nav-link signupA" asp-area="" asp-controller="Login" asp-action="Account">Login<i class="fa-solid fa-right-to-bracket signupI"></i></a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container container-m-ft-md">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2024 - FitnessHub - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="footer">
+        <div class="container footinfo">
+            <div class="row align-items-center text-center mr-1">
+
+                <!-- Left: About, Privacy, Contacts -->
+                <div class="col-md-4 d-flex justify-content-center justify-content-md-start" style="gap: 5%;">
+                    <span class="foot-links"><a asp-controller="Home" asp-action="About">About</a></span>
+                    <span class="foot-links"><a asp-controller="Home" asp-action="Privacy">Privacy</a></span>
+                    <span class="foot-links"><a asp-controller="Home" asp-action="Contacts">Contacts</a></span>
+                </div>
+
+                <!-- Center: Copyright and FitnessHub -->
+                <div class="col-md-4">
+                    <span>
+                        &copy; @DateTime.Now.Year &nbsp;
+                        <a asp-controller="Home" action="Index">
+                            <span id="foot-hover"><span class="foot-fitness">Fitness</span><span class="foot-hub">Hub</span></span>
+                        </a>
+                    </span>
+                </div>
+
+                <!-- Right: Social Media Links -->
+                <div class="col-md-4 d-flex justify-content-center justify-content-md-end" style="gap: 5%;">
+                    <a class="socials" target="_blank" href="https://www.facebook.com/"><i class="fa-brands fa-facebook"></i></a>
+                    <a class="socials" target="_blank" href="https://www.instagram.com/"><i class="fa-brands fa-instagram"></i></a>
+                    <a class="socials" target="_blank" href="https://www.twitter.com/"><i class="fa-brands fa-twitter"></i></a>
+                </div>
+
+            </div>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+
+    // JS function to set the main content container's bottom margin according to the footer's height
+    function adjustContainerMargin() {
+    var footer = document.querySelector('.footer');
+    var container = document.querySelector('.container-m-ft-md');
+
+    // Get the footer's height
+     var footerHeight = footer.offsetHeight;
+
+    // Set the container's margin-bottom to match the footer's height
+    container.style.marginBottom = footerHeight + 'px';
+    }
+
+    // Call the function on browser window load and resize
+    window.addEventListener('load', adjustContainerMargin);
+    window.addEventListener('resize', adjustContainerMargin);
+
+        // Listen for Bootstrap collapse events
+        var navbarCollapse = document.querySelector('.navbar-collapse');
+        var toggleIcon = document.getElementById('toggleIcon');
+
+        // Change icon when the navbar is shown
+        navbarCollapse.addEventListener('show.bs.collapse', function () {
+            toggleIcon.className = 'fa-solid fa-minus toggleIcon'; // Change to minus
+        });
+
+        // Change icon when the navbar is hidden
+        navbarCollapse.addEventListener('hide.bs.collapse', function () {
+            toggleIcon.className = 'fa-solid fa-bars toggleIcon'; // Change to bars
+        });
+
+    </script>
+
 </body>
 </html>
+
