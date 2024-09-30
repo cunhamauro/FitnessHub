@@ -139,7 +139,7 @@ h5 {
     color: white;
 }
 
-.signupLi {
+.signupItem {
     padding-left: 10px;
     padding-right: 10px;
     border-color: #ff6201;
@@ -149,20 +149,20 @@ h5 {
     position: relative;
 }
 
-.signupA {
+.signupLink {
     color: black;
     transition: color 0.9s ease; 
 }
 
-.signupLi:hover .signupA {
+.signupItem:hover .signupLink {
     color: white; 
 }
 
-.signupI {
+.signupIcon {
     margin-left: 7px; 
     transition: transform 0.6s ease; 
 }
 
-.signupLi:hover .signupI {
+.signupItem:hover .signupIcon {
     transform: translateX(30%);
 }
