@@ -6,15 +6,17 @@ namespace FitnessHub.Data.Entities.Users
     {
         public int Id { get; set; }
 
-        [Range(0, 3)]
+        [Range(0, 9)]
         [Required]
         public int Tier {  get; set; } // 0, 1, 2, etc...
 
         [Required]
-        [Display(Name = "Membership Type")]
-        public string? Type { get; set; }
+        public string? Name { get; set; }
 
         [Required]
         public decimal Price { get; set; } // Monthly price
+
+        [Required]
+        public string? Description {  get; set; }
     }
 }

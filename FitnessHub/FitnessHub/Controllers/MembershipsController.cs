@@ -2,6 +2,7 @@
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
@@ -13,6 +14,11 @@ namespace FitnessHub.Controllers
         public MembershipsController(IMembershipRepository membershipRepository)
         {
             _membershipRepository = membershipRepository;
+        }
+
+        public IActionResult Available()
+        {
+            return View(_membershipRepository.GetAll());
         }
 
         // GET: Memberships
@@ -40,8 +46,31 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Memberships/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            List<SelectListItem> tierList = new List<SelectListItem>();
+            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+
+            for (int i = 0; i <= 9; i++)
+            {
+                bool tierTaken = false;
+                foreach (Membership membership in memberships)
+                {
+                    if (membership.Tier == i)
+                    {
+                        tierTaken = true;
+                        break;
+                    }
+                }
+
+                if (!tierTaken)
+                {
+                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
+                }
+            }
+
+            ViewBag.TierList = tierList;
+
             return View();
         }
 
@@ -52,6 +81,13 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Membership membership)
         {
+            List<Membership> memberhsips = await _membershipRepository.GetAll().ToListAsync();
+
+            if (memberhsips.Any(m => m.Tier == membership.Tier))
+            {
+                ModelState.AddModelError("Tier", "This Tier is already selected");
+            }
+
             if (ModelState.IsValid)
             {
                 await _membershipRepository.CreateAsync(membership);
