@@ -10,6 +10,7 @@
     <Folder Include="Controllers\API\" />
     <Folder Include="Data\Classes\" />
     <Folder Include="Services\" />
+    <Folder Include="wwwroot\machineImages\" />
   </ItemGroup>
 
   <ItemGroup>
