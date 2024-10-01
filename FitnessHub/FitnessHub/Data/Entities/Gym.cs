@@ -12,7 +12,6 @@ namespace FitnessHub.Data.Entities
 
         public string City { get; set; }
 
-        [Range(1,5)]
         public int Rating {  get; set; }
 
         [Display(Name = "Reviews")]

@@ -2,9 +2,9 @@ using FitnessHub.Data;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
+using FitnessHub.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -79,6 +79,9 @@ namespace FitnessHub
             //    options.LoginPath = "/Account/NotAuthorized";
             //    options.AccessDeniedPath = "/Account/NotAuthorized";
             //});
+
+            // Api services
+            builder.Services.AddHttpClient<CountryService>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
