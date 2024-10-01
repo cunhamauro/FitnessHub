@@ -1,40 +1,45 @@
 ﻿@model FitnessHub.Data.Entities.Users.Membership
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Add Membership";
 }
 
-<h1>Create</h1>
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
+<hr style="margin-bottom: 2rem" />
 
-<h4>Membership</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row view-form-style">
+    <div class="col-md-4 offset-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Tier" class="control-label"></label>
-                <input asp-for="Tier" class="form-control" />
+                <select asp-for="Tier" asp-items="@ViewBag.TierList" class="form-control">
+                    <option value="0">Select a Tier</option>
+                </select>
                 <span asp-validation-for="Tier" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Type" class="control-label"></label>
-                <input asp-for="Type" class="form-control" />
-                <span asp-validation-for="Type" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="6" style="height: 200px"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="submit" class="btn btn-success me-4">
+                    <i class="fa-solid fa-check me-2"></i>Save
+                </button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
