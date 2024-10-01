@@ -24,6 +24,8 @@ namespace FitnessHub.Data
 
         public DbSet<Membership> Memberships { get; set; }
 
+        public DbSet<MembershipDetails> MembershipDetails { get; set; }
+
         // Classes
 
         public DbSet<GymClass> GymClasses {  get; set; }
@@ -56,6 +58,11 @@ namespace FitnessHub.Data
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Employee>().ToTable("Employees");
             builder.Entity<Instructor>().ToTable("Instructors");
+
+            // Make price with two decimals
+            builder.Entity<Membership>()
+                       .Property(m => m.Price)
+                       .HasColumnType("decimal(18,2)");
 
             base.OnModelCreating(builder);
         }
