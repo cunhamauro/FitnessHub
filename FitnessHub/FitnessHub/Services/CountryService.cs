@@ -24,7 +24,7 @@ namespace FitnessHub.Services
                 return new Response
                 {
                     IsSuccess = true,
-                    Results = countries
+                    Results = countries.OrderBy(c => c.Name).ToList()
                 };
             }
 

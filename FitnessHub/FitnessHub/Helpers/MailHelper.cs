@@ -14,7 +14,7 @@ namespace FitnessHub.Helpers
             _configuration = configuration;
         }
 
-        public Response SendEmail(string to, string subject, string body)
+        public async Task<Response> SendEmailAsync(string to, string subject, string body)
         {
             var senderEmail = _configuration["Mail:SenderEmail"];
             var sender = _configuration["Mail:Sender"];
@@ -37,12 +37,10 @@ namespace FitnessHub.Helpers
             {
                 using (var client = new SmtpClient())
                 {
-                    client.Connect(smtp, int.Parse(port), SecureSocketOptions.StartTls);
-
-                    client.Authenticate(senderEmail, password);
-
-                    client.Send(message);
-                    client.Disconnect(true);
+                    await client.ConnectAsync(smtp, int.Parse(port), SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(senderEmail, password);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
                 }
             }
             catch (Exception ex)

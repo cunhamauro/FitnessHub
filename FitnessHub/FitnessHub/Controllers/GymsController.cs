@@ -49,7 +49,18 @@ namespace FitnessHub.Controllers
             var countries = (IEnumerable<CountryApi>)countriesResult.Results;
 
             ViewBag.Countries = new SelectList(countries, "Name", "Name");
+
+            ViewBag.Cities = new SelectList(new List<string>());
+
             return View();
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetCitiesByCountry(string country)
+        {
+            var cities = await _gymRepository.GetCitiesByCountryAsync(country);
+
+            return Json(cities);
         }
 
         // POST: Gyms/Create
@@ -70,6 +81,8 @@ namespace FitnessHub.Controllers
 
             ViewBag.Countries = new SelectList(countries, "Name", "Name");
 
+            ViewBag.Cities = new SelectList(new List<string>());
+
             return View(gym);
         }
 
@@ -86,6 +99,7 @@ namespace FitnessHub.Controllers
             {
                 return NotFound();
             }
+
             return View(gym);
         }
 

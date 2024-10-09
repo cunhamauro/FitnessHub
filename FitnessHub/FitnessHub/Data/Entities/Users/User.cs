@@ -18,5 +18,8 @@ namespace FitnessHub.Data.Entities.Users
 
         [Display(Name = "Profile Image")]
         public string? ImagePath { get; set; }
+
+        [Display(Name = "Name")]
+        public string? Fullname => $"{FirstName} {LastName}";
     }
 }

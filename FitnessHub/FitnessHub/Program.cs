@@ -62,7 +62,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IUserHelper, UserHelper>();
             builder.Services.AddScoped<IMailHelper, MailHelper>();
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
-
+            builder.Services.AddScoped<ILoadRolesHelper, LoadRolesHelper>();
 
             // Repositories
             builder.Services.AddScoped<IClassRepository, ClassRepository>();
