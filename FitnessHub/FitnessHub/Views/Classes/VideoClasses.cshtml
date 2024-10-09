@@ -1,10 +1,10 @@
-﻿@model IEnumerable<FitnessHub.Data.Entities.Users.Membership>
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.VideoClass>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "VideoClasses";
 }
 
-<h1>Index</h1>
+<h1>VideoClasses</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,13 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Tier)
+                @Html.DisplayNameFor(model => model.VideoClassUrl)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.Rating)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model.NumReviews)
             </th>
             <th></th>
         </tr>
@@ -28,13 +28,13 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Tier)
+                @Html.DisplayFor(modelItem => item.VideoClassUrl)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Rating)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Price)
+                @Html.DisplayFor(modelItem => item.NumReviews)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

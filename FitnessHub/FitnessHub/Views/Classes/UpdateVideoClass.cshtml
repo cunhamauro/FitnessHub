@@ -1,0 +1,31 @@
+﻿@model FitnessHub.Data.Entities.GymClasses.VideoClass
+
+@{
+    ViewData["Title"] = "UpdateVideoClass";
+}
+
+<h1>UpdateVideoClass</h1>
+
+<h4>VideoClass</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateVideoClass">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="VideoClassUrl" class="control-label"></label>
+                <input asp-for="VideoClassUrl" class="form-control" />
+                <span asp-validation-for="VideoClassUrl" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

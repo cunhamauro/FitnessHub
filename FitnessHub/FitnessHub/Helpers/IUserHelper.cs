@@ -11,6 +11,8 @@ namespace FitnessHub.Helpers
 
         Task<IdentityResult> AddUserAsync(User user, string password);
 
+        Task<List<T>> GetUsersByTypeAsync<T>() where T : User;
+
         Task<SignInResult> LoginAsync(LoginViewModel model);
 
         Task LogoutAsync();

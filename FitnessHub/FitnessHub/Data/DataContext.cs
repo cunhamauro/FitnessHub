@@ -28,6 +28,8 @@ namespace FitnessHub.Data
 
         // Classes
 
+        public DbSet<Class> Class {  get; set; }
+
         public DbSet<GymClass> GymClasses {  get; set; }
 
         public DbSet<OnlineClass> OnlineClasses { get; set; }
@@ -52,12 +54,17 @@ namespace FitnessHub.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // TPC (Table Per Class) Inheritance Configuration to separate different User Classes
+            // Table-per-Type (TPT) Inheritance Configuration to separate different sub classes
             builder.Entity<User>().ToTable("AspNetUsers");
             builder.Entity<Admin>().ToTable("Admins");
             builder.Entity<Client>().ToTable("Clients");
             builder.Entity<Employee>().ToTable("Employees");
             builder.Entity<Instructor>().ToTable("Instructors");
+
+            builder.Entity<Class>().ToTable("Classes");
+            builder.Entity<GymClass>().ToTable("GymClasses").HasBaseType<Class>(); ;
+            builder.Entity<OnlineClass>().ToTable("OnlineClasses").HasBaseType<Class>(); ;
+            builder.Entity<VideoClass>().ToTable("VideoClasses").HasBaseType<Class>(); ;
 
             // Make price with two decimals
             builder.Entity<Membership>()

@@ -1,17 +1,21 @@
 ﻿using FitnessHub.Data.Entities.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Data.Entities.GymClasses
 {
     public class OnlineClass : Class
     {
-        public Instructor Instructor {  get; set; }
+        public Instructor? Instructor {  get; set; }
 
+        [Required]
         public DateTime DateStart {  get; set; }
 
+        [Required]
         public DateTime DateEnd { get; set; }
 
-        public string Platform {  get; set; }
+        [Required]
+        public string? Platform {  get; set; }
 
-        public List<Client> Client { get; set; }
+        public List<Client>? Client { get; set; }
     }
 }

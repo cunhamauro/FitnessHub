@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Models;
+using Microsoft.EntityFrameworkCore;
+using FitnessHub.Data.Entities.GymClasses;
 
 namespace FitnessHub.Helpers
 {
@@ -23,6 +25,11 @@ namespace FitnessHub.Helpers
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
+        }
+
+        public async Task<List<T>> GetUsersByTypeAsync<T>() where T : User
+        {
+            return await _userManager.Users.OfType<T>().ToListAsync();
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
