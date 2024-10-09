@@ -1,0 +1,36 @@
+﻿@model FitnessHub.Data.Entities.GymClasses.VideoClass
+
+@{
+    ViewData["Title"] = "VideoClassDetails";
+}
+
+<h1>VideoClassDetails</h1>
+
+<div>
+    <h4>VideoClass</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.VideoClassUrl)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.VideoClassUrl)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Rating)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Rating)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NumReviews)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NumReviews)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

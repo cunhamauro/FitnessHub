@@ -1,0 +1,743 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using FitnessHub.Data;
+using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Repositories;
+using FitnessHub.Models;
+using FitnessHub.Helpers;
+using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Entities;
+
+namespace FitnessHub.Controllers
+{
+    public class ClassesController : Controller
+    {
+        private readonly IClassRepository _classRepository;
+        private readonly IUserHelper _userHelper;
+        private readonly IGymRepository _gymRepository;
+
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository)
+        {
+            _classRepository = classRepository;
+            _userHelper = userHelper;
+            _gymRepository = gymRepository;
+        }
+
+        // Index not in use
+        //// GET: Classes
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _context.Class.ToListAsync());
+        //}
+
+        #region Online Classes
+
+        // GET: OnlineClasses
+        public async Task<IActionResult> OnlineClasses() // Index for Online Classes
+        {
+            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            return View(onlineClasses);
+        }
+
+        // GET: Classes/OnlineClassDetails/5
+        public async Task<IActionResult> OnlineClassDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+
+            if (onlineClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(onlineClass);
+        }
+
+        // GET: Classes/CreateOnlineClass
+        public async Task<IActionResult> CreateOnlineClass()
+        {
+            List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+            List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+
+            foreach (Instructor instructor in instructorsList)
+            {
+                selectInstructorList.Add(new SelectListItem
+                {
+                    Text = $"{instructor.Id} - {instructor.FirstName} {instructor.LastName}",
+                    Value = instructor.Id.ToString(),
+                });
+            }
+
+            OnlineClassViewModel model = new OnlineClassViewModel
+            {
+                InstructorsList = selectInstructorList,
+            };
+
+            return View(model);
+        }
+
+        // POST: Classes/CreateOnlineClass
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateOnlineClass(OnlineClassViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.InstructorId))
+            {
+                ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            Instructor? instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            if (instructor == null)
+            {
+                ModelState.AddModelError("InstructorId", "Instructor not found");
+            }
+
+            if (ModelState.IsValid)
+            {
+                OnlineClass onlineClass = new OnlineClass
+                {
+                    Instructor = instructor,
+                    DateStart = model.DateStart,
+                    DateEnd = model.DateEnd,
+                    Platform = model.Platform,
+                };
+
+                await _classRepository.CreateAsync(onlineClass);
+            }
+            return View(model);
+        }
+
+        // GET: Classes/UpdateOnlineClass/5
+        public async Task<IActionResult> UpdateOnlineClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+
+            if (onlineClass == null)
+            {
+                return NotFound();
+            }
+
+            List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+            List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+
+            foreach (Instructor instructor in instructorsList)
+            {
+                selectInstructorList.Add(new SelectListItem
+                {
+                    Text = $"{instructor.Id} - {instructor.FirstName} {instructor.LastName}",
+                    Value = instructor.Id.ToString(),
+                });
+            }
+
+            OnlineClassViewModel model = new OnlineClassViewModel
+            {
+                Id = id.Value,
+                InstructorsList = selectInstructorList,
+                InstructorId = onlineClass.Instructor.Id,
+                DateStart = onlineClass.DateStart,
+                DateEnd = onlineClass.DateEnd,
+                Platform = onlineClass.Platform,
+            };
+
+            return View(model);
+        }
+
+        // POST: Classes/UpdateOnlineClass/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOnlineClass(OnlineClassViewModel model)
+        {
+            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(model.Id) as OnlineClass;
+
+            if (onlineClass == null)
+            {
+                return NotFound();
+            }
+
+            onlineClass.DateStart = model.DateStart;
+            onlineClass.DateEnd = model.DateEnd;
+            onlineClass.Platform = model.Platform;
+            onlineClass.Instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _classRepository.UpdateAsync(onlineClass);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _classRepository.ExistsAsync(onlineClass.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(OnlineClasses));
+            }
+            return View(onlineClass);
+        }
+
+        // GET: Classes/DeleteOnlineClass/5
+        public async Task<IActionResult> DeleteOnlineClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+
+            if (onlineClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(onlineClass);
+        }
+
+        // POST: Classes/DeleteOnlineClass/5
+        [HttpPost, ActionName("DeleteOnlineClass")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOnlineClassConfirmed(int id)
+        {
+            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id) as OnlineClass;
+
+            if (onlineClass != null)
+            {
+                await _classRepository.DeleteAsync(onlineClass);
+            }
+
+            return RedirectToAction(nameof(OnlineClasses));
+        }
+
+        #endregion
+
+        #region Gym Classes
+
+        // GET: GymClasses
+        public async Task<IActionResult> GymClasses() // Index for Gym Classes
+        {
+            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            return View();
+        }
+
+        // GET: Classes/GymClassDetails/5
+        public async Task<IActionResult> GymClassDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+
+            if (gymClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(gymClass);
+        }
+
+        // GET: Classes/CreateGymClass
+        public async Task<IActionResult> CreateGymClass()
+        {
+            List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
+            List<SelectListItem> selectGymList = new List<SelectListItem>();
+
+            List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+            List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+
+            foreach (Instructor instructor in instructorsList)
+            {
+                selectInstructorList.Add(new SelectListItem
+                {
+                    Text = $"{instructor.Id} - {instructor.FirstName} {instructor.LastName}",
+                    Value = instructor.Id.ToString(),
+                });
+            }
+
+            foreach (Gym gym in gymsList)
+            {
+                selectGymList.Add(new SelectListItem
+                {
+                    Text = $"{gym.Id} - {gym.Name} - {gym.City}, {gym.Country}",
+                    Value = gym.Id.ToString(),
+                });
+            }
+
+            GymClassViewModel model = new GymClassViewModel
+            {
+                InstructorsList = selectInstructorList,
+                GymsList = selectGymList,
+            };
+
+            return View(model);
+        }
+
+        // POST: Classes/CreateGymClass
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateGymClass(GymClassViewModel model)
+        {
+            if (string.IsNullOrEmpty(model.InstructorId))
+            {
+                ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            Instructor? instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            if (instructor == null)
+            {
+                ModelState.AddModelError("InstructorId", "Instructor not found");
+            }
+
+            Gym? gym = await _gymRepository.GetByIdAsync(model.GymId);
+
+            if (gym == null)
+            {
+                ModelState.AddModelError("GymId", "Gym not found");
+            }
+
+            if (ModelState.IsValid)
+            {
+                GymClass gymClass = new GymClass
+                {
+                    Gym = gym,
+                    Instructor = instructor,
+                    DateStart = model.DateStart,
+                    DateEnd = model.DateEnd,
+                };
+
+                await _classRepository.CreateAsync(gymClass);
+            }
+            return View(model);
+        }
+
+        // GET: Classes/UpdateGymClass/5
+        public async Task<IActionResult> UpdateGymClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+
+            if (gymClass == null)
+            {
+                return NotFound();
+            }
+
+            List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            instructorsList = instructorsList.Where(i => i.Gym.Id == gymClass.Gym.Id).ToList();
+
+            List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+
+            foreach (Instructor instructor in instructorsList)
+            {
+                selectInstructorList.Add(new SelectListItem
+                {
+                    Text = $"{instructor.Id} - {instructor.FirstName} {instructor.LastName}",
+                    Value = instructor.Id.ToString(),
+                });
+            }
+
+            GymClassViewModel model = new GymClassViewModel
+            {
+                InstructorId = gymClass.Instructor.Id,
+                Gym = await _gymRepository.GetByIdAsync(gymClass.Gym.Id),
+                InstructorsList = selectInstructorList,
+                DateStart = gymClass.DateStart,
+                DateEnd = gymClass.DateEnd,
+            };
+
+            return View(model);
+        }
+
+        // POST: Classes/UpdateGymClass/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateGymClass(GymClassViewModel model)
+        {
+            GymClass? gymClass = await _classRepository.GetByIdAsync(model.Id) as GymClass;
+
+            if (gymClass == null)
+            {
+                return NotFound();
+            }
+
+            gymClass.DateStart = model.DateStart;
+            gymClass.DateEnd = model.DateEnd;
+            gymClass.Instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _classRepository.UpdateAsync(model);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _classRepository.ExistsAsync(model.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(GymClasses));
+            }
+            return View(model);
+        }
+
+        // GET: Classes/DeleteGymClass/5
+        public async Task<IActionResult> DeleteGymClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+
+            if (gymClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(gymClass);
+        }
+
+        // POST: Classes/DeleteGymClass/5
+        [HttpPost, ActionName("DeleteGymClass")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteGymClassConfirmed(int id)
+        {
+            GymClass? gymClass = await _classRepository.GetByIdAsync(id) as GymClass;
+
+            if (gymClass != null)
+            {
+                await _classRepository.DeleteAsync(gymClass);
+            }
+
+            return RedirectToAction(nameof(GymClasses));
+        }
+
+        #endregion
+
+        #region Video Classes
+
+        // GET: VideoClasses
+        public async Task<IActionResult> VideoClasses() // Index for Video Classes
+        {
+            List<VideoClass> videoClasses = await _classRepository.GetAll().OfType<VideoClass>().ToListAsync();
+            return View();
+        }
+
+        // GET: Classes/VideoClassDetails/5
+        public async Task<IActionResult> VideoClassDetails(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            // Fetch the class using the repository method
+            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+
+            if (videoClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(videoClass);
+        }
+
+        // GET: Classes/CreateVideoClass
+        public IActionResult CreateVideoClass()
+        {
+            return View();
+        }
+
+        // POST: Classes/CreateVideoClass
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateVideoClass(VideoClass videoClass)
+        {
+            if (ModelState.IsValid)
+            {
+                await _classRepository.CreateAsync(videoClass);
+
+                return RedirectToAction(nameof(VideoClasses));
+            }
+            return View(videoClass);
+        }
+
+        // GET: Classes/UpdateVideoClass/5
+        public async Task<IActionResult> UpdateVideoClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+
+            if (videoClass == null)
+            {
+                return NotFound();
+            }
+            return View(videoClass);
+        }
+
+        // POST: Classes/UpdateVideoClass/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateVideoClass(OnlineClass videoClass)
+        {
+            if (videoClass == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _classRepository.UpdateAsync(videoClass);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _classRepository.ExistsAsync(videoClass.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(VideoClasses));
+            }
+            return View(videoClass);
+        }
+
+        // GET: Classes/DeleteVideoClass/5
+        public async Task<IActionResult> DeleteVideoClass(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+
+            if (videoClass == null)
+            {
+                return NotFound();
+            }
+
+            return View(videoClass);
+        }
+
+        // POST: Classes/DeleteVideoClass/5
+        [HttpPost, ActionName("DeleteVideoClass")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteVideoClassConfirmed(int id)
+        {
+            VideoClass? videoClass = await _classRepository.GetByIdAsync(id) as VideoClass;
+
+            if (videoClass != null)
+            {
+                await _classRepository.DeleteAsync(videoClass);
+            }
+
+            return RedirectToAction(nameof(VideoClasses));
+        }
+
+        public async Task<JsonResult> GetAvailableInstructorsOnline(DateTime dateStart, DateTime dateEnd)
+        {
+            // Get all instructors
+            List<Instructor> instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            // Get all online classes
+            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+
+            // Iterate through each online class to check for overlaps
+            foreach (OnlineClass onlineClass in onlineClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
+                {
+                    // The class overlaps remove its instructor from the available list
+                    instructors.Remove(onlineClass.Instructor);
+                }
+            }
+
+            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+
+            // Iterate through each gym class to check for overlaps
+            foreach (GymClass gymClass in gymClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
+                {
+                    // If the class overlaps remove its instructor from the available list
+                    instructors.Remove(gymClass.Instructor);
+                }
+            }
+
+            // Return the filtered list of available instructors
+            return Json(instructors);
+        }
+
+        public async Task<JsonResult> GetAvailableInstructorsGym(DateTime dateStart, DateTime dateEnd, int gymSelect)
+        {
+            // Get all instructors
+            List<Instructor> instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            // Get all online classes
+            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+
+            // Iterate through each online class to check for overlaps
+            foreach (OnlineClass onlineClass in onlineClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
+                {
+                    // The class overlaps remove its instructor from the available list
+                    instructors.Remove(onlineClass.Instructor);
+                }
+            }
+
+            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+
+            // Iterate through each gym class to check for overlaps
+            foreach (GymClass gymClass in gymClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
+                {
+                    // If the class overlaps remove its instructor from the available list
+                    instructors.Remove(gymClass.Instructor);
+                }
+            }
+
+            instructors = instructors.Where(i => i.Gym.Id == gymSelect).ToList();
+
+            // Return the filtered list of available instructors
+            return Json(instructors);
+        }
+
+        public async Task<JsonResult> GetAvailableInstructorsOnlineEdit(DateTime dateStart, DateTime dateEnd, int classId)
+        {
+            // Get all instructors
+            List<Instructor> instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            // Get all online classes
+            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+
+            // Iterate through each online class to check for overlaps
+            foreach (OnlineClass onlineClass in onlineClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd) && onlineClass.Id != classId)
+                {
+                    // The class overlaps remove its instructor from the available list
+                    instructors.Remove(onlineClass.Instructor);
+                }
+            }
+
+            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+
+            // Iterate through each gym class to check for overlaps
+            foreach (GymClass gymClass in gymClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
+                {
+                    // If the class overlaps remove its instructor from the available list
+                    instructors.Remove(gymClass.Instructor);
+                }
+            }
+
+            // Return the filtered list of available instructors
+            return Json(instructors);
+        }
+
+        public async Task<JsonResult> GetAvailableInstructorsGymEdit(DateTime dateStart, DateTime dateEnd, int gymId, int classId)
+        {
+            // Get all instructors
+            List<Instructor> instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            // Get all online classes
+            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+
+            // Iterate through each online class to check for overlaps
+            foreach (OnlineClass onlineClass in onlineClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
+                {
+                    // The class overlaps remove its instructor from the available list
+                    instructors.Remove(onlineClass.Instructor);
+                }
+            }
+
+            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+
+            // Iterate through each gym class to check for overlaps
+            foreach (GymClass gymClass in gymClasses)
+            {
+                // Check if the class overlaps with the requested time range
+                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd) && gymClass.Id != classId)
+                {
+                    // If the class overlaps remove its instructor from the available list
+                    instructors.Remove(gymClass.Instructor);
+                }
+            }
+
+            instructors = instructors.Where(i => i.Gym.Id == gymId).ToList();
+
+            // Return the filtered list of available instructors
+            return Json(instructors);
+        }
+
+        #endregion
+    }
+}
