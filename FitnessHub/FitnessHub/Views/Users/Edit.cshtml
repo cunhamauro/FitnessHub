@@ -1,0 +1,41 @@
+﻿@model FitnessHub.Data.Entities.Users.User
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<div class="card-container">
+    <div class="card">
+        <form method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" readonly />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" readonly />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-warning"></span>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-3" style="width: auto">
+                <i class="fa-solid fa-floppy-disk"></i> Save
+            </button>
+            <a asp-action="Index" class="btn btn-secondary mt-3" style="width: auto">
+                <i class="fa-solid fa-arrow-left"></i> Cancel
+            </a>
+
+        </form>
+    </div>
+</div>
+

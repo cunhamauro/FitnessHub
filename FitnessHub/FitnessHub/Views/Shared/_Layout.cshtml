@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using FitnessHub.Helpers
+@inject IUserHelper UserHelper
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,15 +12,21 @@
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
      <link rel="stylesheet" href="~/FitnessHub.styles.css" asp-append-version="true" />
+    <!-- Syncfusion ASP.NET Core controls styles -->
+    <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/fluent.css" />
+    <!-- Syncfusion ASP.NET Core controls scripts -->
+    <script src="https://cdn.syncfusion.com/ej2/27.1.48/dist/ej2.min.js"></script>
  </head>
 
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-toggleable-sm box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" style="margin-right: 0" asp-area="" asp-controller="Home" asp-action="Index"><img class="img-fluid" src="~/img/logo.png" style="width: 30vh"/></a>
-                <button class="navbar-toggler toggleBtn" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand" style="margin-right: 0" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img class="img-fluid" src="~/img/logo.png" style="width: 30vh"/>
+                </a>
+                <button class="navbar-toggler toggleBtn" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span style="margin-top: 1.2px" class="fa-solid fa-bars toggleIcon" id="toggleIcon"></span>
                 </button>
 
@@ -32,12 +41,54 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Index"><span>Classes</span></a>
                         </li>
-                    </ul>
-
-                    <ul class="nav navbar-nav navbar-right" style="margin-left: 2%">
-                        <li class="nav-item text-nowrap  signupItem">
-                            <a class="nav-link signupLink" asp-area="" asp-controller="Login" asp-action="Account">Login<i class="fa-solid fa-right-to-bracket signupIcon"></i></a>
+                    
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>Admin</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Machines" asp-action="Index">Machines</a>
+                                </li>
+                            </ul>
                         </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>Instructor</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Exercises" asp-action="Index">Exercises</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="Index">Workouts</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right" style="margin-left: 2%">
+                        @if (this.User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="ChangeUser">@this.User.Identity.Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item text-nowrap  signupItem">
+                                <a class="nav-link signupLink" asp-area="" asp-controller="Account" asp-action="Login">Login<i class="fa-solid fa-right-to-bracket signupIcon"></i></a>
+                            </li>
+                        }
                     </ul>
 
                 </div>
@@ -121,7 +172,8 @@
         });
 
     </script>
-
+    <!-- Syncfusion ASP.NET Core Script Manager -->
+    <ejs-scripts></ejs-scripts>
 </body>
 </html>
 

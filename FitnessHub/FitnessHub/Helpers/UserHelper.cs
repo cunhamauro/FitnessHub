@@ -115,5 +115,44 @@ namespace FitnessHub.Helpers
         {
             return await _userManager.GetUserAsync(claims); 
         }
+
+        public async Task<IList<User>> GetAdminsAsync()
+        {
+            return await _userManager.GetUsersInRoleAsync("Admin");
+        }
+
+        public async Task<IList<User>> GetEmployeesAndInstructorsAndClientsAsync()
+        {
+            var instructors = await _userManager.GetUsersInRoleAsync("Employee");
+            
+            var employees = await _userManager.GetUsersInRoleAsync("Instructor");
+
+            var clients = await _userManager.GetUsersInRoleAsync("Client");
+
+            var combinedUsers = employees.Union(instructors).Union(clients).ToList();
+
+            return combinedUsers;
+        }
+
+        public async Task<IList<string>> GetUserRolesAsync(User user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public IQueryable<IdentityRole> GetAllRoles()
+        {
+            return _roleManager.Roles;
+        }
+
+        public IQueryable<IdentityRole> GetRolesExceptAdmin()
+        {
+            return _roleManager.Roles
+                .Where(r => r.Name != "MasterAdmin" && r.Name != "Admin");
+        }
+
+        public Task<IdentityResult> DeleteUser(User user)
+        {
+            return _userManager.DeleteAsync(user);
+        }
     }
 }

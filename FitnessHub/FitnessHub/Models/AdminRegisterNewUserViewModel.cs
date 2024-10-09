@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Models
 {
-    public class RegisterNewUserViewModel
+    public class AdminRegisterNewUserViewModel
     {
         [Required]
         [Display(Name = "First Name")]
@@ -21,17 +22,14 @@ namespace FitnessHub.Models
 
 
         [Required]
+        public string? SelectedRole { get; set; }
+
+
+        public IEnumerable<SelectListItem>? Roles { get; set; }
+
+
+        [Required]
         [DataType(DataType.EmailAddress)]
         public string? Username { get; set; }
-
-
-        [Required]
-        [MinLength(8)]
-        public string? Password { get; set; }
-
-
-        [Required]
-        [Compare("Password")]
-        public string? Confirm { get; set; }
     }
 }

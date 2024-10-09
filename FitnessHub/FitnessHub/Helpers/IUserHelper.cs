@@ -40,5 +40,17 @@ namespace FitnessHub.Helpers
         Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
 
         Task<User?> GetUserAsync(ClaimsPrincipal claims);
+
+        Task<IList<User>> GetAdminsAsync();
+
+        Task<IList<User>> GetEmployeesAndInstructorsAndClientsAsync();
+
+        Task<IList<string>> GetUserRolesAsync(User user);
+
+        IQueryable<IdentityRole> GetAllRoles();
+
+        IQueryable<IdentityRole> GetRolesExceptAdmin();
+
+        Task<IdentityResult> DeleteUser(User user);
     }
 }

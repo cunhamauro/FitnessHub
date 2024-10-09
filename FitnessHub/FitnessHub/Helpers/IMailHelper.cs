@@ -4,6 +4,6 @@ namespace FitnessHub.Helpers
 {
     public interface IMailHelper
     {
-        Response SendEmail(string to, string subject, string body);
+        Task<Response> SendEmailAsync(string to, string subject, string body);
     }
 }

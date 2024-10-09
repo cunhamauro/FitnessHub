@@ -4,14 +4,10 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger">@ViewBag.Error</div>
-}
-<hr />
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
+<hr style="margin-bottom: 2rem" />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4 offset-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
@@ -21,27 +17,55 @@
             </div>
             <div class="form-group">
                 <label asp-for="Country" class="control-label"></label>
-                <select asp-for="Country" class="form-control" asp-items="ViewBag.Countries">
-                    <option value="">-- Select a country --</option>
+                <select asp-for="Country" id="country-dropdown" class="form-control" asp-items="ViewBag.Countries">
+                    <option value="">-- Select a Country --</option>
                 </select>
                 <span asp-validation-for="Country" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="City" class="control-label"></label>
-                <input asp-for="City" class="form-control" />
+                <ejs-combobox id="city-combobox" name="City" placeholder="Type or select a city" allowCustom="true"></ejs-combobox>
                 <span asp-validation-for="City" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="Address" class="control-label"></label>
+                <input asp-for="Address" class="form-control" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#country-dropdown').change(function () {
+                var selectedCountry = $(this).val();
+
+                if (selectedCountry) {
+                    $.ajax({
+                        url: '@Url.Action("GetCitiesByCountry", "Gyms")',
+                        data: { country: selectedCountry },
+                        success: function (response) {
+                            if (response && response.length > 0) {
+                                var cityCombobox = document.getElementById('city-combobox').ej2_instances[0];
+                                cityCombobox.dataSource = response;
+                            } else {
+                                var cityCombobox = document.getElementById('city-combobox').ej2_instances[0];
+                                cityCombobox.dataSource = [];  
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }
