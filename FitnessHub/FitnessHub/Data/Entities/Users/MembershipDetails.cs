@@ -11,8 +11,6 @@ namespace FitnessHub.Data.Entities.Users
         [Display(Name = "Date of Renewal")]
         public DateTime DateRenewal { get; set; }
 
-        Membership? Membership { get; set; }
-
-        Client? Client { get; set; }
+        public Membership? Membership { get; set; }
     }
 }

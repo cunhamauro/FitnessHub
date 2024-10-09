@@ -1,0 +1,96 @@
+﻿@model GymClassViewModel
+
+@{
+    ViewData["Title"] = "Update Gym Class";
+}
+
+<h1>Update Gym Class</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateGymClass">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" id="gymId" asp-for="@Model.Gym.Id" />
+            <div class="form-group">
+                <label>Gym</label>
+                <input readonly type="text" value="@Model.Gym.Id - @Model.Gym.Name - @Model.Gym.Country, @Model.Gym.City" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Online Class ID</label>
+                <input id="gymId" readonly value="@Model.Id" />
+            </div>
+            <div class="form-group">
+                <label asp-for="DateStart" class="control-label"></label>
+                <input asp-for="DateStart" class="form-control" />
+                <span asp-validation-for="DateStart" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateEnd" class="control-label"></label>
+                <input asp-for="DateEnd" class="form-control" />
+                <span asp-validation-for="DateEnd" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InstructorId" class="control-label"></label>
+                <select asp-for="InstructorId" class="form-control" asp-items="@Model.InstructorsList">
+                    <option value="">Select an Instructor</option>
+                </select>
+                <span asp-validation-for="InstructorId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        // Scripts for getting available aircrafts for given inputs
+        <script type="text/javascript">
+
+            $(document).ready(function () {
+                function UpdateAvailableInstructors() {
+                    var dateStart = $("#dateStart").val();
+                    var dateEnd = $("#dateEnd").val();
+                    var classId = $("#classId").val();
+                    var gymId = $("#gymId").val();
+
+                    $.ajax({
+                        url: '@Url.Action("GetAvailableInstructorsGymEdit", "Classes")',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            dateStart: dateStart,
+                            dateEnd: dateEnd,
+                            classId: classId,
+                            gymId: gymId,
+                        },
+                        success: function (instructors) {
+                            console.log('Received instructors:', instructors); // Debug: log the response
+                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>');
+                            $.each(instructors, function (index, instructors) {
+                                console.log('Instructor:', instructor); // Debug: log each instructor object
+                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + instructor.lastName '</option>');
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching instructors:', status, error); // Improved error logging
+                            alert('Failed to retrieve available Instructors: ' + error);
+                        }
+                    });
+                }
+
+                // Bind the change event to the OriginId dropdown
+                $("#dateStart").change(UpdateAvailableInstructors);
+
+                // // Bind the change event to the OriginId dropdown
+                $("#dateEnd").change(UpdateAvailableInstructors);
+            });
+        </script>
+    }
+}
