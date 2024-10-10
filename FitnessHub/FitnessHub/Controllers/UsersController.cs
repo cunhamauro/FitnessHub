@@ -155,13 +155,13 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var user = await _userHelper.GetUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             return View(user);
@@ -177,7 +177,7 @@ namespace FitnessHub.Controllers
                 var user = await _userHelper.GetUserByIdAsync(model.Id);
                 if (user == null)
                 {
-                    return NotFound();
+                    return UserNotFound();
                 }
 
                 user.Email = model.Email;
@@ -201,13 +201,13 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var user = await _userHelper.GetUserByIdAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             return View(user);
@@ -231,5 +231,9 @@ namespace FitnessHub.Controllers
             return View(user);
         }
 
+        public IActionResult UserNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
     }
 }

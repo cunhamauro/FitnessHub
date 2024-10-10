@@ -52,13 +52,15 @@ namespace FitnessHub.Controllers
                 }
             }
 
-            this.ModelState.AddModelError(string.Empty, "Failed to login");
+            ModelState.AddModelError("Username", "Failed to login");
+
             return View(model);
         }
 
         public async Task<IActionResult> Logout()
         {
             await _userHelper.LogoutAsync();
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -85,15 +87,17 @@ namespace FitnessHub.Controllers
                     };
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
+
                     if (result != IdentityResult.Success)
                     {
-                        ModelState.AddModelError("", "Couldn't create user.");
+                        ModelState.AddModelError("Username", "This user could not be created");
                         return View(model);
                     }
 
                     await _userHelper.AddUserToRoleAsync(user, "Client");
 
                     string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+
                     string? tokenLink = Url.Action("ConfirmEmail", "Account", new
                     {
                         userid = user.Id,
@@ -106,15 +110,15 @@ namespace FitnessHub.Controllers
 
                     if (response.IsSuccess)
                     {
-                        ViewBag.Message = "The instructions to allow you user have been sent to email";
+                        ViewBag.Message = "The instructions to confirm your account have been sent to your email";
                         return View(model);
                     }
 
-                    ModelState.AddModelError("", "The user couldn't be logged.");
+                    return DisplayMessage("Email not sent", "There was an error sending the email to confirm the account. Try again later!");
                 }
             }
 
-            ModelState.AddModelError("", "That email is already registered!");
+            ModelState.AddModelError("Username", "This email is already registered");
 
             return View(model);
         }
@@ -122,13 +126,17 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> ChangeUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-            var model = new ChangeUserViewModel();
-            if (user != null)
+
+            if (user == null)
             {
-                model.FirstName = user.FirstName;
-                model.LastName = user.LastName;
-                model.BirthDate = user.BirthDate;
+                return UserNotFound();
             }
+
+            var model = new ChangeUserViewModel();
+
+            model.FirstName = user.FirstName;
+            model.LastName = user.LastName;
+            model.BirthDate = user.BirthDate;
 
             return View(model);
         }
@@ -152,14 +160,19 @@ namespace FitnessHub.Controllers
                     }
 
                     var response = await _userHelper.UpdateUserAsync(user);
+
                     if (response.Succeeded)
                     {
-                        ViewBag.UserMessage = "User updated!";
+                        ViewBag.UserMessage = "User successfully updated!";
                     }
                     else
                     {
-                        ModelState.AddModelError("", response.Errors.FirstOrDefault().Description);
+                        return DisplayMessage("Error updating account", "The account could not be updated. Try again!");
                     }
+                }
+                else
+                {
+                    return UserNotFound();
                 }
             }
 
@@ -177,25 +190,27 @@ namespace FitnessHub.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
                 if (user != null)
                 {
                     var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
                     if (result.Succeeded)
                     {
-                        return this.RedirectToAction("ChangeUser");
+                        return RedirectToAction("ChangeUser");
                     }
                     else
                     {
-                        this.ModelState.AddModelError("", result.Errors.FirstOrDefault().Description);
+                        return DisplayMessage("Error changing password", "The password could not be updated. Try again!");
                     }
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, "User not found.");
+                    return UserNotFound();
                 }
             }
 
-            return this.View(model);
+            return View(model);
         }
 
         [HttpPost]
@@ -242,22 +257,23 @@ namespace FitnessHub.Controllers
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var user = await _userHelper.GetUserByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var result = await _userHelper.ConfirmEmailAsync(user, token);
+
             if (!result.Succeeded)
             {
-                return NotFound();
+                return DisplayMessage("Email confirmation failure", "Your account activation has failed! Try again!");
             }
 
-            return View();
+            return RedirectToAction("Login");
         }
 
         public IActionResult RecoverPassword()
@@ -268,12 +284,12 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
         {
-            if (this.ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "The email doesn't correspond to a registered user.");
+                    ModelState.AddModelError(string.Empty, "The email doesn't correspond to a registered user");
                     return View(model);
                 }
 
@@ -290,13 +306,13 @@ namespace FitnessHub.Controllers
 
                 if (response.IsSuccess)
                 {
-                    this.ViewBag.Message = "The instructions to recover your password have been sent to your email.";
+                    ViewBag.Message = "The instructions to recover your password have been sent to your email";
                 }
 
-                return this.View();
+                return View();
             }
 
-            return this.View(model);
+            return View(model);
         }
 
         public IActionResult ResetPassword(string token)
@@ -313,15 +329,16 @@ namespace FitnessHub.Controllers
                 var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.NewPassword);
                 if (result.Succeeded)
                 {
-                    this.ViewBag.Message = "Password reset successful.";
+                    ViewBag.Message = "Password reset was successful";
                     return View();
                 }
 
-                this.ViewBag.Message = "Error while resetting the password.";
+                ViewBag.Message = "Error while resetting the password";
                 return View(model);
             }
 
-            this.ViewBag.Message = "User not found.";
+            ViewBag.Message = "User not found";
+
             return View(model);
         }
 
@@ -329,13 +346,13 @@ namespace FitnessHub.Controllers
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var user = await _userHelper.GetUserByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var model = new ResetPasswordViewModel
@@ -350,28 +367,51 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> ConfirmEmailChangePassword(ResetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            // Ensure no active user session is affecting this operation
+            if (User.Identity.IsAuthenticated)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.Email);
-                if (user != null)
+                return NotAuthorized();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(model.Email);
+
+            if (user != null)
+            {
+                var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.NewPassword);
+
+                if (result.Succeeded)
                 {
-                    var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.NewPassword);
-                    if (result.Succeeded)
-                    {
-                        return this.RedirectToAction("Login");
-                    }
-                    else
-                    {
-                        this.ModelState.AddModelError("", result.Errors.FirstOrDefault().Description);
-                    }
+                    return RedirectToAction("Login");
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, "User not found.");
+                    return DisplayMessage("Password configuration failed", "Your password configuration has failed! Try again.");
                 }
             }
+            else
+            {
+                return UserNotFound();
+            }
+        }
 
-            return this.View(model);
+        public IActionResult UserNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult NotAuthorized()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Not authorized", Message = $"You haven't warmed up enough for this!" });
+        }
+
+        public IActionResult DisplayMessage(string title, string message)
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = $"{title}", Message = $"{message}" });
         }
     }
 }

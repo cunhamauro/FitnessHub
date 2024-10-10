@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Repositories;
+using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessHub.Controllers
@@ -27,14 +28,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             var category = await _categoryRepository.GetByIdAsync(id.Value);
 
             if (category == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
             return View(category);
         }
@@ -50,6 +51,16 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Category category)
         {
+            List<Category> categories = _categoryRepository.GetAll().ToList();
+
+            foreach (var cat in categories)
+            {
+                if (cat.Name == category.Name)
+                {
+                    ModelState.AddModelError("Name", "There is already a category with this name");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 await _categoryRepository.CreateAsync(category);
@@ -63,14 +74,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             var category = await _categoryRepository.GetByIdAsync(id.Value);
 
             if (category == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
             return View(category);
         }
@@ -80,6 +91,17 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
+            Category oldCategory = await _categoryRepository.GetByIdAsync(category.Id);
+            List<Category> categories = _categoryRepository.GetAll().ToList();
+
+            foreach (var cat in categories)
+            {
+                if (cat.Name == category.Name && cat.Name != oldCategory.Name)
+                {
+                    ModelState.AddModelError("Name", "There is already a category with this name");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -90,7 +112,7 @@ namespace FitnessHub.Controllers
                 {
                     if (!await _categoryRepository.ExistsAsync(category.Id))
                     {
-                        return NotFound();
+                        return CategoryNotFound();
                     }
                     throw;
                 }
@@ -103,14 +125,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             var category = await _categoryRepository.GetByIdAsync(id.Value);
 
             if (category == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             return View(category);
@@ -125,11 +147,21 @@ namespace FitnessHub.Controllers
 
             if (category == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             await _categoryRepository.DeleteAsync(category);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult CategoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Category not found", Message = "Maybe it got lost at the gym?" });
+        }
+
+        public IActionResult DisplayMessage(string title, string message)
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = $"{title}", Message = $"{message}" });
         }
     }
 }

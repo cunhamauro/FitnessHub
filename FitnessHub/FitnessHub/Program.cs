@@ -75,11 +75,11 @@ namespace FitnessHub
             builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
             builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 
-            //builder.Services.ConfigureApplicationCookie(options =>
-            //{
-            //    options.LoginPath = "/Account/NotAuthorized";
-            //    options.AccessDeniedPath = "/Account/NotAuthorized";
-            //});
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/NotAuthorized";
+                options.AccessDeniedPath = "/Account/NotAuthorized";
+            });
 
             // Api services
             builder.Services.AddHttpClient<CountryService>();

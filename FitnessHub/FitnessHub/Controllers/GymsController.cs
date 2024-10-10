@@ -5,6 +5,7 @@ using FitnessHub.Data.Entities;
 using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Services;
+using FitnessHub.Models;
 
 namespace FitnessHub.Controllers
 {
@@ -30,13 +31,13 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             var gym = await _gymRepository.GetByIdAsync(id.Value);
             if (gym == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             return View(gym);
@@ -91,13 +92,13 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             var gym = await _gymRepository.GetByIdAsync(id.Value);
             if (gym == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             return View(gym);
@@ -120,7 +121,7 @@ namespace FitnessHub.Controllers
                 {
                     if (!await _gymRepository.ExistsAsync(gym.Id))
                     {
-                        return NotFound();
+                        return GymNotFound();
                     }
                     else
                     {
@@ -137,13 +138,13 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             var gym = await _gymRepository.GetByIdAsync(id.Value);
             if (gym == null)
             {
-                return NotFound();
+                return GymNotFound();
             }
 
             return View(gym);
@@ -168,7 +169,12 @@ namespace FitnessHub.Controllers
                 }
             }
 
-            return NotFound();
+            return GymNotFound();
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
     }
 }
