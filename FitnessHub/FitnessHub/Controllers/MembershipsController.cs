@@ -1,6 +1,7 @@
 ﻿using FitnessHub.Data;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
+using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -180,6 +181,11 @@ namespace FitnessHub.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult MembershipNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time to add another membership?" });
         }
     }
 }

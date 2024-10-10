@@ -124,14 +124,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
 
             if (onlineClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
@@ -170,7 +170,7 @@ namespace FitnessHub.Controllers
 
             if (onlineClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             onlineClass.DateStart = model.DateStart;
@@ -188,7 +188,7 @@ namespace FitnessHub.Controllers
                 {
                     if (!await _classRepository.ExistsAsync(onlineClass.Id))
                     {
-                        return NotFound();
+                        return ClassNotFound();
                     }
                     else
                     {
@@ -205,14 +205,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
 
             if (onlineClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(onlineClass);
@@ -249,14 +249,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
 
             if (gymClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(gymClass);
@@ -344,14 +344,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
 
             if (gymClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
@@ -392,7 +392,7 @@ namespace FitnessHub.Controllers
 
             if (gymClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             gymClass.DateStart = model.DateStart;
@@ -409,7 +409,7 @@ namespace FitnessHub.Controllers
                 {
                     if (!await _classRepository.ExistsAsync(model.Id))
                     {
-                        return NotFound();
+                        return ClassNotFound();
                     }
                     else
                     {
@@ -426,14 +426,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
 
             if (gymClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(gymClass);
@@ -470,7 +470,7 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             // Fetch the class using the repository method
@@ -478,7 +478,7 @@ namespace FitnessHub.Controllers
 
             if (videoClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(videoClass);
@@ -511,14 +511,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
 
             if (videoClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
             return View(videoClass);
         }
@@ -532,7 +532,7 @@ namespace FitnessHub.Controllers
         {
             if (videoClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             if (ModelState.IsValid)
@@ -545,7 +545,7 @@ namespace FitnessHub.Controllers
                 {
                     if (!await _classRepository.ExistsAsync(videoClass.Id))
                     {
-                        return NotFound();
+                        return ClassNotFound();
                     }
                     else
                     {
@@ -569,7 +569,7 @@ namespace FitnessHub.Controllers
 
             if (videoClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(videoClass);
@@ -589,6 +589,10 @@ namespace FitnessHub.Controllers
 
             return RedirectToAction(nameof(VideoClasses));
         }
+
+        #endregion
+
+        #region AJAX Instructors Class Availability 
 
         public async Task<JsonResult> GetAvailableInstructorsOnline(DateTime dateStart, DateTime dateEnd)
         {
@@ -739,5 +743,10 @@ namespace FitnessHub.Controllers
         }
 
         #endregion
+
+        public IActionResult ClassNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
+        }
     }
 }

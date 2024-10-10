@@ -35,7 +35,7 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             var machine = await _machineRepository.GetAll()
@@ -44,7 +44,7 @@ namespace FitnessHub.Controllers
 
             if (machine == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             return View(machine);
@@ -89,14 +89,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             var machine = await _machineRepository.GetByIdAsync(id.Value);
 
             if (machine == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             var model = _converterHelper.ToMachineViewModel(machine);
@@ -122,14 +122,13 @@ namespace FitnessHub.Controllers
                     }
 
                     var machine = await _converterHelper.ToMachineAsync(model, path, false);
-
                     await _machineRepository.UpdateAsync(machine);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!await _machineRepository.ExistsAsync(model.Id))
                     {
-                        return NotFound();
+                        return MachineNotFound();
                     }
                     else
                     {
@@ -146,14 +145,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             var machine = await _machineRepository.GetByIdAsync(id.Value);
 
             if (machine == null)
             {
-                return NotFound();
+                return MachineNotFound();
             }
 
             return View(machine);
@@ -171,6 +170,11 @@ namespace FitnessHub.Controllers
                 await _machineRepository.DeleteAsync(machine);
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult MachineNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Machine not found", Message = "Don't worry, there are plenty of other machines to get fit!" });
         }
     }
 }
