@@ -1,0 +1,103 @@
+﻿@model WorkoutViewModel
+
+<h2>Create Workout</h2>
+
+<form asp-action="Create" method="post">
+ 
+    <div>
+        <label asp-for="ClientEmail">Client</label>
+        <input asp-for="ClientEmail" class="form-control" />
+        <span asp-validation-for="ClientEmail" class="text-danger"></span>
+    </div>
+
+    <!-- Exercises Section -->
+    <h4>Exercises</h4>
+    <div id="exerciseContainer">
+        <div class="exercise">
+            <div class="form-group">
+                <label for="Exercise_0__Machine">Machine</label>
+                <input type="text" class="form-control" name="exercises[0].Machine" />
+            </div>
+            <div class="form-group">
+                <label for="Exercise_0__Ticks">Time (in minutes)</label>
+                <input type="number" class="form-control" name="exercises[0].Ticks" />
+            </div>
+            <div class="form-group">
+                <label for="Exercise_0__Repetitions">Repetitions</label>
+                <input type="number" class="form-control" name="exercises[0].Repetitions" />
+            </div>
+            <div class="form-group">
+                <label for="Exercise_0__Sets">Sets</label>
+                <input type="number" class="form-control" name="exercises[0].Sets" />
+            </div>
+            <div class="form-group">
+                <label for="Exercise_0__DayOfWeek">Day of Week</label>
+                <select class="form-control" name="exercises[0].DayOfWeek">
+                    @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                    {
+                        <option value="@day">@day</option>
+                    }
+                </select>
+            </div>
+            <button type="button" class="btn btn-danger remove-exercise">Remove</button>
+        </div>
+    </div>
+
+    <button type="button" id="addExercise" class="btn btn-success">Add Exercise</button>
+
+    <div class="form-group">
+        <input type="submit" value="Create Workout" class="btn btn-primary" />
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var exerciseCount = 1; 
+            $('#addExercise').click(function () {
+                var newExercise = `
+                        <div class="exercise">
+                            <div class="form-group">
+                                <label for="Exercise_${exerciseCount}__Machine">Machine</label>
+                                <input type="text" class="form-control" name="exercises[${exerciseCount}].Machine" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Exercise_${exerciseCount}__Ticks">Time (in minutes)</label>
+                                <input type="number" class="form-control" name="exercises[${exerciseCount}].Ticks" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Exercise_${exerciseCount}__Repetitions">Repetitions</label>
+                                <input type="number" class="form-control" name="exercises[${exerciseCount}].Repetitions" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Exercise_${exerciseCount}__Sets">Sets</label>
+                                <input type="number" class="form-control" name="exercises[${exerciseCount}].Sets" />
+                            </div>
+                            <div class="form-group">
+                                <label for="Exercise_${exerciseCount}__DayOfWeek">Day of Week</label>
+                                <select class="form-control" name="exercises[${exerciseCount}].DayOfWeek">
+        @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+                                            <option value="@day">@day</option>
+        }
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-danger remove-exercise">Remove</button>
+                        </div>`;
+                $('#exerciseContainer').append(newExercise);
+                exerciseCount++; 
+            });
+
+           
+            $(document).on('click', '.remove-exercise', function () {
+                $(this).closest('.exercise').remove();
+            });
+        });
+    </script>
+}
+
+

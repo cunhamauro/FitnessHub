@@ -4,6 +4,6 @@ namespace FitnessHub.Data.Repositories
 {
     public interface IWorkoutRepository : IGenericRepository<Workout>
     {
-
+        Task<IEnumerable<Workout>> GetAllWorkouts();
     }
 }

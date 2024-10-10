@@ -1,0 +1,33 @@
+﻿@model IEnumerable<WorkoutViewModel>
+
+<h2>Workouts List</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Workout</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Client</th>
+            <th>Instructor</th>
+            <th>Exercises Count</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var workout in Model)
+        {
+            <tr>
+                <td>@workout.ClientEmail</td>
+                @* <td>@workout.InstructorFullName</td> *@
+               @*  <td>@(workout.Exercises?.Count ?? 0)</td> *@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@workout.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@workout.Id" class="btn btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@workout.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
