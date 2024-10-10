@@ -5,6 +5,7 @@ using FitnessHub.Data.Entities.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using FitnessHub.Models;
 
 namespace FitnessHub.Data
 {
@@ -73,5 +74,6 @@ namespace FitnessHub.Data
 
             base.OnModelCreating(builder);
         }
+        
     }
 }

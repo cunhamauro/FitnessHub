@@ -1,0 +1,29 @@
+﻿@model WorkoutViewModel
+
+<h2>Edit Workout</h2>
+
+<form asp-action="Edit">
+    <div class="form-group">
+        <label asp-for="ClientEmail" class="control-label"></label>
+        <input asp-for="ClientEmail" class="form-control" />
+        <span asp-validation-for="ClientEmail" class="text-danger"></span>
+    </div>
+    <!-- Section for displaying/editing Exercises -->
+   @*  @foreach (var exercise in Model.Exercises)
+    {
+        <div>
+            <label>Machine</label>
+            <input type="text" value="@exercise.Machine" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Machine" />
+            <label>Repetitions</label>
+            <input type="number" value="@exercise.Repetitions" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Repetitions" />
+            <label>Sets</label>
+            <input type="number" value="@exercise.Sets" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Sets" />
+            <label>DayOfWeek</label>
+            <input type="text" value="@exercise.DayOfWeek" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].DayOfWeek" />
+            <input type="hidden" value="@exercise.Id" name="exercises[@Model.Exercises.IndexOf(exercise)].Id" />
+        </div>
+    } *@
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>

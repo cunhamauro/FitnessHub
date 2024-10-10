@@ -6,10 +6,10 @@ namespace FitnessHub.Data.Entities.GymMachines
     {
         public int Id { get; set; }
 
-        public Client Client { get; set; }
+        public Client? Client { get; set; }
 
-        public Instructor Instructor { get; set; }
+        public Instructor? Instructor { get; set; }
 
-        public List<Exercise> Exercise { get; set; }
+        public List<Exercise>? Exercise { get; set; }
     }
 }

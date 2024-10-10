@@ -1,0 +1,24 @@
+﻿@model WorkoutViewModel
+
+<h2>Workout Details</h2>
+<div>
+    <h4>Client Email</h4>
+    <p>@Model.ClientEmail</p>
+</div>
+<div>
+    <h4>Instructor</h4>
+    <p>@Model.InstructorFullName</p>
+</div>
+<div>
+    <h4>Exercises</h4>
+    <ul>
+       @*  @foreach (var exercise in Model.Exercises)
+        {
+            <li>
+                Machine: @exercise.Machine, Repetitions: @exercise.Repetitions, Sets: @exercise.Sets, Day: @exercise.DayOfWeek
+            </li>
+        }
+    </ul> *@
+</div>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
