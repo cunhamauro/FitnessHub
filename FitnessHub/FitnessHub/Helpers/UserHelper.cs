@@ -129,7 +129,7 @@ namespace FitnessHub.Helpers
 
             var clients = await _userManager.GetUsersInRoleAsync("Client");
 
-            var combinedUsers = employees.Union(instructors).Union(clients).ToList();
+            var combinedUsers = employees.Union(instructors).Union(clients).ToList();            
 
             return combinedUsers;
         }

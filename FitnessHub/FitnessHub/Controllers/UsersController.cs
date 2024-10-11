@@ -1,10 +1,11 @@
 ﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace FitnessHub.Controllers
 {
@@ -13,18 +14,25 @@ namespace FitnessHub.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
         private readonly ILoadRolesHelper _loadRolesHelper;
+        private readonly IGymRepository _gymRepository;
 
-        public UsersController(IUserHelper userHelper, IMailHelper mailHelper, ILoadRolesHelper loadRolesHelper)
+        public UsersController(
+            IUserHelper userHelper, 
+            IMailHelper mailHelper, 
+            ILoadRolesHelper loadRolesHelper, 
+            IGymRepository gymRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _loadRolesHelper = loadRolesHelper;
+            _gymRepository = gymRepository;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
             var users = new List<User>();
+
             if (this.User.IsInRole("MasterAdmin"))
             {
                 users = (await _userHelper.GetAdminsAsync()).ToList();
@@ -40,6 +48,7 @@ namespace FitnessHub.Controllers
             foreach (var user in users)
             {
                 var role = (await _userHelper.GetUserRolesAsync(user)).FirstOrDefault();
+                Gym? gym = await _gymRepository.GetGymByUserAsync(user);
 
                 usersList.Add(new UserRoleViewModel
                 {
@@ -47,7 +56,8 @@ namespace FitnessHub.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    Role = role
+                    Role = role,
+                    Gym = gym
                 });
             }
 
@@ -55,17 +65,44 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Users/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var model = new AdminRegisterNewUserViewModel();
-            
+
             if (this.User.IsInRole("MasterAdmin"))
             {
+                model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                {
+                    Value = gym.Id.ToString(),
+                    Text = $"{gym.Data}",
+                });
+                
                 _loadRolesHelper.LoadMasterAdminRoles(model);
             }
 
             if (this.User.IsInRole("Admin"))
             {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if(user == null)
+                {
+                    return UserNotFound();
+                }
+
+                var gym = await _gymRepository.GetGymByUserAsync(user);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                model.Gyms = new List<SelectListItem>
+                    {
+                        new SelectListItem
+                        {
+                            Value = gym.Id.ToString(),
+                            Text = $"{gym.Data}"
+                        }
+                    };
+
                 _loadRolesHelper.LoadAdminRoles(model);
             }
 
@@ -79,30 +116,43 @@ namespace FitnessHub.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.Username);
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
+                    var gym = await _gymRepository.GetByIdTrackAsync(model.SelectedGym);
+                    if (gym == null)
+                    {
+                        return GymNotFound();
+                    }
+
                     if (model.SelectedRole == "Admin" || model.SelectedRole == "MasterAdmin")
                     {
-                        user = new Admin();
+                        user = new Admin
+                        { 
+                            Gym = gym
+                        };
                     }
+
                     if (model.SelectedRole == "Employee")
                     {
-                        user = new Employee();
+                        user = new Employee
+                        {
+                            Gym = gym
+                        };
                     }
-                    if (model.SelectedRole == "Client")
-                    {
-                        user = new Client();
-                    }
+                    
                     if (model.SelectedRole == "Instructor")
                     {
-                        user = new Instructor();
+                        user = new Instructor
+                        {
+                            Gym = gym
+                        };
                     }
 
                     user.FirstName = model.FirstName;
                     user.LastName = model.LastName;
-                    user.Email = model.Username;
-                    user.UserName = model.Username;
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
                     user.BirthDate = model.BirthDate;
 
                     string? password = "FitHub_2024";
@@ -122,9 +172,9 @@ namespace FitnessHub.Controllers
                             token = resetToken
                         }, protocol: HttpContext.Request.Scheme);
 
-                        Response response = await _mailHelper.SendEmailAsync(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                        $"To allow the user, " +
-                        $"plase click in this link:</br></br><a href = \"{tokenLink}\">Click here to confirm your  email and change your password</a>");
+                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                            $"To allow the user, " +
+                            $"plase click in this link:</br></br><a href = \"{tokenLink}\">Click here to confirm your  email and change your password</a>");
 
                         if (response.IsSuccess)
                         {
@@ -136,16 +186,42 @@ namespace FitnessHub.Controllers
 
             if (this.User.IsInRole("MasterAdmin"))
             {
+                model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                {
+                    Value = gym.Id.ToString(),
+                    Text = $"{gym.Data}",
+                });
+
                 _loadRolesHelper.LoadMasterAdminRoles(model);
             }
 
             if (this.User.IsInRole("Admin"))
             {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (user == null)
+                {
+                    return UserNotFound();
+                }
+
+                var gym = await _gymRepository.GetGymByUserAsync(user);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                model.Gyms = new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}"
+                    }
+                };
+
                 _loadRolesHelper.LoadAdminRoles(model);
             }
 
             ModelState.AddModelError("", "Failed to create user.");
-
 
             return View(model);
         }
@@ -164,13 +240,68 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            return View(user);
+            var model = new AdminEditUserViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+            };
+
+            if (this.User.IsInRole("MasterAdmin"))
+            {
+                if(user is Admin admin)
+                {
+                    model.GymId = admin.GymId;
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                        
+                    });
+                }
+            }
+
+            if (this.User.IsInRole("Admin"))
+            {
+                if (user is Client client)
+                {
+                    model.GymId = client.GymId;
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                        
+                    });
+                }
+
+                if (user is Employee employee)
+                {
+                    model.GymId = employee.GymId;
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                        
+                    });
+                }
+
+                if (user is Instructor instructor)
+                {
+                    model.GymId = instructor.GymId;
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                    });
+                }
+            }
+
+            return View(model);
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(User model)
+        public async Task<IActionResult> Edit(AdminEditUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -180,8 +311,34 @@ namespace FitnessHub.Controllers
                     return UserNotFound();
                 }
 
+                var gym = await _gymRepository.GetByIdTrackAsync(model.GymId);
+                if(gym == null)
+                {
+                    return GymNotFound();
+                }
+
                 user.Email = model.Email;
                 user.UserName = model.Email;
+                
+                if(user is Admin admin)
+                {
+                    admin.Gym = gym;
+                }
+
+                if (user is Instructor instructor)
+                {
+                    instructor.Gym = gym;
+                }
+
+                if (user is Employee employee)
+                {
+                    employee.Gym = gym;
+                }
+
+                if (user is Client client)
+                {
+                    client.Gym = gym;
+                }
 
                 var result = await _userHelper.UpdateUserAsync(user);
                 if (!result.Succeeded)
@@ -234,6 +391,11 @@ namespace FitnessHub.Controllers
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
     }
 }
