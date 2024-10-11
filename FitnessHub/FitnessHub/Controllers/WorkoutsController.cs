@@ -3,9 +3,7 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
@@ -14,27 +12,20 @@ namespace FitnessHub.Controllers
         private readonly IWorkoutRepository _workoutRepository;
         private readonly IUserHelper _userHelper;
         private readonly IMachineRepository _machineRepository;
+        private readonly IExerciseRepository _exerciseRepository;
 
-        public WorkoutsController(IWorkoutRepository workoutRepository, IUserHelper userHelper, IMachineRepository machineRepository)
+        public WorkoutsController(IWorkoutRepository workoutRepository, IUserHelper userHelper, IMachineRepository machineRepository, IExerciseRepository exerciseRepository)
         {
             _workoutRepository = workoutRepository;
             _userHelper = userHelper;
             _machineRepository = machineRepository;
+            _exerciseRepository = exerciseRepository;
         }
 
         // GET: Workouts
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var workouts = await _workoutRepository.GetAllWorkouts();
-
-            var model = workouts.Select(w => new WorkoutViewModel
-            {
-                Id = w.Id,
-                ClientEmail = w.Client.Email,
-                InstructorFullName = $"{w.Instructor.FirstName} {w.Instructor.LastName}",
-            }).ToList();
-
-            return View(model);
+            return View(_workoutRepository.GetAll());
         }
 
         // GET: Workouts/Create
@@ -51,50 +42,49 @@ namespace FitnessHub.Controllers
         // POST: Workouts/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(WorkoutViewModel model, List<Exercise> exercises)
+        public async Task<IActionResult> Create(WorkoutViewModel model)
         {
-            //var instructor = await _userHelper.GetUserAsync(this.User) as Instructor;
+            // Get current instructor
+            var instructor = await _userHelper.GetUserAsync(this.User) as Instructor;
+
+            if (instructor == null)
+            {
+                return UserNotFound();
+            }
 
             var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
 
             if (client == null)
             {
-                ModelState.AddModelError("ClientEmail", "Client not found.");
+                ModelState.AddModelError("ClientEmail", "Client not found");
                 return View(model);
             }
 
-            //if (instructor == null)
-            //{
-            //    ModelState.AddModelError("InstructorId", "Instructor not found.");
-            //    return View(model);
-            //}
-
-            
-
             if (ModelState.IsValid)
             {
-                var workout = new Workout
+                Workout workout = new Workout
                 {
                     Client = client,
-                    //Instructor = instructor,
-                    Exercise = new List<Exercise>()
+                    Instructor = instructor,
+                    Exercises = new List<Exercise>(),
                 };
 
-                foreach (var exercise in exercises)
+                foreach (var exerModel in model.Exercises)
                 {
-                    var machine = await _machineRepository.GetByIdTrackAsync(exercise.Machine.Id);
+                    Machine machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // With track to nest existing machine inside new workout
 
-                    workout.Exercise.Add(new Exercise
+                    workout.Exercises.Add(new Exercise
                     {
                         Machine = machine,
-                        Ticks = exercise.Ticks,
-                        Repetitions = exercise.Repetitions,
-                        Sets = exercise.Sets,
-                        DayOfWeek = exercise.DayOfWeek
+                        Ticks = exerModel.Ticks,
+                        Repetitions = exerModel.Repetitions,
+                        Sets = exerModel.Sets,
+                        DayOfWeek = exerModel.DayOfWeek
                     });
                 }
 
                 await _workoutRepository.CreateAsync(workout);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
@@ -104,21 +94,39 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
-            var workout = await _workoutRepository.GetByIdAsync(id.Value);
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id.Value);
+
             if (workout == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
+            }
+
+            var exercisesModel = new List<ExerciseViewModel>();
+
+            foreach (Exercise exercise in workout.Exercises)
+            {
+                exercisesModel.Add(new ExerciseViewModel
+                {
+                    Id = exercise.Id,
+                    MachineId = exercise.Machine.Id,
+                    Name = exercise.Name,
+                    Ticks = exercise.Ticks,
+                    Repetitions = exercise.Repetitions,
+                    Sets = exercise.Sets,
+                    DayOfWeek= exercise.DayOfWeek
+                });
             }
 
             var model = new WorkoutViewModel
             {
                 Id = workout.Id,
                 ClientEmail = workout.Client.Email,
-                InstructorFullName = $"{workout.Instructor.FirstName} {workout.Instructor.LastName}",
-                //Exercises = workout.Exercise
+                Instructor = workout.Instructor,
+                Exercises =  exercisesModel,
+                Machines = await _machineRepository.GetAllMachinesAsync(),
             };
 
             return View(model);
@@ -127,32 +135,68 @@ namespace FitnessHub.Controllers
         // POST: Workouts/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, WorkoutViewModel model, List<Exercise> exercises)
+        public async Task<IActionResult> Edit(WorkoutViewModel model)
         {
-            if (id != model.Id)
-            {
-                return NotFound();
-            }
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(model.Id);
 
-            var workout = await _workoutRepository.GetByIdAsync(id);
             if (workout == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
-            var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
+            var client = workout.Client;
+
             if (client == null)
             {
-                ModelState.AddModelError("ClientEmail", "Client not found.");
+                ModelState.AddModelError("ClientEmail", "Client not found");
                 return View(model);
             }
 
             if (ModelState.IsValid)
             {
-                workout.Client = client;
-                workout.Exercise = exercises;
+                // Update or add exercises
+                foreach (var exerModel in model.Exercises)
+                {
+                    // Find existing exercise
+                    var existingExercise = workout.Exercises.FirstOrDefault(e => e.Id == exerModel.Id);
+
+                    Machine machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // Get the exercise machine with track to nest existing machine updated workout
+
+                    // If it exists, update it
+                    if (existingExercise != null)
+                    {
+                        existingExercise.Machine = machine;
+                        existingExercise.Ticks = exerModel.Ticks;
+                        existingExercise.Repetitions = exerModel.Repetitions;
+                        existingExercise.Sets = exerModel.Sets;
+                        existingExercise.DayOfWeek = exerModel.DayOfWeek;
+                    }
+                    else
+                    {
+                        // If it doesn't exist, create a new exercise
+                        var newExercise = new Exercise
+                        {
+                            Machine = machine,
+                            Ticks = exerModel.Ticks,
+                            Repetitions = exerModel.Repetitions,
+                            Sets = exerModel.Sets,
+                            DayOfWeek = exerModel.DayOfWeek
+                        };
+
+                        workout.Exercises.Add(newExercise);
+                    }
+                }
+
+                var exerciseIdsToKeep = model.Exercises.Select(e => e.Id).ToList();
+                var exercisesToRemove = workout.Exercises.Where(e => !exerciseIdsToKeep.Contains(e.Id)).ToList();
+
+                foreach (var exercise in exercisesToRemove)
+                {
+                    await _exerciseRepository.DeleteAsync(exercise);
+                }
 
                 await _workoutRepository.UpdateAsync(workout);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -161,35 +205,27 @@ namespace FitnessHub.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
-
-            var workout = await _workoutRepository.GetByIdAsync(id);
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id);
 
             if (workout == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
-            var model = new WorkoutViewModel
-            {
-                Id = workout.Id,
-                ClientEmail = workout.Client.Email,
-                InstructorFullName = $"{workout.Instructor.FirstName} {workout.Instructor.LastName}",
-                //Exercises = workout.Exercise
-            };
-            return View(model);
+            return View(workout);
         }
 
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
             var workout = await _workoutRepository.GetByIdAsync(id.Value);
             if (workout == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
             return View(workout);
@@ -203,15 +239,25 @@ namespace FitnessHub.Controllers
             var workout = await _workoutRepository.GetByIdAsync(id);
             if (workout == null)
             {
-                return NotFound();
+                return WorkoutNotFound();
             }
 
             await _workoutRepository.DeleteAsync(workout);
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult UserNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult WorkoutNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Workout not found", Message = "Maybe it was left behind in the locker room!" });
+        }
     }
 }
-    
 
-    
+
+
 

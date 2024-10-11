@@ -20,12 +20,14 @@ namespace FitnessHub.Controllers
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
         private readonly IGymRepository _gymRepository;
+        private readonly IClassCategoryRepository _classCategoryRepository;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
             _gymRepository = gymRepository;
+            _classCategoryRepository = classCategoryRepository;
         }
 
         // Index not in use
@@ -40,7 +42,7 @@ namespace FitnessHub.Controllers
         // GET: OnlineClasses
         public async Task<IActionResult> OnlineClasses() // Index for Online Classes
         {
-            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
             return View(onlineClasses);
         }
 
@@ -52,7 +54,7 @@ namespace FitnessHub.Controllers
                 return NotFound();
             }
 
-            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id.Value);
 
             if (onlineClass == null)
             {
@@ -67,6 +69,7 @@ namespace FitnessHub.Controllers
         {
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+            List<SelectListItem> selectClassCategoriesList = await _classCategoryRepository.GetCategoriesSelectListAsync();
 
             foreach (Instructor instructor in instructorsList)
             {
@@ -80,6 +83,7 @@ namespace FitnessHub.Controllers
             OnlineClassViewModel model = new OnlineClassViewModel
             {
                 InstructorsList = selectInstructorList,
+                CategoriesList = selectClassCategoriesList,
             };
 
             return View(model);
@@ -97,17 +101,30 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
             }
 
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
             Instructor? instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            ClassCategory? category = await _classCategoryRepository.GetByIdTrackAsync(model.CategoryId);
 
             if (instructor == null)
             {
                 ModelState.AddModelError("InstructorId", "Instructor not found");
             }
 
+            if (category == null)
+            {
+                ModelState.AddModelError("CategoryId", "Category not found");
+            }
+
             if (ModelState.IsValid)
             {
                 OnlineClass onlineClass = new OnlineClass
                 {
+                    Category = category,
                     Instructor = instructor,
                     DateStart = model.DateStart,
                     DateEnd = model.DateEnd,
@@ -127,13 +144,14 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id.Value);
 
             if (onlineClass == null)
             {
                 return ClassNotFound();
             }
 
+            List<SelectListItem> selectClassCategoriesList = await _classCategoryRepository.GetCategoriesSelectListAsync();
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
 
@@ -154,6 +172,8 @@ namespace FitnessHub.Controllers
                 DateStart = onlineClass.DateStart,
                 DateEnd = onlineClass.DateEnd,
                 Platform = onlineClass.Platform,
+                CategoryId = onlineClass.Category.Id,
+                CategoriesList = selectClassCategoriesList,
             };
 
             return View(model);
@@ -166,13 +186,24 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateOnlineClass(OnlineClassViewModel model)
         {
-            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(model.Id) as OnlineClass;
+            if (string.IsNullOrEmpty(model.InstructorId))
+            {
+                ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(model.Id);
 
             if (onlineClass == null)
             {
                 return ClassNotFound();
             }
 
+            onlineClass.Category = await _classCategoryRepository.GetByIdTrackAsync(model.Id);
             onlineClass.DateStart = model.DateStart;
             onlineClass.DateEnd = model.DateEnd;
             onlineClass.Platform = model.Platform;
@@ -208,7 +239,7 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id.Value) as OnlineClass;
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id.Value);
 
             if (onlineClass == null)
             {
@@ -223,7 +254,7 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteOnlineClassConfirmed(int id)
         {
-            OnlineClass? onlineClass = await _classRepository.GetByIdAsync(id) as OnlineClass;
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
 
             if (onlineClass != null)
             {
@@ -240,7 +271,7 @@ namespace FitnessHub.Controllers
         // GET: GymClasses
         public async Task<IActionResult> GymClasses() // Index for Gym Classes
         {
-            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
             return View();
         }
 
@@ -252,7 +283,7 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(id.Value);
 
             if (gymClass == null)
             {
@@ -267,6 +298,7 @@ namespace FitnessHub.Controllers
         {
             List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
             List<SelectListItem> selectGymList = new List<SelectListItem>();
+            List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
@@ -293,6 +325,7 @@ namespace FitnessHub.Controllers
             {
                 InstructorsList = selectInstructorList,
                 GymsList = selectGymList,
+                CategoriesList = selectCategoryList,
             };
 
             return View(model);
@@ -308,6 +341,18 @@ namespace FitnessHub.Controllers
             if (string.IsNullOrEmpty(model.InstructorId))
             {
                 ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
+            ClassCategory category = await _classCategoryRepository.GetByIdTrackAsync(model.CategoryId);
+
+            if (category == null)
+            {
+                ModelState.AddModelError("CategoryId", "Category not found");
             }
 
             Instructor? instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
@@ -332,6 +377,7 @@ namespace FitnessHub.Controllers
                     Instructor = instructor,
                     DateStart = model.DateStart,
                     DateEnd = model.DateEnd,
+                    Category = category,
                 };
 
                 await _classRepository.CreateAsync(gymClass);
@@ -347,7 +393,7 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(id.Value);
 
             if (gymClass == null)
             {
@@ -355,10 +401,9 @@ namespace FitnessHub.Controllers
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
-
             instructorsList = instructorsList.Where(i => i.Gym.Id == gymClass.Gym.Id).ToList();
-
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+            List<SelectListItem> selectCategoriesList = await _classCategoryRepository.GetCategoriesSelectListAsync();
 
             foreach (Instructor instructor in instructorsList)
             {
@@ -376,6 +421,8 @@ namespace FitnessHub.Controllers
                 InstructorsList = selectInstructorList,
                 DateStart = gymClass.DateStart,
                 DateEnd = gymClass.DateEnd,
+                CategoryId = gymClass.Category.Id,
+                CategoriesList = selectCategoriesList,
             };
 
             return View(model);
@@ -388,7 +435,31 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGymClass(GymClassViewModel model)
         {
-            GymClass? gymClass = await _classRepository.GetByIdAsync(model.Id) as GymClass;
+            if (string.IsNullOrEmpty(model.InstructorId))
+            {
+                ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            Instructor instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+            if (instructor == null)
+            {
+                ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+            }
+
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
+            ClassCategory? category = await _classCategoryRepository.GetByIdAsync(model.CategoryId);
+
+            if (category == null)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
+            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(model.Id);
 
             if (gymClass == null)
             {
@@ -397,7 +468,8 @@ namespace FitnessHub.Controllers
 
             gymClass.DateStart = model.DateStart;
             gymClass.DateEnd = model.DateEnd;
-            gymClass.Instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+            gymClass.Instructor = instructor;
+            gymClass.Category = category;
 
             if (ModelState.IsValid)
             {
@@ -429,7 +501,7 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            GymClass? gymClass = await _classRepository.GetByIdAsync(id.Value) as GymClass;
+            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(id.Value);
 
             if (gymClass == null)
             {
@@ -444,7 +516,7 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteGymClassConfirmed(int id)
         {
-            GymClass? gymClass = await _classRepository.GetByIdAsync(id) as GymClass;
+            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(id);
 
             if (gymClass != null)
             {
@@ -461,7 +533,7 @@ namespace FitnessHub.Controllers
         // GET: VideoClasses
         public async Task<IActionResult> VideoClasses() // Index for Video Classes
         {
-            List<VideoClass> videoClasses = await _classRepository.GetAll().OfType<VideoClass>().ToListAsync();
+            List<VideoClass> videoClasses = await _classRepository.GetAllVideoClasses();
             return View();
         }
 
@@ -474,7 +546,7 @@ namespace FitnessHub.Controllers
             }
 
             // Fetch the class using the repository method
-            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+            VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id.Value);
 
             if (videoClass == null)
             {
@@ -514,7 +586,7 @@ namespace FitnessHub.Controllers
                 return ClassNotFound();
             }
 
-            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+            VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id.Value);
 
             if (videoClass == null)
             {
@@ -528,7 +600,7 @@ namespace FitnessHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateVideoClass(OnlineClass videoClass)
+        public async Task<IActionResult> UpdateVideoClass(VideoClass videoClass)
         {
             if (videoClass == null)
             {
@@ -565,7 +637,7 @@ namespace FitnessHub.Controllers
                 return NotFound();
             }
 
-            VideoClass? videoClass = await _classRepository.GetByIdAsync(id.Value) as VideoClass;
+            VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id.Value);
 
             if (videoClass == null)
             {
@@ -580,7 +652,7 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVideoClassConfirmed(int id)
         {
-            VideoClass? videoClass = await _classRepository.GetByIdAsync(id) as VideoClass;
+            VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id);
 
             if (videoClass != null)
             {
@@ -747,6 +819,16 @@ namespace FitnessHub.Controllers
         public IActionResult ClassNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
+        }
+
+        public IActionResult CategoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Category not found", Message = "Maybe it got lost at the gym?" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
     }
 }

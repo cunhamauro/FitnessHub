@@ -1,31 +1,40 @@
-﻿@model IEnumerable<WorkoutViewModel>
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymMachines.Workout>
 
-<h2>Workouts List</h2>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary">Add New Workout</a>
+    <a asp-action="Create">Create New</a>
 </p>
-
-<table class="table table-bordered">
+<table class="table">
     <thead>
         <tr>
             <th>Client</th>
             <th>Instructor</th>
-            <th>Exercises Count</th>
+            <th>Exercises</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var workout in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@workout.ClientEmail</td>
-                @* <td>@workout.InstructorFullName</td> *@
-               @*  <td>@(workout.Exercises?.Count ?? 0)</td> *@
                 <td>
-                    <a asp-action="Edit" asp-route-id="@workout.Id" class="btn btn-warning">Edit</a>
-                    <a asp-action="Details" asp-route-id="@workout.Id" class="btn btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@workout.Id" class="btn btn-danger">Delete</a>
+                    @item.Client.Fullname (@item.Client.Email)
+                </td>
+                <td>
+                    @item.Instructor.Fullname
+                </td>
+                <td>
+                    @item.Exercises.Count
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }

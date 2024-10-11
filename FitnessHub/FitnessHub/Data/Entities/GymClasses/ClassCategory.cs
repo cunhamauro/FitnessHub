@@ -1,6 +1,6 @@
-﻿namespace FitnessHub.Data.Entities.GymMachines
+﻿namespace FitnessHub.Data.Entities.GymClasses
 {
-    public class Category : IEntity
+    public class ClassCategory : IEntity
     {
         public int Id { get; set; }
 

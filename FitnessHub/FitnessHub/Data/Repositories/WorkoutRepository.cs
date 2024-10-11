@@ -12,13 +12,18 @@ namespace FitnessHub.Data.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Workout>> GetAllWorkouts()
+        public async Task<IEnumerable<Workout>> GetAllWorkoutsInclude()
         {
             return await _context.Workouts
                 .Include(w => w.Client) 
                 .Include(w => w.Instructor) 
-                .Include(w => w.Exercise) 
+                .Include(w => w.Exercises).ThenInclude(e => e.Machine)
                 .ToListAsync();
+        }
+
+        public async Task<Workout> GetWorkoutByIdIncludeAsync(int id)
+        {
+            return await _context.Workouts.Where(w => w.Id == id).Include(w => w.Client).Include(w => w.Instructor).Include(w => w.Exercises).ThenInclude(e => e.Machine).FirstOrDefaultAsync();  
         }
     }
 }

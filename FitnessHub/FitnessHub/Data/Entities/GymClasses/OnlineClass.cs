@@ -16,6 +16,6 @@ namespace FitnessHub.Data.Entities.GymClasses
         [Required]
         public string? Platform {  get; set; }
 
-        public List<Client>? Client { get; set; }
+        public List<Client>? Clients { get; set; }
     }
 }

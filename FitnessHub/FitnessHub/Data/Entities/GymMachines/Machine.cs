@@ -7,7 +7,7 @@ namespace FitnessHub.Data.Entities.GymMachines
         public int Id { get; set; }
 
         public string? Name { get; set; }
-        public Category? Category { get; set; }
+        public MachineCategory? Category { get; set; }
 
         [Display(Name = "Image")]
         public string? ImagePath { get; set; }

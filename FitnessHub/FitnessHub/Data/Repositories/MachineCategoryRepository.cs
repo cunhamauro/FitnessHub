@@ -4,17 +4,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
 {
-    public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
+    public class MachineCategoryRepository : GenericRepository<MachineCategory>, IMachineCategoryRepository
     {
         private readonly DataContext _context;
-        public CategoryRepository(DataContext context) : base(context)
+        public MachineCategoryRepository(DataContext context) : base(context)
         {
             _context = context;
         }
 
         public async Task<IEnumerable<SelectListItem>> GetCategoriesSelectListAsync()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _context.MachineCategories.ToListAsync();
 
             return categories.Select(c => new SelectListItem
             {

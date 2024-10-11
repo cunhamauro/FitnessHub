@@ -11,6 +11,12 @@
     <h4>GymClass</h4>
     <hr />
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Category.Name
+        </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.DateStart)
         </dt>

@@ -9,12 +9,12 @@ namespace FitnessHub.Controllers
     public class MachinesController : Controller
     {
         private readonly IMachineRepository _machineRepository;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMachineCategoryRepository _categoryRepository;
         private readonly IConverterHelper _converterHelper;
         private readonly IImageHelper _imageHelper;
 
         public MachinesController(IMachineRepository machineRepository,
-            ICategoryRepository categoryRepository,
+            IMachineCategoryRepository categoryRepository,
             IConverterHelper converterHelper,
             IImageHelper imageHelper)
         {

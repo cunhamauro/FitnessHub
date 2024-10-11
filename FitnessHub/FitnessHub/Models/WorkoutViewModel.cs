@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Entities.GymMachines;
+using FitnessHub.Data.Entities.Users;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
@@ -8,12 +9,14 @@ namespace FitnessHub.Models
     {
         public int Id { get; set; }
 
-        // O campo para o email do cliente
         [Required]
         [DataType(DataType.EmailAddress)]
         public string? ClientEmail { get; set; } = string.Empty;
+
         public List<SelectListItem>? Machines { get; set; }
-        public string? InstructorFullName { get; set; }
-        //public List<Exercise>? Exercises { get; set; }
+
+        public Instructor Instructor { get; set; }
+
+        public List<ExerciseViewModel>? Exercises { get; set; }
     }
 }
