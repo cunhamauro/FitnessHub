@@ -33,7 +33,7 @@ namespace FitnessHub.Helpers
                 TutorialVideoUrl = machine.TutorialVideoUrl,
                 ImagePath = machine.ImagePath,
                 Category = machine.Category,
-                CategoryId = machine.Category?.Id ?? 0 
+                CategoryId = machine.Category.Id,
             };
         }
     }

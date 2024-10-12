@@ -4,6 +4,7 @@ using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
@@ -25,7 +26,7 @@ namespace FitnessHub.Controllers
         // GET: Workouts
         public IActionResult Index()
         {
-            return View(_workoutRepository.GetAll());
+            return View(_workoutRepository.GetAll().Include(w => w.Client).Include(w => w.Instructor).Include(w => w.Exercises).ThenInclude(m => m.Machine).ThenInclude(m => m.Category));
         }
 
         // GET: Workouts/Create

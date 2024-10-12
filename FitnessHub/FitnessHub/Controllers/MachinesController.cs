@@ -92,7 +92,7 @@ namespace FitnessHub.Controllers
                 return MachineNotFound();
             }
 
-            var machine = await _machineRepository.GetByIdAsync(id.Value);
+            var machine = await _machineRepository.GetMachineByIdInclude(id.Value);
 
             if (machine == null)
             {

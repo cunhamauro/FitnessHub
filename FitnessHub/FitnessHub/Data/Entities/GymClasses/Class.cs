@@ -7,10 +7,10 @@ namespace FitnessHub.Data.Entities.GymClasses
         public int Id { get; set; }
 
         [Range(1, 5)]
-        public int Rating { get; set; }
+        public int? Rating { get; set; }
 
         [Display(Name = "Reviews")]
-        public int NumReviews { get; set; }
+        public int? NumReviews { get; set; }
 
         public ClassCategory? Category { get; set; }
     }

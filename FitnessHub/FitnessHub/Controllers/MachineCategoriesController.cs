@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessHub.Controllers
 {
-    public class CategoriesController : Controller
+    public class MachineCategoriesController : Controller
     {
         private readonly IMachineCategoryRepository _categoryRepository;
 
-        public CategoriesController(IMachineCategoryRepository categoryRepository)
+        public MachineCategoriesController(IMachineCategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }

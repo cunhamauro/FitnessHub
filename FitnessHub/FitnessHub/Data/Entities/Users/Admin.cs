@@ -2,8 +2,9 @@
 {
     public class Admin : User
     {
-        public int GymId { get; set; }
+        public int? GymId { get; set; }
 
         public Gym? Gym { get; set; }
     }
 }
+

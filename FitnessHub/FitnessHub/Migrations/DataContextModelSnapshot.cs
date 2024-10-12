@@ -24,13 +24,13 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("ClientGymClass", b =>
                 {
-                    b.Property<string>("ClientId")
+                    b.Property<string>("ClientsId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("GymClassId")
                         .HasColumnType("int");
 
-                    b.HasKey("ClientId", "GymClassId");
+                    b.HasKey("ClientsId", "GymClassId");
 
                     b.HasIndex("GymClassId");
 
@@ -39,13 +39,13 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("ClientOnlineClass", b =>
                 {
-                    b.Property<string>("ClientId")
+                    b.Property<string>("ClientsId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("OnlineClassId")
                         .HasColumnType("int");
 
-                    b.HasKey("ClientId", "OnlineClassId");
+                    b.HasKey("ClientsId", "OnlineClassId");
 
                     b.HasIndex("OnlineClassId");
 
@@ -91,20 +91,25 @@ namespace FitnessHub.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("NumReviews")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rating")
+                    b.Property<int?>("NumReviews")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Rating")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Classes", (string)null);
 
                     b.UseTptMappingStrategy();
                 });
 
-            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Category", b =>
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.ClassCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -120,7 +125,7 @@ namespace FitnessHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("ClassCategories");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>
@@ -186,6 +191,25 @@ namespace FitnessHub.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Machines");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MachineCategories");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetail", b =>
@@ -552,6 +576,7 @@ namespace FitnessHub.Migrations
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
 
                     b.Property<string>("VideoClassUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.ToTable("VideoClasses", (string)null);
@@ -591,6 +616,7 @@ namespace FitnessHub.Migrations
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
                     b.Property<int?>("GymId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasIndex("GymId");
@@ -603,6 +629,7 @@ namespace FitnessHub.Migrations
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
                     b.Property<int?>("GymId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("NumReviews")
@@ -620,7 +647,7 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Users.Client", null)
                         .WithMany()
-                        .HasForeignKey("ClientId")
+                        .HasForeignKey("ClientsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -635,7 +662,7 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Users.Client", null)
                         .WithMany()
-                        .HasForeignKey("ClientId")
+                        .HasForeignKey("ClientsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -646,6 +673,15 @@ namespace FitnessHub.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.Class", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.GymClasses.ClassCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>
                 {
                     b.HasOne("FitnessHub.Data.Entities.GymMachines.Machine", "Machine")
@@ -653,7 +689,7 @@ namespace FitnessHub.Migrations
                         .HasForeignKey("MachineId");
 
                     b.HasOne("FitnessHub.Data.Entities.GymMachines.Workout", null)
-                        .WithMany("Exercise")
+                        .WithMany("Exercises")
                         .HasForeignKey("WorkoutId");
 
                     b.Navigation("Machine");
@@ -661,7 +697,7 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Machine", b =>
                 {
-                    b.HasOne("FitnessHub.Data.Entities.GymMachines.Category", "Category")
+                    b.HasOne("FitnessHub.Data.Entities.GymMachines.MachineCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
@@ -843,7 +879,9 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()
-                        .HasForeignKey("GymId");
+                        .HasForeignKey("GymId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FitnessHub.Data.Entities.Users.User", null)
                         .WithOne()
@@ -858,7 +896,9 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()
-                        .HasForeignKey("GymId");
+                        .HasForeignKey("GymId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FitnessHub.Data.Entities.Users.User", null)
                         .WithOne()
@@ -871,7 +911,7 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Workout", b =>
                 {
-                    b.Navigation("Exercise");
+                    b.Navigation("Exercises");
                 });
 #pragma warning restore 612, 618
         }

@@ -250,7 +250,7 @@ namespace FitnessHub.Controllers
             {
                 if(user is Admin admin)
                 {
-                    model.GymId = admin.GymId;
+                    model.GymId = admin.GymId.Value;
                     model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                     {
                         Value = gym.Id.ToString(),
@@ -264,7 +264,7 @@ namespace FitnessHub.Controllers
             {
                 if (user is Client client)
                 {
-                    model.GymId = client.GymId;
+                    model.GymId = client.GymId.Value;
                     model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                     {
                         Value = gym.Id.ToString(),
@@ -275,7 +275,7 @@ namespace FitnessHub.Controllers
 
                 if (user is Employee employee)
                 {
-                    model.GymId = employee.GymId;
+                    model.GymId = employee.GymId.Value;
                     model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                     {
                         Value = gym.Id.ToString(),
@@ -286,7 +286,7 @@ namespace FitnessHub.Controllers
 
                 if (user is Instructor instructor)
                 {
-                    model.GymId = instructor.GymId;
+                    model.GymId = instructor.GymId.Value;
                     model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                     {
                         Value = gym.Id.ToString(),

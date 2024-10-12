@@ -132,6 +132,8 @@ namespace FitnessHub.Controllers
                 };
 
                 await _classRepository.CreateAsync(onlineClass);
+
+                return RedirectToAction(nameof(OnlineClasses));
             }
             return View(model);
         }
@@ -272,7 +274,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> GymClasses() // Index for Gym Classes
         {
             List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
-            return View();
+            return View(gymClasses);
         }
 
         // GET: Classes/GymClassDetails/5
@@ -362,7 +364,7 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("InstructorId", "Instructor not found");
             }
 
-            Gym? gym = await _gymRepository.GetByIdAsync(model.GymId);
+            Gym? gym = await _gymRepository.GetByIdTrackAsync(model.GymId);
 
             if (gym == null)
             {
@@ -534,7 +536,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> VideoClasses() // Index for Video Classes
         {
             List<VideoClass> videoClasses = await _classRepository.GetAllVideoClasses();
-            return View();
+            return View(videoClasses);
         }
 
         // GET: Classes/VideoClassDetails/5

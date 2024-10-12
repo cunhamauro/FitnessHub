@@ -13,6 +13,11 @@ namespace FitnessHub.Data.Repositories
             _context = context;
         }
 
+        public async Task<Machine> GetMachineByIdInclude(int id)
+        {
+            return await _context.Machines.Where(m => m.Id == id).Include(m => m.Category).FirstOrDefaultAsync();
+        }
+
         public async Task<List<SelectListItem>> GetAllMachinesAsync()
         {
             var machines = await _context.Machines.ToListAsync();

@@ -5,6 +5,8 @@ namespace FitnessHub.Data.Repositories
 {
     public interface IMachineRepository : IGenericRepository<Machine>
     {
+        Task<Machine> GetMachineByIdInclude(int id);
+
         Task<List<SelectListItem>> GetAllMachinesAsync();
     }
 }

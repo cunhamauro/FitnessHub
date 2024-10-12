@@ -15,7 +15,7 @@ namespace FitnessHub.Models
 
         public List<SelectListItem>? Machines { get; set; }
 
-        public Instructor Instructor { get; set; }
+        public Instructor? Instructor { get; set; }
 
         public List<ExerciseViewModel>? Exercises { get; set; }
     }
