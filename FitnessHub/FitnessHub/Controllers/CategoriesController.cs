@@ -10,9 +10,9 @@ namespace FitnessHub.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMachineCategoryRepository _categoryRepository;
 
-        public CategoriesController(ICategoryRepository categoryRepository)
+        public CategoriesController(IMachineCategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
@@ -49,9 +49,9 @@ namespace FitnessHub.Controllers
         // POST: CategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category)
+        public async Task<IActionResult> Create(MachineCategory category)
         {
-            List<Category> categories = _categoryRepository.GetAll().ToList();
+            List<MachineCategory> categories = _categoryRepository.GetAll().ToList();
 
             foreach (var cat in categories)
             {
@@ -89,10 +89,10 @@ namespace FitnessHub.Controllers
         // POST: CategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Category category)
+        public async Task<IActionResult> Edit(MachineCategory category)
         {
-            Category oldCategory = await _categoryRepository.GetByIdAsync(category.Id);
-            List<Category> categories = _categoryRepository.GetAll().ToList();
+            MachineCategory oldCategory = await _categoryRepository.GetByIdAsync(category.Id);
+            List<MachineCategory> categories = _categoryRepository.GetAll().ToList();
 
             foreach (var cat in categories)
             {

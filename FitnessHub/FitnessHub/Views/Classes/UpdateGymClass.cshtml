@@ -17,6 +17,13 @@
                 <input readonly type="text" value="@Model.Gym.Id - @Model.Gym.Name - @Model.Gym.Country, @Model.Gym.City" />
             </div>
             <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
+                    <option value="0">Select a Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label class="control-label">Online Class ID</label>
                 <input id="gymId" readonly value="@Model.Id" />
             </div>

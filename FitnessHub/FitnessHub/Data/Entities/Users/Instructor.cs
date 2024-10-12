@@ -4,6 +4,7 @@ namespace FitnessHub.Data.Entities.Users
 {
     public class Instructor : User
     {
+        [Required]
         public int GymId { get; set; }
 
         public Gym? Gym { get; set; }

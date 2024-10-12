@@ -15,5 +15,10 @@ namespace FitnessHub.Models
 
         [Required]
         public int GymId { get; set; }
+
+        public List<SelectListItem>? CategoriesList { get; set; }
+
+        [Required]
+        public int CategoryId { get; set; }
     }
 }

@@ -67,7 +67,7 @@ namespace FitnessHub
 
             // Repositories
             builder.Services.AddScoped<IClassRepository, ClassRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IMachineCategoryRepository, MachineCategoryRepository>();
             builder.Services.AddScoped<IExerciseRepository, ExerciseRepository>();
             builder.Services.AddScoped<IGymRepository, GymRepository>();
             builder.Services.AddScoped<IClassRepository, ClassRepository>();

@@ -1,24 +1,60 @@
-﻿@model WorkoutViewModel
+﻿@model FitnessHub.Data.Entities.GymMachines.Workout
 
 <h2>Workout Details</h2>
 <div>
-    <h4>Client Email</h4>
-    <p>@Model.ClientEmail</p>
+    <h4>Client</h4>
+    <p>@Model.Client.Fullname</p>
+    <p>@Model.Client.Email</p>
 </div>
 <div>
     <h4>Instructor</h4>
-    <p>@Model.InstructorFullName</p>
+    <p>@Model.Instructor.Fullname</p>
+    <p>@Model.Instructor.Email</p>
 </div>
 <div>
     <h4>Exercises</h4>
     <ul>
-       @*  @foreach (var exercise in Model.Exercises)
+        @foreach (var exercise in Model.Exercises)
         {
             <li>
                 Machine: @exercise.Machine, Repetitions: @exercise.Repetitions, Sets: @exercise.Sets, Day: @exercise.DayOfWeek
             </li>
         }
-    </ul> *@
+    </ul>
 </div>
+
+@if (Model.Exercises.Any())
+{
+    <div class="row justify-content-center mt-2">
+        @foreach (var exercise in Model.Exercises)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+                <div class="card view-text" style="background-color:#3131319e">
+                    <div class="card-body">
+                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@exercise.Name</h5>
+                        <hr />
+                        <div class="card-text" style="color:white">
+                            <p>Machine: @exercise.Machine.Name</p>
+                            <p>Repetitions: @exercise.Repetitions</p>
+                            <p>Sets: @exercise.Sets</p>
+                        </div>
+                    </div>
+                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
+                        <p>Day: @exercise.DayOfWeek</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <div class="text-light">
+            This workout is empty!<br />
+        </div>
+    </div>
+}
+
 <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
 <a asp-action="Index" class="btn btn-secondary">Back to List</a>

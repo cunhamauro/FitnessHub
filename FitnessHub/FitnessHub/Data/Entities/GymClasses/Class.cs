@@ -11,5 +11,7 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         [Display(Name = "Reviews")]
         public int NumReviews { get; set; }
+
+        public ClassCategory? Category { get; set; }
     }
 }

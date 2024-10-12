@@ -4,6 +4,7 @@ namespace FitnessHub.Data.Entities.GymClasses
 {
     public class VideoClass : Class
     {
+        [Required]
         [Display(Name = "Video Class")]
         public string? VideoClassUrl { get; set; }
     }

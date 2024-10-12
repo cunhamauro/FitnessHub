@@ -6,9 +6,9 @@ namespace FitnessHub.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMachineCategoryRepository _categoryRepository;
 
-        public ConverterHelper(ICategoryRepository categoryRepository)
+        public ConverterHelper(IMachineCategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }

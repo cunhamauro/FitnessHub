@@ -37,11 +37,13 @@ namespace FitnessHub.Data
 
         public DbSet<VideoClass> VideoClasses { get; set; }
 
+        public DbSet<ClassCategory> ClassCategories { get; set; }
+
         // Machines
 
         public DbSet<Machine> Machines { get; set; }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<MachineCategory> MachineCategories { get; set; }
 
         public DbSet<Exercise> Exercises { get; set; }
 

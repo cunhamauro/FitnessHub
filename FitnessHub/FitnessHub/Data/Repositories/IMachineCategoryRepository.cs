@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Data.Repositories
 {
-    public interface ICategoryRepository : IGenericRepository<Category>
+    public interface IMachineCategoryRepository : IGenericRepository<MachineCategory>
     {
         Task<IEnumerable<SelectListItem>> GetCategoriesSelectListAsync();
     }

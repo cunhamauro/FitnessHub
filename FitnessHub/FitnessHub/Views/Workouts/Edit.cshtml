@@ -2,28 +2,98 @@
 
 <h2>Edit Workout</h2>
 
+<div class="form-group">
+    <label class="control-label"></label>
+    <input readonly class="form-control" value="@Model.ClientEmail" />
+</div>
 <form asp-action="Edit">
-    <div class="form-group">
-        <label asp-for="ClientEmail" class="control-label"></label>
-        <input asp-for="ClientEmail" class="form-control" />
-        <span asp-validation-for="ClientEmail" class="text-danger"></span>
+    <input type="hidden" asp-for="ClientEmail" />
+<!-- Section for displaying/editing Exercises -->
+    <h4>Exercises</h4>
+    <div id="exerciseContainer">
+        @for (var i = 0; i < Model.Exercises.Count; i++)
+        {
+            <div class="exercise">
+                <input type="hidden" name="exercises[@i].Id" value="@Model.Exercises[i].Id" />
+                
+                <div class="form-group">
+                    <label>Machine</label>
+                    <input type="text" value="@Model.Exercises[i].MachineId" class="form-control" name="exercises[@i].MachineId" />
+                </div>
+                <div class="form-group">
+                    <label>Repetitions</label>
+                    <input type="number" value="@Model.Exercises[i].Repetitions" class="form-control" name="exercises[@i].Repetitions" />
+                </div>
+                <div class="form-group">
+                    <label>Sets</label>
+                    <input type="number" value="@Model.Exercises[i].Sets" class="form-control" name="exercises[@i].Sets" />
+                </div>
+                <div class="form-group">
+                    <label>Day of Week</label>
+                    <select class="form-control" name="exercises[@i].DayOfWeek">
+                        @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                        {
+                            <option value="@day">@day</option>
+                        }
+                    </select>
+                </div>
+
+                <button type="button" class="btn btn-danger remove-exercise">Remove</button>
+            </div>
+        }
     </div>
-    <!-- Section for displaying/editing Exercises -->
-   @*  @foreach (var exercise in Model.Exercises)
-    {
-        <div>
-            <label>Machine</label>
-            <input type="text" value="@exercise.Machine" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Machine" />
-            <label>Repetitions</label>
-            <input type="number" value="@exercise.Repetitions" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Repetitions" />
-            <label>Sets</label>
-            <input type="number" value="@exercise.Sets" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].Sets" />
-            <label>DayOfWeek</label>
-            <input type="text" value="@exercise.DayOfWeek" class="form-control" name="exercises[@Model.Exercises.IndexOf(exercise)].DayOfWeek" />
-            <input type="hidden" value="@exercise.Id" name="exercises[@Model.Exercises.IndexOf(exercise)].Id" />
-        </div>
-    } *@
+
+    <button type="button" id="addExercise" class="btn btn-success">Add Exercise</button>
+
     <div class="form-group">
         <input type="submit" value="Save" class="btn btn-primary" />
     </div>
 </form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var exerciseCount = @Model.Exercises.Count;
+
+            $('#addExercise').click(function () {
+                var newExercise = `
+                    <div class="exercise">
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" class="form-control" name="exercises[${exerciseCount}].Name" />
+                        </div>
+                        <div class="form-group">
+                            <label>Machine ID</label>
+                            <input type="text" class="form-control" name="exercises[${exerciseCount}].MachineId" />
+                        </div>
+                        <div class="form-group">
+                            <label>Repetitions</label>
+                            <input type="number" class="form-control" name="exercises[${exerciseCount}].Repetitions" />
+                        </div>
+                        <div class="form-group">
+                            <label>Sets</label>
+                            <input type="number" class="form-control" name="exercises[${exerciseCount}].Sets" />
+                        </div>
+                        <div class="form-group">
+                            <label>Day of Week</label>
+                            <select class="form-control" name="exercises[${exerciseCount}].DayOfWeek">
+                                @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                                {
+                                    <option value="@day">@day</option>
+                                }
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-exercise">Remove</button>
+                    </div>`;
+                $('#exerciseContainer').append(newExercise);
+                exerciseCount++;
+            });
+
+            $(document).on('click', '.remove-exercise', function () {
+                $(this).closest('.exercise').remove();
+            });
+        });
+    </script>
+}
