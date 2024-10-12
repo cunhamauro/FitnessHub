@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FitnessHub.Data.Entities;
 
 namespace FitnessHub.Models
 {
@@ -16,6 +17,9 @@ namespace FitnessHub.Models
 
 
         public string? Email { get; set; }
+
+
+        public Gym? Gym { get; set; }
 
 
         public string? Role { get; set; }
