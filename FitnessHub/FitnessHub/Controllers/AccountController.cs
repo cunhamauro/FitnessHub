@@ -4,10 +4,13 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 using FitnessHub.Data.Classes;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using FitnessHub.Data.Repositories;
+using FitnessHub.Data.Entities;
 
 namespace FitnessHub.Controllers
 {
@@ -17,17 +20,20 @@ namespace FitnessHub.Controllers
         private readonly IMailHelper _mailHelper;
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
+        private readonly IGymRepository _gymRepository;
 
         public AccountController(
             IUserHelper userHelper,
             IMailHelper mailHelper,
             IImageHelper imageHelper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IGymRepository gymRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _imageHelper = imageHelper;
             _configuration = configuration;
+            _gymRepository = gymRepository;
         }
 
         public IActionResult Login()
@@ -340,13 +346,19 @@ namespace FitnessHub.Controllers
             ViewBag.Message = "User not found";
 
             return View(model);
-        }
+        }   
 
         public async Task<IActionResult> ConfirmEmailChangePassword(string userId, string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
                 return UserNotFound();
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                await _userHelper.LogoutAsync();
+                return RedirectToAction(nameof(ConfirmEmailChangePassword), new { userId, token });
             }
 
             var user = await _userHelper.GetUserByIdAsync(userId);
@@ -367,12 +379,6 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> ConfirmEmailChangePassword(ResetPasswordViewModel model)
         {
-            // Ensure no active user session is affecting this operation
-            if (User.Identity.IsAuthenticated)
-            {
-                return NotAuthorized();
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -399,9 +405,89 @@ namespace FitnessHub.Controllers
             }
         }
 
+        // GET: Account/RegisterNewClient
+        [Authorize(Roles ="Employee")]
+        public IActionResult RegisterNewClient()
+        {
+            return View();
+        }
+
+        // POST: Account/RegisterNewClient
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterNewClient(EmployeeRegisterNewClientViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var employee = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (employee == null)
+                {
+                    return UserNotFound();
+                }
+
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    var gym = await _gymRepository.GetGymByUserAsync(employee);
+                    if (gym == null)
+                    {
+                        return GymNotFound();
+                    }
+
+                    user = new Client
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.Email,
+                        UserName = model.Email,
+                        BirthDate = model.BirthDate,
+                        Gym = gym
+                    };
+
+                    string? password = "FitHub_2024";
+                    var result = await _userHelper.AddUserAsync(user, password);
+
+                    if (result.Succeeded)
+                    {
+                        await _userHelper.AddUserToRoleAsync(user, "Client");
+                        var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                        await _userHelper.ConfirmEmailAsync(user, userToken);
+
+                        var resetToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+
+                        string? tokenLink = Url.Action("ConfirmEmailChangePassword", "Account", new
+                        {
+                            userid = user.Id,
+                            token = resetToken
+                        }, protocol: HttpContext.Request.Scheme);
+
+                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                            $"To allow the user, " +
+                            $"plase click in this link:</br></br><a href = \"{tokenLink}\">Click here to change your password</a>");
+
+                        if (response.IsSuccess)
+                        {
+                            return RedirectToAction(nameof(Index), "Home");
+                        }
+                    }
+                }
+
+                ModelState.AddModelError("Email", "Email already registered.");
+            }
+
+            ModelState.AddModelError("", "Failed to create user.");
+
+            return View(model);
+        }
+
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
 
         public IActionResult NotAuthorized()

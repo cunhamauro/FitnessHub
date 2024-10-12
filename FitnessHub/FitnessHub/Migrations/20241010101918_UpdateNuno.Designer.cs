@@ -4,6 +4,7 @@ using FitnessHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241010101918_UpdateNuno")]
+    partial class UpdateNuno
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
+                .HasAnnotation("ProductVersion", "8.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -573,13 +576,8 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
-                    b.Property<int?>("GymId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("MembershipDetailsId")
                         .HasColumnType("int");
-
-                    b.HasIndex("GymId");
 
                     b.HasIndex("MembershipDetailsId");
 
@@ -820,10 +818,6 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("FitnessHub.Data.Entities.Users.Client", b =>
                 {
-                    b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
-                        .WithMany()
-                        .HasForeignKey("GymId");
-
                     b.HasOne("FitnessHub.Data.Entities.Users.User", null)
                         .WithOne()
                         .HasForeignKey("FitnessHub.Data.Entities.Users.Client", "Id")
@@ -833,8 +827,6 @@ namespace FitnessHub.Migrations
                     b.HasOne("FitnessHub.Data.Entities.Users.MembershipDetails", "MembershipDetails")
                         .WithMany()
                         .HasForeignKey("MembershipDetailsId");
-
-                    b.Navigation("Gym");
 
                     b.Navigation("MembershipDetails");
                 });

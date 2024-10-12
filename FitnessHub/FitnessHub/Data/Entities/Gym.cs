@@ -18,5 +18,7 @@ namespace FitnessHub.Data.Entities
 
         [Display(Name = "Reviews")]
         public int NumReviews { get; set; }
+
+        public string Data => $"{Name} - {Address}, {City}, {Country}";
     }
 }

@@ -1,5 +1,6 @@
-﻿using FitnessHub.Data.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.Users;
 
 namespace FitnessHub.Data.Repositories
 {
@@ -20,5 +21,31 @@ namespace FitnessHub.Data.Repositories
                 .Distinct()
                 .ToListAsync();
         }
+
+        public async Task<Gym?> GetGymByUserAsync(User user)
+        {
+            if (user is Admin admin)
+            {
+                return await _context.Gyms.FirstOrDefaultAsync(g => g.Id == admin.GymId);
+            }
+
+            if (user is Employee employee)
+            {
+                return await _context.Gyms.FirstOrDefaultAsync(g => g.Id == employee.GymId);
+            }
+
+            if (user is Instructor instructor)
+            {
+                return await _context.Gyms.FirstOrDefaultAsync(g => g.Id == instructor.GymId);
+            }
+
+            if (user is Client client)
+            {
+                return await _context.Gyms.FirstOrDefaultAsync(g => g.Id == client.GymId);
+            }
+
+            return null;
+        }
+
     }
 }
