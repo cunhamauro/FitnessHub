@@ -1,0 +1,44 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassCategory>
+
+@{
+    ViewData["Title"] = "Classes";
+}
+
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
+    <hr style="margin-bottom: 2.2rem" />
+</div>
+
+@if (Model.Any())
+{
+    <div class="row justify-content-center mt-2">
+        @foreach (var category in Model)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+                <div class="card view-text" style="background-color:#3131319e">
+                    <div class="card-body">
+                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@category.Name</h5>
+                        <hr />
+                        <div class="card-text" style="color:white">
+                            <p>@category.Description</p>
+                        </div>
+                    </div>
+                    @*  <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
+            <small><strong>Price information here</strong></small>
+            </div> *@
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <div class="text-light">
+            There aren't any categories currently available. <br />
+            But don't give up! <br />
+            Come back later or contact us for more information!
+        </div>
+    </div>
+}
+

@@ -832,5 +832,11 @@ namespace FitnessHub.Controllers
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
+
+        public async Task<IActionResult> Available()
+        {
+            var categories = await _classCategoryRepository.GetAll().ToListAsync();
+            return View(categories);
+        }
     }
 }
