@@ -1,5 +1,5 @@
-﻿using FitnessHub.Models;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using FitnessHub.Models;
 
 namespace FitnessHub.Helpers
 {
@@ -14,7 +14,7 @@ namespace FitnessHub.Helpers
 
         public void LoadMasterAdminRoles(AdminRegisterNewUserViewModel model)
         {
-            model.Roles = _userHelper.GetAllRoles().Select(role => new SelectListItem
+            model.Roles = _userHelper.GetAdminRoles().Select(role => new SelectListItem
             {
                 Value = role.Name,
                 Text = role.Name,

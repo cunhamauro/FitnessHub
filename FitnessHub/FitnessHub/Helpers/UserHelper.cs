@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Models;
-using Microsoft.EntityFrameworkCore;
-using FitnessHub.Data.Entities.GymClasses;
 
 namespace FitnessHub.Helpers
 {
@@ -121,15 +120,21 @@ namespace FitnessHub.Helpers
             return await _userManager.GetUsersInRoleAsync("Admin");
         }
 
-        public async Task<IList<User>> GetEmployeesAndInstructorsAndClientsAsync()
+        public async Task<IList<User>> GetEmployeesAndInstructorsAndClientsByGymAsync(int gymId)
         {
-            var instructors = await _userManager.GetUsersInRoleAsync("Employee");
-            
-            var employees = await _userManager.GetUsersInRoleAsync("Instructor");
+            var instructors = await _userManager.GetUsersInRoleAsync("Instructor") ?? new List<User>();
+            var instructorsByGym = instructors.OfType<Instructor>().Where(i => i.GymId == gymId);
 
-            var clients = await _userManager.GetUsersInRoleAsync("Client");
+            var employees = await _userManager.GetUsersInRoleAsync("Employee") ?? new List<User>();
+            var employeesByGym = employees.OfType<Employee>().Where(i => i.GymId == gymId);
 
-            var combinedUsers = employees.Union(instructors).Union(clients).ToList();            
+            var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();
+            var clientsByGym = clients.OfType<Client>().Where(i => i.GymId == gymId);
+
+            var combinedUsers = employeesByGym.Cast<User>()
+                .Union(instructorsByGym.Cast<User>())
+                .Union(clientsByGym.Cast<User>())
+                .ToList();
 
             return combinedUsers;
         }
@@ -142,6 +147,12 @@ namespace FitnessHub.Helpers
         public IQueryable<IdentityRole> GetAllRoles()
         {
             return _roleManager.Roles;
+        }
+
+        public IQueryable<IdentityRole> GetAdminRoles()
+        {
+            return _roleManager.Roles
+                .Where(r => r.Name == "Admin");
         }
 
         public IQueryable<IdentityRole> GetRolesExceptAdmin()
