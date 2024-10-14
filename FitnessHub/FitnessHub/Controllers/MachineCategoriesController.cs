@@ -16,14 +16,14 @@ namespace FitnessHub.Controllers
         {
             _categoryRepository = categoryRepository;
         }
-        // GET: CategoriesController
+        // GET: MachineCategoriesController
         public IActionResult Index()
         {
             var categories = _categoryRepository.GetAll().OrderBy(e => e.Name);
             return View(categories);
         }
 
-        // GET: CategoriesController/Details/5
+        // GET: MachineCategoriesController/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -40,13 +40,13 @@ namespace FitnessHub.Controllers
             return View(category);
         }
 
-        // GET: CategoriesController/Create
+        // GET: MachineCategoriesController/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: CategoriesController/Create
+        // POST: MachineCategoriesController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MachineCategory category)
@@ -69,7 +69,7 @@ namespace FitnessHub.Controllers
             return View();
         }
 
-        // GET: CategoriesController/Edit/5
+        // GET: MachineCategoriesController/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,7 +86,7 @@ namespace FitnessHub.Controllers
             return View(category);
         }
 
-        // POST: CategoriesController/Edit/5
+        // POST: MachineCategoriesController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(MachineCategory category)
@@ -121,6 +121,8 @@ namespace FitnessHub.Controllers
             return View();
 
         }
+
+        // GET: MachineCategoriesController/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -138,7 +140,7 @@ namespace FitnessHub.Controllers
             return View(category);
         }
 
-        // POST: CategoriesController/Delete/5
+        // POST: MachineCategoriesController/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
