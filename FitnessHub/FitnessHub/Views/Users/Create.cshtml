@@ -27,7 +27,7 @@
 
             <div class="form-group">
                 <label asp-for="BirthDate" class="control-label"></label>
-                <input asp-for="BirthDate" value="@DateTime.Now" format="dd/MM/yyyy" max="maxDate" placeholder="Select a date" class="form-control" type="date" />
+                <input asp-for="BirthDate" format="dd/MM/yyyy" max="@maxDate.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" type="date" />
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
 

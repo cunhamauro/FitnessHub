@@ -43,11 +43,13 @@ namespace FitnessHub.Helpers
 
         Task<IList<User>> GetAdminsAsync();
 
-        Task<IList<User>> GetEmployeesAndInstructorsAndClientsAsync();
+        Task<IList<User>> GetEmployeesAndInstructorsAndClientsByGymAsync(int gymId);
 
         Task<IList<string>> GetUserRolesAsync(User user);
 
         IQueryable<IdentityRole> GetAllRoles();
+
+        IQueryable<IdentityRole> GetAdminRoles();
 
         IQueryable<IdentityRole> GetRolesExceptAdmin();
 
