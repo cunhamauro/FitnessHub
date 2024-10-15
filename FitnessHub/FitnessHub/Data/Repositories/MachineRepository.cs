@@ -18,18 +18,18 @@ namespace FitnessHub.Data.Repositories
             return await _context.Machines.Where(m => m.Id == id).Include(m => m.Category).FirstOrDefaultAsync();
         }
 
-        public async Task<List<SelectListItem>> GetAllMachinesAsync()
+        public async Task<List<SelectListItem>> GetAllMachinesSelectList()
         {
             var machines = await _context.Machines.ToListAsync();
 
             var machineSelectList = machines.Select(m => new SelectListItem
             {
-                Value = m.Id.ToString(),  
-                Text = m.Name             
+                Value = m.Id.ToString(),
+                Text = m.Name
             }).ToList();
 
             return machineSelectList;
         }
     }
-  
+
 }
