@@ -172,6 +172,11 @@ namespace FitnessHub.Controllers
             return GymNotFound();
         }
 
+        public IActionResult Available()
+        {
+            return View(_gymRepository.GetAll());
+        }
+
         public IActionResult GymNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });

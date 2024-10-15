@@ -33,13 +33,13 @@
                 <div class="navbar-collapse collapse d-lg-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1 d-flex" style="gap: 3%; margin-right:auto !important; margin-left: 3% !important">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Index"><span>Gyms</span></a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Available"><span>Gyms</span></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Index"><span>Classes</span></a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                         </li>
                     
                         <li class="nav-item dropdown">
@@ -50,11 +50,34 @@
                                 <li class="nav-item">
                                     <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Gyms" asp-action="Index">Gyms</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-area="" asp-controller="Machines" asp-action="Index">Machines</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MachineCategories" asp-action="Index">Machine Categories</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="ClassCategories" asp-action="Index">Class Categories</a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>Classes</span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="OnlineClasses">Online Classes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="GymClasses">Gym Classes</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="VideoClasses">Video Classes</a>
                                 </li>
                             </ul>
                         </li>
@@ -64,9 +87,6 @@
                                 <span>Instructor</span>
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Exercises" asp-action="Index">Exercises</a>
-                                </li>
                                 <li>
                                     <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="Index">Workouts</a>
                                 </li>

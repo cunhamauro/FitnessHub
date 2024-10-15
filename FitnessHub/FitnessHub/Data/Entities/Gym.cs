@@ -6,6 +6,7 @@ namespace FitnessHub.Data.Entities
     {
         public int Id { get; set; }
 
+        [Display(Name = "Gym")]
         public string? Name { get; set; }
 
         public string? Country { get; set; }

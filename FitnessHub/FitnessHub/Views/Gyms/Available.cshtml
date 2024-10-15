@@ -1,0 +1,72 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.Gym>
+
+@{
+    ViewData["Title"] = "Available Gyms";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css" />
+
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
+    <hr style="margin-bottom: 2.2rem" />
+</div>
+
+<div class="d-flex justify-content-center mb-4">
+    <div class="col-md-3 mx-2">
+        <input type="text" id="countryFilter" class="form-control" placeholder="Search by country" style="background-color:#3131319e;color:white">
+    </div>
+    <div class="col-md-3 mx-2">
+        <input type="text" id="cityFilter" class="form-control" placeholder="Search by city" style="background-color:#3131319e;color:white">
+    </div>
+</div>
+
+<div class="row justify-content-center mt-2" id="gymsContainer">
+    @foreach (var gym in Model)
+    {
+        <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
+            <div class="card view-text" style="background-color:#3131319e">
+                <div class="card-body">
+                    <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@gym.Name</h5>
+                    <hr />
+                    <div class="card-text" style="color:white">
+                        <p>
+                            <strong>Country:</strong> @gym.Country <br />
+                            <strong>City:</strong> @gym.City <br />
+                            <strong>Address:</strong> @gym.Address <br />
+                        </p>
+                    </div>
+                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
+                        <small>
+                            <strong>
+                                <strong>Rating:</strong> @gym.Rating 
+                                <strong>Reviews:</strong> @gym.NumReviews
+                            </strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#countryFilter, #cityFilter').on('input', function () {
+            var countryQuery = $('#countryFilter').val().toLowerCase();
+            var cityQuery = $('#cityFilter').val().toLowerCase();
+
+            $('.gym-card').each(function () {
+                var country = $(this).data('country').toLowerCase();
+                var city = $(this).data('city').toLowerCase();
+
+                if (country.includes(countryQuery) && city.includes(cityQuery)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
