@@ -9,11 +9,13 @@ namespace FitnessHub.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "A valid Client email is required")]
         [DataType(DataType.EmailAddress)]
         public string? ClientEmail { get; set; } = string.Empty;
 
-        public List<SelectListItem>? Machines { get; set; }
+        public List<MachineDTO>? MachinesDTO { get; set; }
+
+        public List<Machine>? Machines { get; set; }
 
         public Instructor? Instructor { get; set; }
 

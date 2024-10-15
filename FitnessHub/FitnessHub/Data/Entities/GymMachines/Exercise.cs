@@ -5,7 +5,9 @@ namespace FitnessHub.Data.Entities.GymMachines
     public class Exercise : IEntity
     {
         public int Id {  get; set; }
+
         public string? Name { get; set; }
+
         public Machine? Machine { get; set; }
 
         // TODO: Convert TimeSpan to Ticks in Controller/Action
@@ -18,5 +20,7 @@ namespace FitnessHub.Data.Entities.GymMachines
         public int Sets { get; set; }
 
         public DayOfWeek DayOfWeek { get; set; }
+
+        public string? Notes { get; set; }
     }
 }

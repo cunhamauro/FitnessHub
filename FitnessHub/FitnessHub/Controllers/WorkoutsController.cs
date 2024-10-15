@@ -5,6 +5,8 @@ using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using System.Reflection.PortableExecutable;
 
 namespace FitnessHub.Controllers
 {
@@ -32,9 +34,23 @@ namespace FitnessHub.Controllers
         // GET: Workouts/Create
         public async Task<IActionResult> Create()
         {
+            var machines = await _machineRepository.GetAll().ToListAsync();
+
+            var machinesDto = new List<MachineDTO>();
+
+            foreach (var machine in machines)
+            {
+                machinesDto.Add(new MachineDTO
+                {
+                    Id = machine.Id,
+                    Name = machine.Name,
+                });
+            }
+
             var model = new WorkoutViewModel
             {
-                Machines = await _machineRepository.GetAllMachinesAsync()
+                Machines = machines,
+                MachinesDTO = machinesDto,
             };
 
             return View(model);
@@ -58,7 +74,22 @@ namespace FitnessHub.Controllers
             if (client == null)
             {
                 ModelState.AddModelError("ClientEmail", "Client not found");
-                return View(model);
+            }
+
+            // Validation of the maximum duration for each exercise
+            TimeSpan maxTime = new TimeSpan(23, 59, 59);
+
+            foreach (var ex in model.Exercises)
+            {
+                if (ex.Time > maxTime)
+                {
+                    ModelState.AddModelError($"Exercises[{ex.Id}].Time", "The duration must not exceed 23H:59M:59S.");
+                }
+            }
+
+            if (model.Exercises == null || !model.Exercises.Any())
+            {
+                return RedirectToAction("Create", "Workouts");
             }
 
             if (ModelState.IsValid)
@@ -72,15 +103,17 @@ namespace FitnessHub.Controllers
 
                 foreach (var exerModel in model.Exercises)
                 {
-                    Machine machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // With track to nest existing machine inside new workout
+                    var machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // With track to nest existing machine inside new exercise < workout
 
                     workout.Exercises.Add(new Exercise
                     {
+                        Name = exerModel.Name,
                         Machine = machine,
-                        Ticks = exerModel.Ticks,
+                        Ticks = exerModel.Time.Ticks,
                         Repetitions = exerModel.Repetitions,
                         Sets = exerModel.Sets,
-                        DayOfWeek = exerModel.DayOfWeek
+                        DayOfWeek = exerModel.DayOfWeek,
+                        Notes = string.IsNullOrEmpty(exerModel.Notes) ? "N/A" : exerModel.Notes,
                     });
                 }
 
@@ -88,6 +121,23 @@ namespace FitnessHub.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            var machines = await _machineRepository.GetAll().ToListAsync();
+
+            var machinesDto = new List<MachineDTO>();
+
+            foreach (var machine in machines)
+            {
+                machinesDto.Add(new MachineDTO
+                {
+                    Id = machine.Id,
+                    Name = machine.Name,
+                });
+            }
+
+            model.Machines = machines;
+            model.MachinesDTO = machinesDto;
+
             return View(model);
         }
 
@@ -114,10 +164,24 @@ namespace FitnessHub.Controllers
                     Id = exercise.Id,
                     MachineId = exercise.Machine.Id,
                     Name = exercise.Name,
-                    Ticks = exercise.Ticks,
+                    Time = exercise.Time,
                     Repetitions = exercise.Repetitions,
                     Sets = exercise.Sets,
-                    DayOfWeek= exercise.DayOfWeek
+                    DayOfWeek= exercise.DayOfWeek,
+                    Notes = exercise.Notes,
+                });
+            }
+
+            var machines = await _machineRepository.GetAll().ToListAsync();
+
+            var machinesDto = new List<MachineDTO>();
+
+            foreach (var machine in machines)
+            {
+                machinesDto.Add(new MachineDTO
+                {
+                    Id = machine.Id,
+                    Name = machine.Name,
                 });
             }
 
@@ -126,8 +190,9 @@ namespace FitnessHub.Controllers
                 Id = workout.Id,
                 ClientEmail = workout.Client.Email,
                 Instructor = workout.Instructor,
-                Exercises =  exercisesModel,
-                Machines = await _machineRepository.GetAllMachinesAsync(),
+                Exercises = exercisesModel,
+                Machines = machines,
+                MachinesDTO = machinesDto,
             };
 
             return View(model);
@@ -145,12 +210,25 @@ namespace FitnessHub.Controllers
                 return WorkoutNotFound();
             }
 
-            var client = workout.Client;
-
-            if (client == null)
+            if (model.Exercises == null || !model.Exercises.Any())
             {
-                ModelState.AddModelError("ClientEmail", "Client not found");
-                return View(model);
+                return RedirectToAction("Edit", "Workouts", new {id = model.Id});
+            }
+
+            if (model.Exercises == null || !model.Exercises.Any())
+            {
+                ModelState.AddModelError("", "A Workout must contain at least one Exercise");
+            }
+
+            // Validation of the maximum duration for each exercise
+            TimeSpan maxTime = new TimeSpan(23, 59, 59);
+
+            foreach (var ex in model.Exercises)
+            {
+                if (ex.Time > maxTime)
+                {
+                    ModelState.AddModelError($"Exercises[{ex.Id}].Time", "The duration must not exceed 23H:59M:59S.");
+                }
             }
 
             if (ModelState.IsValid)
@@ -161,27 +239,31 @@ namespace FitnessHub.Controllers
                     // Find existing exercise
                     var existingExercise = workout.Exercises.FirstOrDefault(e => e.Id == exerModel.Id);
 
-                    Machine machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // Get the exercise machine with track to nest existing machine updated workout
+                    var machine = await _machineRepository.GetByIdTrackAsync(exerModel.MachineId); // Get the exercise machine with track to nest existing machine updated workout
 
                     // If it exists, update it
                     if (existingExercise != null)
                     {
+                        existingExercise.Name = exerModel.Name;
                         existingExercise.Machine = machine;
-                        existingExercise.Ticks = exerModel.Ticks;
+                        existingExercise.Ticks = exerModel.Time.Ticks;
                         existingExercise.Repetitions = exerModel.Repetitions;
                         existingExercise.Sets = exerModel.Sets;
                         existingExercise.DayOfWeek = exerModel.DayOfWeek;
+                        existingExercise.Notes = exerModel.Notes;
                     }
                     else
                     {
                         // If it doesn't exist, create a new exercise
                         var newExercise = new Exercise
                         {
+                            Name = exerModel.Name,
                             Machine = machine,
-                            Ticks = exerModel.Ticks,
+                            Ticks = exerModel.Time.Ticks,
                             Repetitions = exerModel.Repetitions,
                             Sets = exerModel.Sets,
-                            DayOfWeek = exerModel.DayOfWeek
+                            DayOfWeek = exerModel.DayOfWeek,
+                            Notes = exerModel.Notes
                         };
 
                         workout.Exercises.Add(newExercise);
@@ -200,6 +282,21 @@ namespace FitnessHub.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            var machines = await _machineRepository.GetAll().ToListAsync();
+            var machinesDto = new List<MachineDTO>();
+
+            foreach (var machine in machines)
+            {
+                machinesDto.Add(new MachineDTO
+                {
+                    Id = machine.Id,
+                    Name = machine.Name,
+                });
+            }
+
+            model.MachinesDTO = machinesDto;
+            model.Machines = machines;
 
             return View(model);
         }
@@ -223,7 +320,8 @@ namespace FitnessHub.Controllers
                 return WorkoutNotFound();
             }
 
-            var workout = await _workoutRepository.GetByIdAsync(id.Value);
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id.Value);
+
             if (workout == null)
             {
                 return WorkoutNotFound();
@@ -237,10 +335,22 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var workout = await _workoutRepository.GetByIdAsync(id);
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id);
             if (workout == null)
             {
                 return WorkoutNotFound();
+            }
+
+            List<Exercise> exercisesToRemove = new List<Exercise>();
+            foreach (var exercise in workout.Exercises)
+            {
+                exercisesToRemove.Add(exercise); // Collecting exercises to delete
+            }
+
+            // Now, delete each collected exercise
+            foreach (var exercise in exercisesToRemove)
+            {
+                await _exerciseRepository.DeleteAsync(exercise); // Deleting the exercise
             }
 
             await _workoutRepository.DeleteAsync(workout);
