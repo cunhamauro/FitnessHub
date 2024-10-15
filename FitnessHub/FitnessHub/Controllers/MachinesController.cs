@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Repositories;
+﻿using FitnessHub.Data.Entities.GymMachines;
+using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +28,18 @@ namespace FitnessHub.Controllers
         // GET: Machines
         public async Task<IActionResult> Index()
         {
-            return View(await _machineRepository.GetAll().ToListAsync());
+            var machines = await _machineRepository.GetAll().ToListAsync();
+            var noMachine = machines.Where(m => m.Name == "No Machine").FirstOrDefault();
+
+            machines.Remove(noMachine);
+
+            return View(machines);
         }
 
         // GET: Machines/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || id == 1)
             {
                 return MachineNotFound();
             }
@@ -65,6 +71,11 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MachineViewModel model)
         {
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
             if (ModelState.IsValid)
             {
                 var path = string.Empty;
@@ -87,7 +98,7 @@ namespace FitnessHub.Controllers
         // GET: Machines/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || id == 1)
             {
                 return MachineNotFound();
             }
@@ -143,12 +154,12 @@ namespace FitnessHub.Controllers
         // GET: Machines/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || id == 1)
             {
                 return MachineNotFound();
             }
 
-            var machine = await _machineRepository.GetByIdAsync(id.Value);
+            var machine = await _machineRepository.GetMachineByIdInclude(id.Value);
 
             if (machine == null)
             {

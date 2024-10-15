@@ -3,7 +3,6 @@ using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Helpers;
-using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Data
 {
