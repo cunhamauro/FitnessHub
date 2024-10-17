@@ -4,44 +4,74 @@
     ViewData["Title"] = "VideoClasses";
 }
 
-<h1>VideoClasses</h1>
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Button next to the text with margin -->
+        <a style="margin-left: -100px" asp-action="CreateVideoClass" class="btn btn-primary">
+            <i class="fa-solid fa-video me-2"></i>New
+        </a>
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            Video Classes
+        </h2>
+    </div>
+</div>
 
-<p>
-    <a asp-action="CreateVideoClass">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.VideoClassUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumReviews)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.VideoClassUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumReviews)
-            </td>
-            <td>
-                    <a asp-action="UpdateVideoClass" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="VideoClassDetails" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="DeleteVideoClass" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no video classes!</h4>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.VideoClassUrl)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.VideoClassUrl)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Rating)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NumReviews)
+                            </td>
+                            <td>
+                                <div style="display: flex">
+                                    <a asp-action="UpdateVideoClass" asp-route-id="@item.Id" class="btn btn-warning me-2">
+                                        <i class="fa-solid fa-pen me-2"></i>Update
+                                    </a>
+                                    <a asp-action="VideoClassDetails" asp-route-id="@item.Id" class="btn btn-info me-2">
+                                        <i class="fa-solid fa-list me-2"></i>Details
+                                    </a>
+                                    <a asp-action="DeleteVideoClass" asp-route-id="@item.Id" class="btn btn-danger me-1">
+                                        <i class="fa-solid fa-trash-can me-2"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
