@@ -22,7 +22,7 @@
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
-                    <option value="">-- Select Category --</option>
+                    <option value="">Select a Category</option>
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
@@ -34,16 +34,16 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="TutorialVideoUrl" class="control-label">Video URL</label>
+                <label asp-for="TutorialVideoUrl" class="control-label">Youtube video URL</label>
                 <input asp-for="TutorialVideoUrl" class="form-control" />
                 <span asp-validation-for="TutorialVideoUrl" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary me-4">
-                    <i class="fa-solid fa-check me-2"></i>Save
+                <button type="submit" class="btn btn-primary me-4 mt-2">
+                    <i class="fa-solid fa-check me-2"></i>Save Machine
                 </button>
-                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
 
         </form>

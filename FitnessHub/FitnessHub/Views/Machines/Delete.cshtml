@@ -1,7 +1,7 @@
 ﻿@model FitnessHub.Data.Entities.GymMachines.Machine
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Machine";
 }
 
 <div class="container detailsdelete-text">
@@ -12,26 +12,26 @@
         <!-- Left: Machine info -->
         <div class="col-md-4 mb-4">
             <dl class="row">
-                <dt class="col-sm-4">
+                <dt class="col-sm-5">
                     @Html.DisplayNameFor(model => model.Name)
                 </dt>
-                <dd class="col-sm-8">
+                <dd class="col-sm-7">
                     @Html.DisplayFor(model => model.Name)
                 </dd>
-                <dt class="col-sm-4">
+                <dt class="col-sm-5">
                     @Html.DisplayNameFor(model => model.Category)
                 </dt>
-                <dd class="col-sm-8">
+                <dd class="col-sm-7">
                     @Html.DisplayFor(model => model.Category.Name)
                 </dd>
             </dl>
     
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger me-4">
+                <button type="submit" class="btn btn-danger me-4 mt-2">
                     <i class="fa-solid fa-trash-can me-2"></i>Delete
                 </button>
-                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
 
             </form>
 

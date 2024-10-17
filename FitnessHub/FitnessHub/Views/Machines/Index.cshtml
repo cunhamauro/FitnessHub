@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.GymMachines.Machine>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Machines";
 }
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
@@ -17,6 +17,16 @@
         </h2>
     </div>
 </div>
+
+<style>
+    .videoButton {
+        color:red;
+    }
+
+    .videoButton:hover {
+            color: #dd0202;
+    }
+</style>
 
 @if (!Model.Any())
 {
@@ -56,7 +66,7 @@ else
                             <td>
                                 @if (item.TutorialVideoUrl != null && item.TutorialVideoUrl.Length > 4)
                                 {
-                                    <a target="_blank" href="@item.TutorialVideoUrl"><i style="font-size: 1.6em" class="fa-solid fa-circle-play"></i></a>
+                                    <a class="videoButton" target="_blank" href="@item.TutorialVideoUrl"><i style="font-size: 1.6em" class="fa-brands fa-youtube"></i></a>
                                 }
                                 else
                                 {

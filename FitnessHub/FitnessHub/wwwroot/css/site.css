@@ -274,7 +274,7 @@ btn-info .btn-check:checked + .btn-info:focus, .btn-check:active + .btn-info:foc
 .card {
     border-radius: 15px;
     overflow: auto;
-    background-color: transparent;
+    background-color: #ffffffd1;
 }
 
 .card tbody {
@@ -348,4 +348,18 @@ hr {
 
 #link-recoverpassword:hover {
     color: #004cff !important;
+}
+
+.detailsdelete-text h4 {
+    color: white !important;
+    text-shadow: #000000 1px 0 10px;
+}
+
+.detailsdelete-text p {
+    color: white !important;
+    text-shadow: #000000 1px 0 10px;
+}
+
+.text-danger {
+    font-weight: bold;
 }
