@@ -76,6 +76,11 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("CategoryId", "Please select a valid Category");
             }
 
+            if (model.TutorialVideoUrl.Length > 4 && !model.TutorialVideoUrl.ToLower().Contains("youtu"))
+            {
+                ModelState.AddModelError("TutorialVideoUrl", "Only URL's from Youtube videos are accepted");
+            }
+
             if (ModelState.IsValid)
             {
                 var path = string.Empty;
@@ -121,6 +126,16 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(MachineViewModel model)
         {
+            if (model.CategoryId < 1)
+            {
+                ModelState.AddModelError("CategoryId", "Please select a valid Category");
+            }
+
+            if (model.TutorialVideoUrl.Length > 4 && !model.TutorialVideoUrl.ToLower().Contains("youtu"))
+            {
+                ModelState.AddModelError("TutorialVideoUrl", "Only URL's from Youtube videos are accepted");
+            }
+
             if (ModelState.IsValid)
             {
                 try

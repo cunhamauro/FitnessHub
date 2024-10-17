@@ -5,7 +5,7 @@
 }
 
 <div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available @ViewData["Title"]</h2>
     <hr style="margin-bottom: 2.2rem" />
 </div>
 
@@ -15,16 +15,16 @@
         @foreach (var membership in Model)
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
-                <div class="card view-text" style="background-color:#3131319e">
+                <div class="card">
                     <div class="card-body">
                         <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@membership.Name</h5>
                         <hr />
-                        <div class="card-text" style="color:white">
+                        <div class="card-text" style="color:black">
                             <p>@membership.Description</p>
                         </div>
                     </div>
-                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
-                        <small><strong>@membership.Price.ToString("C") / month</strong></small>
+                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(255 255 255 / 81%)">
+                        <small><strong>@membership.Price.ToString("C2") / Month</strong></small>
                     </div>
                 </div>
             </div>

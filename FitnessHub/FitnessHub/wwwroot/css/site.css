@@ -274,7 +274,7 @@ btn-info .btn-check:checked + .btn-info:focus, .btn-check:active + .btn-info:foc
 .card {
     border-radius: 15px;
     overflow: auto;
-    background-color: transparent;
+    background-color: #ffffffd1;
 }
 
 .card tbody {
