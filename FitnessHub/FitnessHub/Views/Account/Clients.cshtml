@@ -1,18 +1,14 @@
-﻿@model IEnumerable<FitnessHub.Models.UserRoleViewModel>
+﻿@model IEnumerable<FitnessHub.Data.Entities.Users.User>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Clients";
 }
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
     <!-- Wrapper for the button and heading -->
     <div style="display: inline-flex; align-items: center;">
-        <!-- Button next to the text with margin -->
-        <a style="margin-left: -100px" asp-action="Create" class="btn btn-primary">
-            <i class="fa-solid fa-user me-2"></i>New
-        </a>
         <!-- Heading centered -->
         <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
-            Users
+            Clients
         </h2>
     </div>
 </div>
@@ -20,7 +16,7 @@
 @if (!Model.Any())
 {
     <hr />
-    <h4 class="no-items-list">There are no Users!</h4>
+    <h4 class="no-items-list">There are no Clients!</h4>
 }
 else
 {
@@ -36,12 +32,10 @@ else
                             @Html.DisplayNameFor(model => model.Email)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Gym)
+                            @Html.DisplayName("Phone")
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Role)
-                        </th>
-                        <th>
+                            @Html.DisplayNameFor(model => model.BirthDate)
                         </th>
                     </tr>
                 </thead>
@@ -56,17 +50,10 @@ else
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Gym.Data)
+                                @Html.DisplayFor(modelItem => item.PhoneNumber)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Role)
-                            </td>
-                            <td>
-                                <div style="display: flex">
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-1"><i class="fa-solid fa-trash-can me-2"></i>Delete</a>
-                                </div>
+                                @Html.DisplayFor(modelItem => item.BirthDate)
                             </td>
                         </tr>
                     }

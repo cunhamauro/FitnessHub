@@ -14,12 +14,30 @@ namespace FitnessHub.Data.Entities.Users
         public string? LastName { get; set; }
 
         [Display(Name = "Birth Date")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
 
         [Display(Name = "Profile Image")]
         public string? ImagePath { get; set; }
 
+
+        [Display(Name = "Image")]
+        public string Avatar
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImagePath))
+                {
+                    return $"/images/defaultavatar.png";
+                }
+                else
+                {
+                    return $"{ImagePath.Substring(1)}";
+                }
+            }
+        }
+
         [Display(Name = "Name")]
-        public string? Fullname => $"{FirstName} {LastName}";
+        public string? FullName => $"{FirstName} {LastName}";
     }
 }

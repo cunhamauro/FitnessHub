@@ -4,21 +4,22 @@
     ViewData["Title"] = "Create";
 }
 
-<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
-<hr style="margin-bottom: 2rem" />
-<div class="row">
-    <div class="col-md-4 offset-4">
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add Gym</h2>
+<hr />
+
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label"> Name</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Country" class="control-label"></label>
                 <select asp-for="Country" id="country-dropdown" class="form-control" asp-items="ViewBag.Countries">
-                    <option value="">-- Select a Country --</option>
+                    <option value="0" disable>Select a Country</option>
                 </select>
                 <span asp-validation-for="Country" class="text-danger"></span>
             </div>
@@ -32,10 +33,14 @@
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index">Back to List</a>
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Save
+                </button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
+
         </form>
     </div>
 </div>
@@ -44,6 +49,15 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var defaultOption = document.querySelector('#country-dropdown option[value="0"]');
+            if (defaultOption) {
+                defaultOption.disabled = true; 
+            }
+        });
+    </script>
 
     <script>
         $(document).ready(function () {

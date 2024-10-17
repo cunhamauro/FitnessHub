@@ -17,7 +17,11 @@ namespace FitnessHub.Models
 
 
         [Required]
-        [Display(Name = "Selected Gym")]
+        [Display(Name = "Gym")]
         public int GymId { get; set; }
+
+
+        [Display(Name = "Name")]
+        public string? FullName { get; set; }
     }
 }

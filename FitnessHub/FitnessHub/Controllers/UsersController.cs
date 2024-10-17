@@ -76,6 +76,43 @@ namespace FitnessHub.Controllers
             return View(usersList);
         }
 
+        // GET: Users/Details/5
+        public async Task<IActionResult> Details(string? id)
+        {
+            if (id == null)
+            {
+                return UserNotFound();
+            }
+
+            var user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return UserNotFound();
+            }
+
+            var userGym = await _gymRepository.GetGymByUserAsync(user);
+            if(userGym == null)
+            {
+                return GymNotFound();
+            }
+
+            var roles = await _userHelper.GetUserRolesAsync(user);
+            var role = roles.FirstOrDefault();
+
+            var model = new UserDetailsViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Gym = userGym,
+                Role = role,
+                BirthDate = user.BirthDate,
+                Avatar = user.Avatar,
+            };
+
+            return View(model);
+        }
+
         // GET: Users/Create
         public async Task<IActionResult> Create()
         {
@@ -126,18 +163,28 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AdminRegisterNewUserViewModel model)
         {
+            if (model.Gym < 1)
+            {
+                ModelState.AddModelError("Gym", "Please select a gym.");
+            }
+
+            if (model.Role == "0")
+            {
+                ModelState.AddModelError("Role", "Please select a role.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
-                    var gym = await _gymRepository.GetByIdTrackAsync(model.SelectedGym);
+                    var gym = await _gymRepository.GetByIdTrackAsync(model.Gym);
                     if (gym == null)
                     {
                         return GymNotFound();
                     }
 
-                    if (model.SelectedRole == "Admin" || model.SelectedRole == "MasterAdmin")
+                    if (model.Role == "Admin" || model.Role == "MasterAdmin")
                     {
                         user = new Admin
                         { 
@@ -145,7 +192,7 @@ namespace FitnessHub.Controllers
                         };
                     }
 
-                    if (model.SelectedRole == "Employee")
+                    if (model.Role == "Employee")
                     {
                         user = new Employee
                         {
@@ -153,7 +200,7 @@ namespace FitnessHub.Controllers
                         };
                     }
                     
-                    if (model.SelectedRole == "Instructor")
+                    if (model.Role == "Instructor")
                     {
                         user = new Instructor
                         {
@@ -172,7 +219,7 @@ namespace FitnessHub.Controllers
 
                     if (result.Succeeded)
                     {
-                        await _userHelper.AddUserToRoleAsync(user, model.SelectedRole);
+                        await _userHelper.AddUserToRoleAsync(user, model.Role);
                         var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                         await _userHelper.ConfirmEmailAsync(user, userToken);
 
@@ -193,6 +240,12 @@ namespace FitnessHub.Controllers
                             return RedirectToAction(nameof(Index));
                         }
                     }
+                }
+                else
+                {
+                    ModelState.AddModelError("Email", "This email is already registered");
+
+                    return View(model);
                 }
             }
 
@@ -256,6 +309,7 @@ namespace FitnessHub.Controllers
             {
                 Id = user.Id,
                 Email = user.Email,
+                FullName = user.FullName,
             };
 
             if (this.User.IsInRole("MasterAdmin"))
@@ -315,6 +369,11 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AdminEditUserViewModel model)
         {
+            if (model.GymId < 1)
+            {
+                ModelState.AddModelError("Gym", "Please select a gym.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByIdAsync(model.Id);
@@ -379,7 +438,27 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            return View(user);
+            var userGym = await _gymRepository.GetGymByUserAsync(user);
+            if (userGym == null)
+            {
+                return GymNotFound();
+            }
+
+            var roles = await _userHelper.GetUserRolesAsync(user);
+            var role = roles.FirstOrDefault();
+
+            var model = new UserDetailsViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Gym = userGym,
+                Role = role,
+                BirthDate = user.BirthDate,
+                Avatar = user.Avatar,
+            };
+
+            return View(model);
         }
 
         //POST: Users/Delete/5

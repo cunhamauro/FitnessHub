@@ -5,23 +5,28 @@
     var maxDate = DateTime.Now;
 }
 
-<h1>Register</h1>
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Register</h2>
+<hr />
 
-<div class="row">
+<div class="row view-form-style">
     <div class="col-md-4 offset-md-4">
+        <div class="text-success" style=" font-size:2em">
+            @ViewBag.Message
+        </div>
+
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="FirstName">First Name</label>
+                <label asp-for="FirstName" class="control-label">First Name</label>
                 <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-warning"></span>
+                <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="LastName">Last Name</label>
+                <label asp-for="LastName" class="control-label">Last Name</label>
                 <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-warning"></span>
+                <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -31,33 +36,30 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="Username">Username</label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-warning"></span>
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password">Password</label>
+                <label asp-for="Password" class="control-label"></label>
                 <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-warning"></span>
+                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Confirm">Confirm</label>
+                <label asp-for="Confirm" class="control-label">Confirm Password</label>
                 <input asp-for="Confirm" type="password" class="form-control" />
-                <span asp-validation-for="Confirm" class="text-warning"></span>
+                <span asp-validation-for="Confirm" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <input type="submit" value="Register New User" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-address-card me-2"></i>Register
+                </button>
+                <a asp-action="Login" class="btn btn-secondary me-2"><i class="fa-solid fa-arrow-left me-2"></i>Back to login</a>
             </div>
         </form>
     </div>
-</div>
-
-<div class="text-success">
-    <p>
-        @ViewBag.Message
-    </p>
 </div>
 
 @section Scripts {

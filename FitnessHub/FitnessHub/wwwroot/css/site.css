@@ -340,3 +340,12 @@ hr {
     color: white !important;
     text-shadow: #000000 1px 0 10px;
 }
+
+#link-recoverpassword {
+    text-decoration: none !important;
+    color: white !important;
+}
+
+#link-recoverpassword:hover {
+    color: #004cff !important;
+}

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using FitnessHub.Data;
+﻿using FitnessHub.Data;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Models;
-using FitnessHub.Data.Entities.GymMachines;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
@@ -37,7 +31,7 @@ namespace FitnessHub.Controllers
             }
 
             var classCategory = await _classCategoryRepository.GetByIdAsync(id.Value);
-              
+
             if (classCategory == null)
             {
                 return CategoryNotFound();
@@ -140,7 +134,7 @@ namespace FitnessHub.Controllers
             }
 
             var classCategory = await _classCategoryRepository.GetByIdAsync(id.Value);
-              
+
             if (classCategory == null)
             {
                 return CategoryNotFound();
