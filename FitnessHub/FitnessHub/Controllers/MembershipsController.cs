@@ -33,14 +33,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
 
             Membership membership = await _membershipRepository.GetByIdAsync(id.Value);
 
             if (membership == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
 
             return View(membership);
@@ -52,7 +52,7 @@ namespace FitnessHub.Controllers
             List<SelectListItem> tierList = new List<SelectListItem>();
             List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
 
-            for (int i = 0; i <= 9; i++)
+            for (int i = 1; i <= 9; i++)
             {
                 bool tierTaken = false;
                 foreach (Membership membership in memberships)
@@ -82,11 +82,11 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Membership membership)
         {
-            List<Membership> memberhsips = await _membershipRepository.GetAll().ToListAsync();
+            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
 
-            if (memberhsips.Any(m => m.Tier == membership.Tier))
+            if (memberships.Any(m => m.Tier == membership.Tier))
             {
-                ModelState.AddModelError("Tier", "This Tier is already selected");
+                ModelState.AddModelError("Tier", "This Tier is already assigned to another Membership");
             }
 
             if (ModelState.IsValid)
@@ -95,6 +95,29 @@ namespace FitnessHub.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
+
+            List<SelectListItem> tierList = new List<SelectListItem>();
+
+            for (int i = 1; i <= 9; i++)
+            {
+                bool tierTaken = false;
+                foreach (Membership m in memberships)
+                {
+                    if (m.Tier == i)
+                    {
+                        tierTaken = true;
+                        break;
+                    }
+                }
+
+                if (!tierTaken)
+                {
+                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
+                }
+            }
+
+            ViewBag.TierList = tierList;
+
             return View(membership);
         }
 
@@ -103,15 +126,41 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
 
             Membership membership = await _membershipRepository.GetByIdAsync(id.Value);
 
             if (membership == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
+
+            List<SelectListItem> tierList = new List<SelectListItem>();
+            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+
+            for (int i = 1; i <= 9; i++)
+            {
+                bool tierTaken = false;
+                foreach (Membership m in memberships)
+                {
+                    if (m.Tier == i)
+                    {
+                        tierTaken = true;
+                        break;
+                    }
+                }
+
+                if (!tierTaken)
+                {
+                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
+                }
+            }
+
+            tierList.Add(new SelectListItem { Value = membership.Tier.ToString(), Text = membership.Tier.ToString() });
+            tierList = tierList.OrderBy(t => t.Value).ToList();
+
+            ViewBag.TierList = tierList;
 
             return View(membership);
         }
@@ -125,7 +174,14 @@ namespace FitnessHub.Controllers
         {
             if (membership == null)
             {
-                return NotFound();
+                return MembershipNotFound();
+            }
+
+            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+
+            if (memberships.Any(m => m.Tier == membership.Tier && m.Id != membership.Id))
+            {
+                ModelState.AddModelError("Tier", "This Tier is already assigned to another Membership");
             }
 
             if (ModelState.IsValid)
@@ -138,7 +194,7 @@ namespace FitnessHub.Controllers
                 {
                     if (await _membershipRepository.ExistsAsync(membership.Id))
                     {
-                        return NotFound();
+                        return MembershipNotFound();
                     }
                     else
                     {
@@ -147,6 +203,31 @@ namespace FitnessHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            List<SelectListItem> tierList = new List<SelectListItem>();
+
+            for (int i = 1; i <= 9; i++)
+            {
+                bool tierTaken = false;
+                foreach (Membership m in memberships)
+                {
+                    if (m.Tier == i)
+                    {
+                        tierTaken = true;
+                        break;
+                    }
+                }
+
+                if (!tierTaken)
+                {
+                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
+                }
+            }
+
+            tierList.Add(new SelectListItem { Value = membership.Tier.ToString(), Text = membership.Tier.ToString() });
+            tierList = tierList.OrderBy(t => t.Value).ToList();
+
+            ViewBag.TierList = tierList;
+
             return View(membership);
         }
 
@@ -155,14 +236,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
 
             Membership membership = await _membershipRepository.GetByIdAsync(id.Value);
 
             if (membership == null)
             {
-                return NotFound();
+                return MembershipNotFound();
             }
 
             return View(membership);
