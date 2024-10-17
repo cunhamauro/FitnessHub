@@ -1,53 +1,81 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.Gym>
 
 @{
-    ViewData["Title"] = "Available Gyms";
+    ViewData["Title"] = "Our Gyms";
 }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css" />
+<style>
+    #countryFilter, #cityFilter {
+        background-color: #ffffff3b;
+        width: 10vw;
+        color: white;
+    }
 
-<div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
-    <hr style="margin-bottom: 2.2rem" />
+        #countryFilter::placeholder, #cityFilter::placeholder {
+            color: white;
+        }
+</style>
+
+<div class="row">
+    <div class="col-3" style="margin-top: -4px">
+        <div class="mb-2">
+            <input type="text" id="countryFilter" class="form-control" placeholder="Search by Country">
+        </div>
+        <div>
+            <input type="text" id="cityFilter" class="form-control" placeholder="Search by City">
+        </div>
+    </div>
+    <div class="col-6 view-text">
+        <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 2vh">@ViewData["Title"]</h2>
+    </div>
+    <hr style="margin-bottom:1.8rem"/>
 </div>
 
-<div class="d-flex justify-content-center mb-4">
-    <div class="col-md-3 mx-2">
-        <input type="text" id="countryFilter" class="form-control" placeholder="Search by country" style="background-color:#3131319e;color:white">
-    </div>
-    <div class="col-md-3 mx-2">
-        <input type="text" id="cityFilter" class="form-control" placeholder="Search by city" style="background-color:#3131319e;color:white">
-    </div>
-</div>
-
-<div class="row justify-content-center mt-2" id="gymsContainer">
-    @foreach (var gym in Model)
-    {
-        <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
-            <div class="card view-text" style="background-color:#3131319e">
-                <div class="card-body">
-                    <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@gym.Name</h5>
-                    <hr />
-                    <div class="card-text" style="color:white">
-                        <p>
-                            <strong>Country:</strong> @gym.Country <br />
-                            <strong>City:</strong> @gym.City <br />
-                            <strong>Address:</strong> @gym.Address <br />
-                        </p>
+@if (Model.Any())
+{
+    <div class="row justify-content-center mt-2" id="gymsContainer">
+        @foreach (var gym in Model)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@gym.Name</h5>
+                        <hr />
+                        <div class="card-text">
+                            <p>
+                                <strong>Country:</strong> @gym.Country <br />
+                                <strong>City:</strong> @gym.City <br />
+                                <strong>Address:</strong> @gym.Address <br />
+                            </p>
+                        </div>
                     </div>
-                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
-                        <small>
-                            <strong>
-                                <strong>Rating:</strong> @gym.Rating 
-                                <strong>Reviews:</strong> @gym.NumReviews
-                            </strong>
-                        </small>
+                    <div class="card-footer" style="color: #ff6201; font-size: 1.3em">
+                        <small><span>Rating: @{
+                                    if (gym.NumReviews > 0)
+                                    {
+                                        @gym.Rating@Html.Raw("/5")
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("N/A")
+                                    }}
+                        </span><span style="float: right">Reviews: @gym.NumReviews</span></small>
                     </div>
                 </div>
             </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <div class="text-light">
+            There aren't any Memberships currently available. <br />
+            But don't give up! <br />
+            Come back late or contact us for more information!
         </div>
-    }
-</div>
+    </div>
+}
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
