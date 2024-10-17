@@ -80,23 +80,26 @@ namespace FitnessHub.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.Username);
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
                     user = new Client
                     {
                         FirstName = model.FirstName,
                         LastName = model.LastName,
-                        Email = model.Username,
-                        UserName = model.Username,
+                        Email = model.Email,
+                        UserName = model.Email,
                         BirthDate = model.BirthDate,
                     };
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
 
-                    if (result != IdentityResult.Success)
+                    if (!result.Succeeded)
                     {
-                        ModelState.AddModelError("Username", "This user could not be created");
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description); 
+                        }
                         return View(model);
                     }
 
@@ -110,7 +113,7 @@ namespace FitnessHub.Controllers
                         token = myToken
                     }, protocol: HttpContext.Request.Scheme);
 
-                    Response response = await _mailHelper.SendEmailAsync(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                    Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
                         $"To allow the user, " +
                         $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
 
@@ -122,9 +125,13 @@ namespace FitnessHub.Controllers
 
                     return DisplayMessage("Email not sent", "There was an error sending the email to confirm the account. Try again later!");
                 }
-            }
+                else
+                {
+                    ModelState.AddModelError("Email", "This email is already registered");
 
-            ModelState.AddModelError("Username", "This email is already registered");
+                    return View(model);
+                }
+            }
 
             return View(model);
         }
@@ -169,7 +176,7 @@ namespace FitnessHub.Controllers
 
                     if (response.Succeeded)
                     {
-                        ViewBag.UserMessage = "User successfully updated!";
+                        ViewBag.UserMessage = "Successfully updated!";
                     }
                     else
                     {
@@ -200,6 +207,15 @@ namespace FitnessHub.Controllers
                 if (user != null)
                 {
                     var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                        return View(model);
+                    }
 
                     if (result.Succeeded)
                     {
@@ -333,17 +349,27 @@ namespace FitnessHub.Controllers
             if (user != null)
             {
                 var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.NewPassword);
-                if (result.Succeeded)
+
+                if (!result.Succeeded)
                 {
-                    ViewBag.Message = "Password reset was successful";
-                    return View();
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
                 }
 
-                ViewBag.Message = "Error while resetting the password";
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Login));
+                }
+
+                ModelState.AddModelError("","Error while resetting the password");
+
                 return View(model);
             }
 
-            ViewBag.Message = "User not found";
+            ModelState.AddModelError("","User not found");
 
             return View(model);
         }   
@@ -390,6 +416,15 @@ namespace FitnessHub.Controllers
             {
                 var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.NewPassword);
 
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(model);
+                }
+
                 if (result.Succeeded)
                 {
                     return RedirectToAction("Login");
@@ -403,6 +438,27 @@ namespace FitnessHub.Controllers
             {
                 return UserNotFound();
             }
+        }
+
+        // GET: Account/Clients
+        [Authorize(Roles = "Employee")]
+        public async Task<IActionResult> Clients()
+        {
+            var employee = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+            if(employee == null)
+            {
+                return UserNotFound();
+            }
+
+            var gym = await _gymRepository.GetGymByUserAsync(employee);
+            if (gym == null)
+            {
+                return GymNotFound();
+            }
+
+            var clients = await _userHelper.GetClientsByGymAsync(gym.Id);
+
+            return View(clients.ToList());
         }
 
         // GET: Account/RegisterNewClient

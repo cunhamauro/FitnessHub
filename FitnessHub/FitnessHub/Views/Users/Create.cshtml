@@ -5,22 +5,22 @@
     var maxDate = DateTime.Now;
 }
 
-<h1>Create User</h1>
-
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add User</h2>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="FirstName"></label>
+                <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="LastName"></label>
+                <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
@@ -32,31 +32,34 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="SelectedGym" class="control-label"></label>
-                <select asp-for="SelectedGym" asp-items="Model.Gyms" class="form-control">
-                    <option value="">-- Select gym --</option>
+                <label asp-for="Gym" class="control-label">Gym</label>
+                <select asp-for="Gym" asp-items="Model.Gyms" class="form-control" id="gymSelect">
+                    <option value="0" disabled selected>Select a gym</option>
                 </select>
-                <span asp-validation-for="SelectedGym" class="text-danger"></span>
+                <span asp-validation-for="Gym" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Email"></label>
+                <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="SelectedRole" class="control-label">Role</label>
-                <select asp-for="SelectedRole" asp-items="Model.Roles" class="form-control">
-                    <option value="">-- Select Role --</option>
+                <label asp-for="Role" class="control-label">Role</label>
+                <select asp-for="Role" asp-items="Model.Roles" class="form-control" id="roleSelect">
+                    <option value="0" disabled selected>Select a Role</option>
                 </select>
-                <span asp-validation-for="SelectedRole" class="text-danger"></span>
+                <span asp-validation-for="Role" class="text-danger"></span>
             </div>
 
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Save
+                </button>
+                <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
+
         </form>
     </div>
 </div>
@@ -65,4 +68,26 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Disable default 'Select a gym' option
+            const gymSelect = document.getElementById('gymSelect');
+            if (gymSelect) {
+                const defaultGymOption = gymSelect.querySelector('option[value="0"]');
+                if (defaultGymOption) {
+                    defaultGymOption.disabled = true;  // Disable the default "Select a gym" option
+                }
+            }
+
+            // Disable default 'Select a Role' option
+            const roleSelect = document.getElementById('roleSelect');
+            if (roleSelect) {
+                const defaultRoleOption = roleSelect.querySelector('option[value="0"]');
+                if (defaultRoleOption) {
+                    defaultRoleOption.disabled = true;  // Disable the default "Select a Role" option
+                }
+            }
+        });
+    </script>
 }

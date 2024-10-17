@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using FitnessHub.Data.HelperClasses;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Models
@@ -18,6 +19,7 @@ namespace FitnessHub.Models
         [Required]
         [Display(Name = "Birth Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
+        [AgeValidation]
         public DateTime BirthDate { get; set; }
 
 
@@ -25,12 +27,11 @@ namespace FitnessHub.Models
 
 
         [Required]
-        [Display(Name = "Selected Gym")]
-        public int SelectedGym { get; set; }
+        public int Gym { get; set; }
 
 
         [Required]
-        public string? SelectedRole { get; set; }
+        public string? Role { get; set; }
 
 
         public IEnumerable<SelectListItem>? Roles { get; set; }

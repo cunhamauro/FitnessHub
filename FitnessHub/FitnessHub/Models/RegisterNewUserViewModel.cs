@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using FitnessHub.Data.HelperClasses;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Models
 {
@@ -16,6 +16,7 @@ namespace FitnessHub.Models
 
 
         [Required]
+        [AgeValidation]
         [Display(Name = "Birth Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
@@ -23,7 +24,7 @@ namespace FitnessHub.Models
 
         [Required]
         [DataType(DataType.EmailAddress)]
-        public string? Username { get; set; }
+        public string? Email { get; set; }
 
 
         [Required]

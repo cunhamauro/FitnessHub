@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FitnessHub.Data.Entities.GymMachines;
+﻿using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;

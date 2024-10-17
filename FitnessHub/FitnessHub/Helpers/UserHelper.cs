@@ -144,6 +144,14 @@ namespace FitnessHub.Helpers
             return combinedUsers;
         }
 
+        public async Task<IList<User>> GetClientsByGymAsync(int gymId)
+        {
+            var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();
+            var clientsByGym = clients.OfType<Client>().Where(i => i.GymId == gymId);
+
+            return clientsByGym.Cast<User>().ToList();
+        }
+
         public async Task<IList<string>> GetUserRolesAsync(User user)
         {
             return await _userManager.GetRolesAsync(user);

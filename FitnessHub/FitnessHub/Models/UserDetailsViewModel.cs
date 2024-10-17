@@ -1,29 +1,40 @@
-﻿using FitnessHub.Data.HelperClasses;
+﻿using FitnessHub.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Models
 {
-    public class EmployeeRegisterNewClientViewModel
+    public class UserDetailsViewModel
     {
-        [Required]
+        public string? Id { get; set; }
+
+
         [Display(Name = "First Name")]
         public string? FirstName { get; set; }
 
 
-        [Required]
         [Display(Name = "Last Name")]
         public string? LastName { get; set; }
 
 
-        [Required]
-        [AgeValidation]
+        public string? Email { get; set; }
+
+
+        public Gym? Gym { get; set; }
+
+
+        public string? Role { get; set; }
+
+
         [Display(Name = "Birth Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
 
 
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string? Email { get; set; }
+        [Display(Name = "Profile Image")]
+        public string? Avatar { get; set; }
+
+
+        [Display(Name = "Name")]
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

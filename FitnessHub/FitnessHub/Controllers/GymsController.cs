@@ -71,6 +71,11 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Gym gym)
         {
+            if (gym.Country == "0")
+            {
+                ModelState.AddModelError("Country", "Please select a valid Country");
+            }
+
             if (ModelState.IsValid)
             {
                 await _gymRepository.CreateAsync(gym);
