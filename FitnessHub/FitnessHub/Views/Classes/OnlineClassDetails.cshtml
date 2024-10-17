@@ -4,57 +4,60 @@
     ViewData["Title"] = "OnlineClassDetails";
 }
 
-<h1>OnlineClassDetails</h1>
-
-<div>
-    <h4>OnlineClass</h4>
+<div class="container detailsdelete-text">
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Online Class Details</h2>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Category.Name
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Instructor)
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Instructor.FirstName @Model.Instructor.LastName
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateStart)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateStart)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DateEnd)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DateEnd)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Platform)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Platform)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Rating)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Rating)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NumReviews)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NumReviews)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="UpdateOnlineClass" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="OnlineClasses">Back to List</a>
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <dl class="row">
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Category)
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.Category.Name
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Instructor)
+                </dt>
+                <dd class="col-sm-8">
+                    @Model.Instructor.FirstName @Model.Instructor.LastName
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.DateStart)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.DateStart)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.DateEnd)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.DateEnd)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Platform)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Platform)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.Rating)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.Rating)
+                </dd>
+                <dt class="col-sm-4">
+                    @Html.DisplayNameFor(model => model.NumReviews)
+                </dt>
+                <dd class="col-sm-8">
+                    @Html.DisplayFor(model => model.NumReviews)
+                </dd>
+            </dl>
+
+            <div class="form-group">
+                <a asp-action="UpdateOnlineClass" asp-route-id="@Model?.Id" class="btn btn-warning me-4"><i class="fa-solid fa-pen me-2"></i>Edit</a>
+                <a asp-action="OnlineClasses" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back to List</a>
+            </div>
+        </div>
+    </div>
 </div>

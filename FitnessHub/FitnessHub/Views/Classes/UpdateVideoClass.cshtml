@@ -4,28 +4,33 @@
     ViewData["Title"] = "UpdateVideoClass";
 }
 
-<h1>UpdateVideoClass</h1>
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Update Video Class</h2>
 
-<h4>VideoClass</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="UpdateVideoClass">
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
+        <form asp-action="UpdateVideoClass" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label class="control-label">Video Class ID</label>
+                <input id="videoClassId" readonly value="@Model.Id" class="form-control" />
+            </div>
+
             <div class="form-group">
                 <label asp-for="VideoClassUrl" class="control-label"></label>
                 <input asp-for="VideoClassUrl" class="form-control" />
                 <span asp-validation-for="VideoClassUrl" class="text-danger"></span>
             </div>
-            <input type="hidden" asp-for="Id" />
+
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Update
+                </button>
+                <a asp-action="VideoClasses" class="btn btn-secondary">
+                    <i class="fa-solid fa-chevron-left me-2"></i>Back to List
+                </a>
             </div>
         </form>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-

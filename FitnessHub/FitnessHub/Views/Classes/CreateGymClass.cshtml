@@ -3,53 +3,59 @@
     ViewData["Title"] = "Create Gym Class";
 }
 
-<h1>Create Gym Class</h1>
-
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add Gym Class</h2>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
         <form asp-action="CreateGymClass">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
+                <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
                     <option value="0">Select a Category</option>
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="DateStart" class="control-label"></label>
                 <input asp-for="DateStart" class="form-control" />
                 <span asp-validation-for="DateStart" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="DateEnd" class="control-label"></label>
                 <input asp-for="DateEnd" class="form-control" />
                 <span asp-validation-for="DateEnd" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="GymId" class="control-label"></label>
+                <label asp-for="GymId" class="control-label">Gym</label>
                 <select asp-for="GymId" id="gymSelect" class="form-control" asp-items="@Model.GymsList">
                     <option value="0">Select a Gym</option>
                 </select>
                 <span asp-validation-for="GymId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="InstructorId" class="control-label"></label>
+                <label asp-for="InstructorId" class="control-label">Instructor</label>
                 <select asp-for="InstructorId" class="form-control" asp-items="@Model.InstructorsList">
                     <option value="">Select an Instructor</option>
                 </select>
                 <span asp-validation-for="InstructorId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Create
+                </button>
+                <a asp-action="GymClasses" class="btn btn-secondary">
+                    <i class="fa-solid fa-chevron-left me-2"></i>Back to List
+                </a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="GymClasses">Back to List</a>
 </div>
 
 

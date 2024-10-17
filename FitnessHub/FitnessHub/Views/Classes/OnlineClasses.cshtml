@@ -4,62 +4,92 @@
     ViewData["Title"] = "Online Classes";
 }
 
-<h1>OnlineClasses</h1>
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Button next to the text with margin -->
+        <a style="margin-left: -100px" asp-action="CreateOnlineClass" class="btn btn-primary">
+            <i class="fa-solid fa-globe me-2"></i>New
+        </a>
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            Online Classes
+        </h2>
+    </div>
+</div>
 
-<p>
-    <a asp-action="CreateOnlineClass">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Instructor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateStart)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateEnd)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Platform)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Rating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NumReviews)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @item.Instructor.FirstName @item.Instructor.LastName
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateStart)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateEnd)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Platform)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rating)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumReviews)
-            </td>
-            <td>
-                    <a asp-action="UpdateOnlineClass" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="OnlineClassDetails" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="DeleteOnlineClass" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no online classes!</h4>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Instructor)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DateStart)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.DateEnd)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Platform)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Instructor.FirstName @item.Instructor.LastName
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateStart)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DateEnd)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Platform)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Rating)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.NumReviews)
+                            </td>
+                            <td>
+                                <div style="display: flex">
+                                    <a asp-action="UpdateOnlineClass" asp-route-id="@item.Id" class="btn btn-warning me-2">
+                                        <i class="fa-solid fa-pen me-2"></i>Update
+                                    </a>
+                                    <a asp-action="OnlineClassDetails" asp-route-id="@item.Id" class="btn btn-info me-2">
+                                        <i class="fa-solid fa-list me-2"></i>Details
+                                    </a>
+                                    <a asp-action="DeleteOnlineClass" asp-route-id="@item.Id" class="btn btn-danger me-1">
+                                        <i class="fa-solid fa-trash-can me-2"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
