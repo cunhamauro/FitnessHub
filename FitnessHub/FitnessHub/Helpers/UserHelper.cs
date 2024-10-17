@@ -33,6 +33,11 @@ namespace FitnessHub.Helpers
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrWhiteSpace(email) || email == null)
+            {
+                return null;
+            }
+
             return await _userManager.FindByEmailAsync(email);
         }
 

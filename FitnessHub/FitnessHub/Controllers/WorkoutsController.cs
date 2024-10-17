@@ -5,8 +5,6 @@ using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
-using System.Reflection.PortableExecutable;
 
 namespace FitnessHub.Controllers
 {
@@ -69,7 +67,9 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
+            Client client = new Client();
+
+            client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
 
             if (client == null)
             {
@@ -167,7 +167,7 @@ namespace FitnessHub.Controllers
                     Time = exercise.Time,
                     Repetitions = exercise.Repetitions,
                     Sets = exercise.Sets,
-                    DayOfWeek= exercise.DayOfWeek,
+                    DayOfWeek = exercise.DayOfWeek,
                     Notes = exercise.Notes,
                 });
             }
@@ -212,7 +212,7 @@ namespace FitnessHub.Controllers
 
             if (model.Exercises == null || !model.Exercises.Any())
             {
-                return RedirectToAction("Edit", "Workouts", new {id = model.Id});
+                return RedirectToAction("Edit", "Workouts", new { id = model.Id });
             }
 
             if (model.Exercises == null || !model.Exercises.Any())

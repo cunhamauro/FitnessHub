@@ -340,3 +340,17 @@ hr {
     color: white !important;
     text-shadow: #000000 1px 0 10px;
 }
+
+.detailsdelete-text h4 {
+    color: white !important;
+    text-shadow: #000000 1px 0 10px;
+}
+
+.detailsdelete-text p {
+    color: white !important;
+    text-shadow: #000000 1px 0 10px;
+}
+
+.text-danger {
+    font-weight: bold;
+}

@@ -1,43 +1,52 @@
 ﻿@model FitnessHub.Data.Entities.GymMachines.Workout
 
-<h2>Workout Details</h2>
-<div>
-    <h4>Client</h4>
-    <p>@Model.Client.Fullname</p>
-    <p>@Model.Client.Email</p>
-</div>
-<div>
-    <h4>Instructor</h4>
-    <p>@Model.Instructor.Fullname</p>
-    <p>@Model.Instructor.Email</p>
+@{
+    ViewData["Title"] = "Workout Details";
+}
+
+<div class="container detailsdelete-text">
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@Model.Client.FirstName's Workout Details</h2>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-12 mb-2">
+            Client
+        </dt>
+        <dd class="col-sm-12">
+            @Model.Client.Fullname
+        </dd>
+        <dd class="col-sm-12">
+            @Model.Client.Email
+        </dd>
+    </dl>
+    <div class="form-group">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-4 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
+        <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+    </div>
 </div>
 
-<h4>Exercises</h4>
 
-<div class="row justify-content-center mt-2">
+<h4 class="view-text mb-4 mt-3" style="color: #ff6201; font-size: 1.8em; text-align:center">Exercises</h4>
+
+<div class="row justify-content-center">
     @foreach (var exercise in Model.Exercises)
     {
-        <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
-            <div class="card view-text" style="background-color:#3131319e">
+        <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+            <div class="card">
                 <div class="card-body">
                     <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@exercise.Name</h5>
                     <hr />
-                    <div class="card-text" style="color:white">
-                        <p>Machine: @exercise.Machine.Name</p>
-                        <p>Repetitions: @exercise.Repetitions</p>
-                        <p>Sets: @exercise.Sets</p>
-                        <p>Repetitions: @exercise.Repetitions</p>
-                        <p>Time: @exercise.Time</p>
-                        <p>Notes: @exercise.Notes</p>
+                    <div class="card-text">
+                        <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                        <p><strong>Sets:</strong> @exercise.Sets</p>
+                        <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                        <p><strong>Time:</strong> @exercise.Time</p>
+                        <p><strong>Notes:</strong> @exercise.Notes</p>
                     </div>
                 </div>
-                <div class="card-footer" style="color: #ff6201; font-size: 1.3em; background-color: rgb(0 0 0 / 16%)">
-                    <p>Day: @exercise.DayOfWeek</p>
+                <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                    <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
                 </div>
             </div>
         </div>
     }
 </div>
-
-<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
-<a asp-action="Index" class="btn btn-secondary">Back to List</a>

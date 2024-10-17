@@ -10,7 +10,7 @@ namespace FitnessHub.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "A valid Client email is required")]
-        [DataType(DataType.EmailAddress)]
+        [EmailAddress]
         public string? ClientEmail { get; set; } = string.Empty;
 
         public List<MachineDTO>? MachinesDTO { get; set; }

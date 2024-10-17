@@ -131,7 +131,7 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("CategoryId", "Please select a valid Category");
             }
 
-            if (model.TutorialVideoUrl.Length > 4 && !model.TutorialVideoUrl.ToLower().Contains("youtu"))
+            if (model.TutorialVideoUrl != null && !model.TutorialVideoUrl.ToLower().Contains("youtu"))
             {
                 ModelState.AddModelError("TutorialVideoUrl", "Only URL's from Youtube videos are accepted");
             }
