@@ -4,44 +4,52 @@
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Delete @Model.Client.FirstName's Workout</h2>
     <hr />
     <div class="row">
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-12 mb-2">
-                    Client
-                </dt>
-                <dd class="col-sm-12">
-                    @Model.Client.FullName
-                </dd>
-                <dd class="col-sm-12">
-                    @Model.Client.Email
-                </dd>
-            </dl>
-            <div class="form-group">
-                <form asp-action="Delete">
-                    <input type="hidden" asp-for="Id" />
-                    <button type="submit" class="btn btn-danger me-4 mt-2">
-                        <i class="fa-solid fa-trash-can me-2"></i>Delete
-                    </button>
-                    <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
-                </form>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12 mb-2">
+                            Client
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Model.Client.FullName
+                        </dd>
+                        <dd class="col-sm-12">
+                            @Model.Client.Email
+                        </dd>
+                    </dl>
+                    <div class="form-group">
+                        <form asp-action="Delete">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger me-2 mt-2">
+                                <i class="fa-solid fa-trash-can me-2"></i>Delete
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-12 mb-2">
-                    Exercises
-                </dt>
-                <dd>
-                    <ul>
-                        @foreach (var exercise in Model.Exercises)
-                        {
-                            <li>
-                                @exercise.Name
-                            </li>
-                        }
-                    </ul>
-                </dd>
-            </dl>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12">
+                            Exercises
+                        </dt>
+                        <dd>
+                            <ul>
+                                @foreach (var exercise in Model.Exercises)
+                                {
+                                    <li>
+                                        @exercise.Name
+                                    </li>
+                                }
+                            </ul>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -384,7 +384,7 @@ namespace FitnessHub.Controllers
 
                 await _classRepository.CreateAsync(gymClass);
             }
-            return View(model);
+            return RedirectToAction(nameof(GymClasses));
         }
 
         // GET: Classes/UpdateGymClass/5
@@ -403,7 +403,7 @@ namespace FitnessHub.Controllers
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
-            instructorsList = instructorsList.Where(i => i.Gym.Id == gymClass.Gym.Id).ToList();
+            //instructorsList = instructorsList.Where(i => i.Gym.Id == gymClass.Gym.Id).ToList();
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
             List<SelectListItem> selectCategoriesList = await _classCategoryRepository.GetCategoriesSelectListAsync();
 
@@ -418,6 +418,7 @@ namespace FitnessHub.Controllers
 
             GymClassViewModel model = new GymClassViewModel
             {
+                Id = gymClass.Id,
                 InstructorId = gymClass.Instructor.Id,
                 Gym = await _gymRepository.GetByIdAsync(gymClass.Gym.Id),
                 InstructorsList = selectInstructorList,
@@ -454,7 +455,7 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("CategoryId", "Please select a valid Category");
             }
 
-            ClassCategory? category = await _classCategoryRepository.GetByIdAsync(model.CategoryId);
+            ClassCategory category = await _classCategoryRepository.GetByIdTrackAsync(model.CategoryId);
 
             if (category == null)
             {
@@ -473,11 +474,16 @@ namespace FitnessHub.Controllers
             gymClass.Instructor = instructor;
             gymClass.Category = category;
 
+            ModelState.Remove("Gym.City");
+            ModelState.Remove("Gym.Name");
+            ModelState.Remove("Gym.Address");
+            ModelState.Remove("Gym.Country");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _classRepository.UpdateAsync(model);
+                    await _classRepository.UpdateAsync(gymClass);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
