@@ -40,7 +40,7 @@ namespace FitnessHub.Data.Repositories
 
         public async Task<GymClass> GetGymClassByIdInclude(int id)
         {
-            return await _context.Class.OfType<GymClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).Include(c => c.Gym).FirstOrDefaultAsync();
+            return await _context.Class.OfType<GymClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).Include(c => c.Gym).AsNoTracking().FirstOrDefaultAsync();
         }
 
     }
