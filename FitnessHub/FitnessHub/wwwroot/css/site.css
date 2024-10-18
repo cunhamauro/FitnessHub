@@ -367,3 +367,7 @@ hr {
 .detailsdelete-text .card {
     margin-bottom: 2vh;
 }
+
+.detailsdelete-text .row {
+    justify-content: center;
+}

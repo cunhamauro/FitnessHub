@@ -5,7 +5,6 @@
 
 @{
     ViewData["Title"] = "Machine Details";
-
     string embedVideoUrl = converterHelper.YoutubeUrlToEmbed(Model.TutorialVideoUrl);
 }
 
@@ -13,12 +12,11 @@
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@Model.Name Details</h2>
     <hr />
     <div class="row">
-
         <!-- Left: Machine info -->
         <div class="col-md-3 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <dl class="row" style="color: black">
+                    <dl class="row">
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Name)
                         </dt>
