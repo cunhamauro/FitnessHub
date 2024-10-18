@@ -8,27 +8,32 @@
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@Model.Name Details</h2>
     <hr />
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <dl class="row">
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Name)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Name)
-                </dd>
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Description)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Description)
-                </dd>
-            </dl>
 
-            <div class="form-group">
-                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-4 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row" style="color: black">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Description)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Description)
+                        </dd>
+                    </dl>
 
-                <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                    <div class="form-group">
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
+                        <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
