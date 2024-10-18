@@ -336,11 +336,6 @@ hr {
     font-weight: bold;
 }
 
-.detailsdelete-text dd {
-    color: white !important;
-    text-shadow: #000000 1px 0 10px;
-}
-
 #link-recoverpassword {
     text-decoration: none !important;
     color: white !important;
@@ -360,6 +355,15 @@ hr {
     text-shadow: #000000 1px 0 10px;
 }
 
+.detailsdelete-text dt, dd {
+    color: black !important;
+    text-shadow: none;
+}
+
 .text-danger {
     font-weight: bold;
+}
+
+.detailsdelete-text .card {
+    margin-bottom: 2vh;
 }
