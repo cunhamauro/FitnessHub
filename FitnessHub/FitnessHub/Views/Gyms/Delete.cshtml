@@ -8,53 +8,59 @@
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Delete @Model.Name</h2>
     <hr />
     <div class="row">
-        <div class="col-md-4 mb-4">
-            <dl class="row">
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Name)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Name)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Country)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Country)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.City)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.City)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Address)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Address)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Rating)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Rating)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.NumReviews)
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.NumReviews)
-                </dd>
-            </dl>
 
-            <form asp-action="Delete">
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger me-4 mt-2">
-                    <i class="fa-solid fa-trash-can me-2"></i>Delete
-                </button>
-                <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
-            </form>
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row" style="color: black">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Name)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Name)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Country)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Country)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.City)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.City)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Address)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Address)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Rating)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        <dd class="col-sm-12">
+                                @Html.DisplayFor(model => model.NumReviews)
+                        </dd>
+                    </dl>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger me-2 mt-2">
+                            <i class="fa-solid fa-trash-can me-2"></i>Delete
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
 
