@@ -9,34 +9,38 @@
     <hr />
     <div class="row">
         <div class="col-md-3 mb-4">
-            <dl class="row">
-                <dt class="col-sm-5">
-                    @Html.DisplayNameFor(model => model.VideoClassUrl)
-                </dt>
-                <dd class="col-sm-7">
-                    @Html.DisplayFor(model => model.VideoClassUrl)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Rating)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Rating)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.NumReviews)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.NumReviews)
-                </dd>
-            </dl>
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.VideoClassUrl)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.VideoClassUrl)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Rating)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.NumReviews)
+                        </dd>
+                    </dl>
 
-            <div class="form-group">
-                <a asp-action="UpdateVideoClass" asp-route-id="@Model?.Id" class="btn btn-warning me-4">
-                    <i class="fa-solid fa-pen me-2"></i>Edit
-                </a>
-                <a asp-action="VideoClasses" class="btn btn-secondary">
-                    <i class="fa-solid fa-chevron-left me-2"></i>Back to List
-                </a>
+                    <div class="form-group">
+                        <a asp-action="UpdateVideoClass" asp-route-id="@Model?.Id" class="btn btn-warning me-2">
+                            <i class="fa-solid fa-pen me-2"></i>Edit
+                        </a>
+                        <a asp-action="VideoClasses" class="btn btn-secondary">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back to List
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
