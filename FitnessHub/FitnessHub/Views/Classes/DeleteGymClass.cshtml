@@ -7,49 +7,55 @@
 <div class="container detailsdelete-text">
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Delete @Model.Category.Name</h2>
     <hr />
-    <div>
-        <hr />
-        <dl class="row">
-            <dt class="col-sm-4">
-                @Html.DisplayNameFor(model => model.Category)
-            </dt>
-            <dd class="col-sm-8">
-                @Model.Category.Name
-            </dd>
-            <dt class="col-sm-4">
-                @Html.DisplayNameFor(model => model.DateStart)
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.DateStart)
-            </dd>
-            <dt class="col-sm-4">
-                @Html.DisplayNameFor(model => model.DateEnd)
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.DateEnd)
-            </dd>
-            <dt class="col-sm-4">
-                @Html.DisplayNameFor(model => model.Rating)
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.Rating)
-            </dd>
-            <dt class="col-sm-4">
-                @Html.DisplayNameFor(model => model.NumReviews)
-            </dt>
-            <dd class="col-sm-8">
-                @Html.DisplayFor(model => model.NumReviews)
-            </dd>
-        </dl>
+    <div class="row">
+        <!-- Left: Class info -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Category)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.Category.Name
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.DateStart)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.DateStart)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.DateEnd)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.DateEnd)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Rating)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.NumReviews)
+                        </dd>
+                    </dl>
 
-        <form asp-action="DeleteGymClass">
-            <input type="hidden" asp-for="Id" />
-            <button type="submit" class="btn btn-danger me-4">
-                <i class="fa-solid fa-trash-can me-2"></i>Delete
-            </button>
-            <a asp-action="GymClasses" class="btn btn-secondary">
-                <i class="fa-solid fa-chevron-left me-2"></i>Back to List
-            </a>
-        </form>
+                    <form asp-action="DeleteGymClass">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger me-4">
+                            <i class="fa-solid fa-trash-can me-2"></i>Delete
+                        </button>
+                        <a asp-action="GymClasses" class="btn btn-secondary">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back to List
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

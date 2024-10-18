@@ -10,36 +10,40 @@
     <div class="row">
         <!-- Left: Video Class info -->
         <div class="col-md-4 mb-4">
-            <dl class="row">
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.VideoClassUrl)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.VideoClassUrl)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.Rating)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.Rating)
-                </dd>
-                <dt class="col-sm-4">
-                    @Html.DisplayNameFor(model => model.NumReviews)
-                </dt>
-                <dd class="col-sm-8">
-                    @Html.DisplayFor(model => model.NumReviews)
-                </dd>
-            </dl>
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.VideoClassUrl)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.VideoClassUrl)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.Rating)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.Rating)
+                        </dd>
+                        <dt class="col-sm-4">
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Html.DisplayFor(model => model.NumReviews)
+                        </dd>
+                    </dl>
 
-            <form asp-action="DeleteVideoClass">
-                <input type="hidden" asp-for="Id" />
-                <button type="submit" class="btn btn-danger me-4">
-                    <i class="fa-solid fa-trash-can me-2"></i>Delete
-                </button>
-                <a asp-action="VideoClasses" class="btn btn-secondary">
-                    <i class="fa-solid fa-chevron-left me-2"></i>Back
-                </a>
-            </form>
+                    <form asp-action="DeleteVideoClass">
+                        <input type="hidden" asp-for="Id" />
+                        <button type="submit" class="btn btn-danger me-4">
+                            <i class="fa-solid fa-trash-can me-2"></i>Delete
+                        </button>
+                        <a asp-action="VideoClasses" class="btn btn-secondary">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back
+                        </a>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
