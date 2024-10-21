@@ -1,10 +1,12 @@
 ﻿using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin")]
     public class MachineCategoriesController : Controller
     {
         private readonly IMachineCategoryRepository _categoryRepository;

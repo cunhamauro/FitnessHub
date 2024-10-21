@@ -3,11 +3,13 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "Instructor")]
     public class WorkoutsController : Controller
     {
         private readonly IWorkoutRepository _workoutRepository;

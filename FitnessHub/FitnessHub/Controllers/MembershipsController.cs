@@ -2,12 +2,14 @@
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin")]
     public class MembershipsController : Controller
     {
         private readonly IMembershipRepository _membershipRepository;
@@ -17,6 +19,8 @@ namespace FitnessHub.Controllers
             _membershipRepository = membershipRepository;
         }
 
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
         public IActionResult Available()
         {
             return View(_membershipRepository.GetAll());

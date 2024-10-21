@@ -12,9 +12,11 @@ using FitnessHub.Models;
 using FitnessHub.Helpers;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ClassesController : Controller
     {
         private readonly IClassRepository _classRepository;
@@ -839,6 +841,8 @@ namespace FitnessHub.Controllers
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
 
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
         public async Task<IActionResult> Available()
         {
             var categories = await _classCategoryRepository.GetAll().ToListAsync();

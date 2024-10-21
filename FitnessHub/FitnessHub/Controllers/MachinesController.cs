@@ -2,11 +2,13 @@
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin")]
     public class MachinesController : Controller
     {
         private readonly IMachineRepository _machineRepository;

@@ -6,9 +6,11 @@ using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Services;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin")]
     public class GymsController : Controller
     {
         private readonly IGymRepository _gymRepository;
@@ -177,6 +179,8 @@ namespace FitnessHub.Controllers
             return GymNotFound();
         }
 
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
         public IActionResult Available()
         {
             return View(_gymRepository.GetAll());
