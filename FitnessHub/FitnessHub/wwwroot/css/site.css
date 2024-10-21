@@ -8,6 +8,20 @@ html {
     }
 }
 
+input.e-input, .e-input-group input.e-input, .e-input-group input, .e-input-group.e-control-wrapper input.e-input, .e-input-group.e-control-wrapper input, .e-float-input input, .e-float-input.e-input-group input, .e-float-input.e-control-wrapper input, .e-float-input.e-control-wrapper.e-input-group input, .e-input-group, .e-input-group.e-control-wrapper, .e-float-input, .e-float-input.e-control-wrapper, .e-input.e-corner, .e-input-group.e-corner.e-rtl input.e-input:only-child, .e-input-group.e-control-wrapper.e-corner.e-rtl input.e-input:only-child, .e-input-group.e-input-focus.e-corner, .e-input-group.e-control-wrapper.e-input-focus.e-corner, textarea.e-input, .e-input-group textarea.e-input, .e-input-group textarea, .e-input-group.e-control-wrapper textarea.e-input, .e-input-group.e-control-wrapper textarea, .e-float-input textarea, .e-float-input.e-input-group textarea, .e-float-input.e-control-wrapper textarea, .e-float-input.e-control-wrapper.e-input-group textarea {
+    border-radius: 4px !important;
+}
+
+input.e-input, .e-input-group input, .e-input-group.e-control-wrapper input, .e-input-group input.e-input, .e-input-group.e-control-wrapper input.e-input {
+    height: 38px !important;
+}
+
+.e-input-group input.e-input, .e-input-group.e-control-wrapper input.e-input, .e-input-group textarea.e-input, .e-input-group.e-control-wrapper textarea.e-input, .e-input-group.e-small .e-input, .e-input-group.e-small.e-control-wrapper .e-input, .e-small .e-input-group .e-input, .e-small .e-input-group.e-control-wrapper .e-input {
+    font-size: 1.07rem !important;
+    font-family: sans-serif !important;
+    color: black !important;
+}
+
 .view-text {
     text-shadow: #000000 1px 0 10px;
 }
@@ -295,9 +309,9 @@ btn-info .btn-check:checked + .btn-info:focus, .btn-check:active + .btn-info:foc
 .no-items-list {
     text-align: center;
     margin: 0;
-    color: #ffffff1f;
-    margin-top: 26%;
-    margin-bottom: 2rem;
+    color: #ff620142;
+    margin-top: 23%;
+    font-size: 2rem;
 }
 
 hr {
@@ -371,3 +385,24 @@ hr {
 .detailsdelete-text .row {
     justify-content: center;
 }
+
+/*ERROR VIEWS*/
+.messageDisplay-container {
+    margin-top: 32vh;
+    text-align: center;
+}
+
+.messageDisplay-title {
+    margin-bottom: 0.8rem;
+    font-size: 5rem;
+    font-weight: bolder;
+    color: #ff6201;
+    text-shadow: #000000 1px 0 10px;
+}
+
+.messageDisplay-message {
+    font-size: 1.50rem;
+    color: white;
+    text-shadow: #000000 1px 0 10px;
+}
+

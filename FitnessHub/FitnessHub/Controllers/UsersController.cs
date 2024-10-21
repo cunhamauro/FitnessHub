@@ -4,11 +4,13 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin, Admin")]
     public class UsersController : Controller
     {
         private readonly IUserHelper _userHelper;
@@ -101,6 +103,7 @@ namespace FitnessHub.Controllers
 
             var model = new UserDetailsViewModel
             {
+                Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,

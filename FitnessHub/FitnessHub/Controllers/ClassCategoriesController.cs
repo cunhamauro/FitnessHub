@@ -2,11 +2,13 @@
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
+    [Authorize(Roles = "MasterAdmin")]
     public class ClassCategoriesController : Controller
     {
         private readonly IClassCategoryRepository _classCategoryRepository;

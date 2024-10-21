@@ -43,5 +43,10 @@ namespace FitnessHub.Controllers
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Not authorized", Message = $"You haven't warmed up enough for this!" });
         }
+
+        public IActionResult PageNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Page not found", Message = $"Take a sip of whey and look for it again!" });
+        }
     }
 }

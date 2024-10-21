@@ -6,6 +6,7 @@ using FitnessHub.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Syncfusion.Licensing;
 using System.Text;
 
 namespace FitnessHub
@@ -40,6 +41,8 @@ namespace FitnessHub
             })
              .AddDefaultTokenProviders()
              .AddEntityFrameworkStores<DataContext>();
+
+            SyncfusionLicenseProvider.RegisterLicense(configuration[@"Syncfusion:LicenseKey"]);
 
             builder.Services.AddAuthentication()
                 .AddCookie()
@@ -104,7 +107,7 @@ namespace FitnessHub
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/Home/Error");
+            app.UseStatusCodePagesWithReExecute("/Home/PageNotFound");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

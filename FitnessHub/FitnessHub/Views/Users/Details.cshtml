@@ -52,7 +52,7 @@
                     </dl>
 
                     <div class="form-group">
-                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>
 
                         <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
                     </div>
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="col-md-3 mb-4">
+        <div class="col-md-3 mb-4" style="margin-left: 10%; align-content: center">
             <dl class="row">
                 <dd class="col-sm-12">
                     <img src="@Model?.Avatar" alt="User image" style="width:100%;height:auto; border-radius:25%; border-color: lightgray; border-width: 0.5px" />
