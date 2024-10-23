@@ -78,6 +78,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
             builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             builder.Services.AddScoped<IClassCategoryRepository, ClassCategoryRepository>();
+            builder.Services.AddScoped<IMembershipDetailsRepository, MembershipDetailsRepository>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {

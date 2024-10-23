@@ -1,0 +1,43 @@
+﻿@model FitnessHub.Models.MembershipViewModel
+
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Membership Sign Up</h2>
+<hr />
+
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
+        <form asp-action="SignUp">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="MembershipId" class="control-label"></label>
+                <select asp-for="MembershipId" asp-items="@Model.SelectMembership" class="form-control">
+                    <option value="0">Select a Membership</option>
+                </select>
+                <span asp-validation-for="MembershipId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="IdNumber" class="control-label"></label>
+                <input asp-for="IdNumber" class="form-control" />
+                <span asp-validation-for="IdNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="FullAddress" class="control-label"></label>
+                <input asp-for="FullAddress" class="form-control" />
+                <span asp-validation-for="FullAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-4 mt-2">
+                    <i class="fa-solid fa-check me-2"></i>Sign Up
+                </button>
+                <a asp-action="MyMembership" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+            </div>
+        </form>
+    </div>
+</div>

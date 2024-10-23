@@ -83,6 +83,11 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("TutorialVideoUrl", "Only URL's from Youtube videos are accepted");
             }
 
+            if (await _machineRepository.GetAll().AnyAsync(m => m.Name == model.Name))
+            {
+                ModelState.AddModelError("Name", "There already exists a Machine with this name");
+            }
+
             if (ModelState.IsValid)
             {
                 var path = string.Empty;
