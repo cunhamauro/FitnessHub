@@ -1,0 +1,86 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymMachines.MachineDetails>
+
+@{
+    ViewData["Title"] = "Machine Details";
+}
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Button next to the text with margin -->
+        <a style="margin-left: -100px" asp-action="Create" class="btn btn-primary">
+            <i class="fa-solid fa-gears me-2"></i>Add
+        </a>
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            Machines
+        </h2>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Machines on this Gym!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.MachineNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Machine)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StatusDisplay)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model) {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.MachineNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Machine.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.StatusDisplay)
+                        </td>
+                        <td>
+                            <div style="display: flex">
+                                <form asp-action="ChangeStatus" method="post">
+                                     @Html.AntiForgeryToken()
+
+                                    <input type="hidden" asp-for="@item.Id" name="id"/>
+
+                                    <button type="submit" class="btn btn-primary me-2">
+                                        @if (item.Status == true)
+                                        {
+                                            <i class="fa-solid fa-turn-down me-2"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-turn-up me-2"></i>
+                                        }
+                                        Status
+                                    </button>
+                                </form>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-1"><i class="fa-solid fa-trash-can me-2"></i>Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+            }
+            </tbody>
+            </table>
+        </div>
+    </div>
+}

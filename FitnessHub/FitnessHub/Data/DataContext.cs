@@ -47,7 +47,7 @@ namespace FitnessHub.Data
 
         public DbSet<Exercise> Exercises { get; set; }
 
-        public DbSet<MachineDetail> MachineDetails { get; set; }
+        public DbSet<MachineDetails> MachineDetails { get; set; }
 
         public DbSet<Workout> Workouts { get; set; }
 

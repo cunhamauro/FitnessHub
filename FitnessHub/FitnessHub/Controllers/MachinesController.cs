@@ -1,5 +1,4 @@
-﻿using FitnessHub.Data.Entities.GymMachines;
-using FitnessHub.Data.Repositories;
+﻿using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -47,7 +46,7 @@ namespace FitnessHub.Controllers
             }
 
             var machine = await _machineRepository.GetAll()
-           .Include(m => m.Category) 
+           .Include(m => m.Category)
            .FirstOrDefaultAsync(m => m.Id == id);
 
             if (machine == null)
