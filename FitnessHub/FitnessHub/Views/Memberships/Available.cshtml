@@ -4,10 +4,29 @@
     ViewData["Title"] = "Memberships";
 }
 
-<div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available @ViewData["Title"]</h2>
-    <hr style="margin-bottom: 2.2rem" />
-</div>
+@if (ViewBag.ShowSignUp == true)
+{
+    <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+        <!-- Wrapper for the button and heading -->
+        <div style="display: inline-flex; align-items: center;">
+            <!-- Button next to the text with margin -->
+            <a style="margin-left: -100px" asp-action="SignUp" class="btn btn-primary">
+                <i class="fa-solid fa-address-card me-2"></i>Sign Up
+            </a>
+            <!-- Heading centered -->
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+                Our Memberships
+            </h2>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Our Memberships</h2>
+        <hr style="margin-bottom: 2.2rem" />
+    </div>
+}
 
 @if (Model.Any())
 {

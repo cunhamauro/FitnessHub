@@ -75,7 +75,6 @@ namespace FitnessHub.Data
                        .HasColumnType("decimal(18,2)");
 
             base.OnModelCreating(builder);
-        }
-        
+        }        
     }
 }

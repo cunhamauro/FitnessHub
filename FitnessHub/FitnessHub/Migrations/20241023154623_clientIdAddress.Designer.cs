@@ -4,6 +4,7 @@ using FitnessHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241023154623_clientIdAddress")]
+    partial class clientIdAddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,7 +226,7 @@ namespace FitnessHub.Migrations
                     b.ToTable("MachineCategories");
                 });
 
-            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetails", b =>
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetail", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -235,9 +238,6 @@ namespace FitnessHub.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("MachineId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MachineNumber")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -724,7 +724,7 @@ namespace FitnessHub.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetails", b =>
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetail", b =>
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()

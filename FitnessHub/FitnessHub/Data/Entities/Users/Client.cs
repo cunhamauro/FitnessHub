@@ -6,6 +6,8 @@ namespace FitnessHub.Data.Entities.Users
     {
         public MembershipDetails? MembershipDetails {  get; set; }
 
+        public int? MembershipDetailsId { get; set; }
+
         public List<OnlineClass>? OnlineClass {  get; set; }
 
         public List<GymClass>? GymClass { get; set; }
@@ -14,5 +16,8 @@ namespace FitnessHub.Data.Entities.Users
 
         public Gym? Gym { get; set; }
 
+        public string? IdentificationNumber {  get; set; }
+
+        public string? FullAddress {  get; set; }
     }
 }
