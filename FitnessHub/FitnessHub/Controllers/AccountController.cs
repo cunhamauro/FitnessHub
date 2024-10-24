@@ -11,6 +11,7 @@ using FitnessHub.Helpers;
 using FitnessHub.Models;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Data.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Controllers
 {
@@ -72,17 +73,37 @@ namespace FitnessHub.Controllers
 
         public IActionResult Register()
         {
-            return View();
+            var model = new RegisterNewUserViewModel()
+                {
+                    Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                    })
+            };
+                    
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterNewUserViewModel model)
         {
+            if (model.Gym < 1)
+            {
+                ModelState.AddModelError("Gym", "Please select a gym.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
+                    var gym = await _gymRepository.GetByIdTrackAsync(model.Gym);
+                    if (gym == null)
+                    {
+                        return GymNotFound();
+                    }
+
                     user = new Client
                     {
                         FirstName = model.FirstName,
@@ -90,6 +111,7 @@ namespace FitnessHub.Controllers
                         Email = model.Email,
                         UserName = model.Email,
                         BirthDate = model.BirthDate,
+                        Gym = gym
                     };
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
@@ -132,6 +154,12 @@ namespace FitnessHub.Controllers
                     return View(model);
                 }
             }
+
+            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+            {
+                Value = gym.Id.ToString(),
+                Text = $"{gym.Data}",
+            });
 
             return View(model);
         }

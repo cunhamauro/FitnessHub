@@ -1,0 +1,50 @@
+﻿@model FitnessHub.Data.Entities.GymMachines.MachineDetails
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<div class="container detailsdelete-text">
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Delete @Model.Machine.Name</h2>
+    <hr />
+    <div class="row">
+
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.MachineNumber)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.MachineNumber)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Machine)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Machine.Name)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.StatusDisplay)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.StatusDisplay)
+                        </dd>
+                    </dl>
+                    <form asp-action="Delete">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <button type="submit" class="btn btn-danger me-4 mt-2">
+                            <i class="fa-solid fa-trash-can me-2"></i>Delete
+                        </button>
+                        <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -30,6 +30,23 @@ namespace FitnessHub.Data.Repositories
 
             return machineSelectList;
         }
+
+        public async Task<List<SelectListItem>> GetAllMachinesSelectListWithoutNoMachine()
+        {
+            var machines = await _context.Machines.ToListAsync();
+
+            Machine? noMachine = _context.Machines.Where(m => m.Name == "No Machine").FirstOrDefault();
+
+            var machinesWithoutNoMachine = machines.Remove(noMachine);
+
+            var machineSelectList = machines.Select(m => new SelectListItem
+            {
+                Value = m.Id.ToString(),
+                Text = m.Name
+            }).ToList();
+
+            return machineSelectList;
+        }
     }
 
 }

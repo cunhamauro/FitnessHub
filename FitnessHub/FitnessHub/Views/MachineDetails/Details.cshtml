@@ -1,0 +1,44 @@
+﻿@model FitnessHub.Data.Entities.GymMachines.MachineDetails
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container detailsdelete-text">
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@Model.Machine.Name Details</h2>
+    <hr />
+    <div class="row">
+
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.MachineNumber)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.MachineNumber)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Machine)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Machine.Name)
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.StatusDisplay)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.StatusDisplay)
+                        </dd>
+                    </dl>
+
+                    <div class="form-group">
+                        <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

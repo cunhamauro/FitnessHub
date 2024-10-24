@@ -3,6 +3,7 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -78,6 +79,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
             builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
             builder.Services.AddScoped<IClassCategoryRepository, ClassCategoryRepository>();
+            builder.Services.AddScoped<IMachineDetailsRepository, MachineDetailsRepository>();
             builder.Services.AddScoped<IMembershipDetailsRepository, MembershipDetailsRepository>();
 
             builder.Services.ConfigureApplicationCookie(options =>
@@ -116,6 +118,27 @@ namespace FitnessHub
             app.UseRouting();
 
             app.UseAuthentication();
+
+            // Middleware to force the logout if the user doesn't exist in the database
+            app.Use(async (context, next) =>
+            {
+                if (context.User?.Identity?.IsAuthenticated == true)
+                {
+                    var userManager = context.RequestServices.GetRequiredService<UserManager<User>>();
+                    var user = await userManager.GetUserAsync(context.User);
+
+                    if (user == null)
+                    {
+                        // User doesn't exist, the logout is forced
+                        await context.SignOutAsync(IdentityConstants.ApplicationScheme);
+                        context.Response.Redirect("/Account/Login");
+                        return;
+                    }
+                }
+
+                await next();
+            });
+
             app.UseAuthorization();
 
             app.MapControllerRoute(

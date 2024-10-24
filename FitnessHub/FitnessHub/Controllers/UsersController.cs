@@ -248,6 +248,12 @@ namespace FitnessHub.Controllers
                 {
                     ModelState.AddModelError("Email", "This email is already registered");
 
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                    });
+
                     return View(model);
                 }
             }
@@ -290,6 +296,12 @@ namespace FitnessHub.Controllers
             }
 
             ModelState.AddModelError("", "Failed to create user.");
+
+            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+            {
+                Value = gym.Id.ToString(),
+                Text = $"{gym.Data}",
+            });
 
             return View(model);
         }

@@ -8,5 +8,7 @@ namespace FitnessHub.Data.Repositories
         Task<Machine> GetMachineByIdInclude(int id);
 
         Task<List<SelectListItem>> GetAllMachinesSelectList();
+
+        Task<List<SelectListItem>> GetAllMachinesSelectListWithoutNoMachine();
     }
 }
