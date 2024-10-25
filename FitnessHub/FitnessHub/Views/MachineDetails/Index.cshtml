@@ -8,9 +8,12 @@
     <!-- Wrapper for the button and heading -->
     <div style="display: inline-flex; align-items: center;">
         <!-- Button next to the text with margin -->
-        <a style="margin-left: -100px" asp-action="Create" class="btn btn-primary">
-            <i class="fa-solid fa-gears me-2"></i>Add
-        </a>
+        @if(this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+        {
+            <a style="margin-left: -100px" asp-action="Create" class="btn btn-primary">
+                <i class="fa-solid fa-gears me-2"></i>Add
+            </a>
+        }
         <!-- Heading centered -->
         <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
             Machines
@@ -31,10 +34,16 @@ else
             <thead>
                 <tr>
                     <th>
+                        @Html.DisplayNameFor(model => model.Machine.ImageDisplay)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(model => model.MachineNumber)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.Machine)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Machine.Category)
                     </th>
                     <th>
                         @Html.DisplayNameFor(model => model.StatusDisplay)
@@ -46,10 +55,16 @@ else
             @foreach (var item in Model) {
                     <tr>
                         <td>
+                            <img style="height:10vh; width:auto" class="img-fluid" src="@item.Machine.ImageDisplay" />
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.MachineNumber)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Machine.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Machine.Category.Name)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.StatusDisplay)
@@ -74,7 +89,10 @@ else
                                     </button>
                                 </form>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-1"><i class="fa-solid fa-trash-can me-2"></i>Delete</a>
+                                    @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger me-1"><i class="fa-solid fa-trash-can me-2"></i>Delete</a>
+                                    }
                             </div>
                         </td>
                     </tr>

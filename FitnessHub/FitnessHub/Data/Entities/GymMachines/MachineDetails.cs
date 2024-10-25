@@ -15,7 +15,7 @@ namespace FitnessHub.Data.Entities.GymMachines
         [Display(Name ="Status")]
         public string StatusDisplay => Status ? "Available" : "Unavailable";
 
-        [Display(Name = "No.")]
+        [Display(Name = "ID No.")]
         public int MachineNumber { get; set; }
     }
 }

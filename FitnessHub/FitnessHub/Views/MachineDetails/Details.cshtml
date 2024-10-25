@@ -1,7 +1,10 @@
-﻿@model FitnessHub.Data.Entities.GymMachines.MachineDetails
+﻿@using FitnessHub.Helpers
+@model FitnessHub.Data.Entities.GymMachines.MachineDetails
+@inject IConverterHelper converterHelper 
 
 @{
     ViewData["Title"] = "Details";
+    string embedVideoUrl = converterHelper.YoutubeUrlToEmbed(Model.Machine.TutorialVideoUrl);
 }
 
 <div class="container detailsdelete-text">
@@ -26,6 +29,12 @@
                             @Html.DisplayFor(model => model.Machine.Name)
                         </dd>
                         <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Machine.Category)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Machine.Category.Name)
+                        </dd>
+                        <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.StatusDisplay)
                         </dt>
                         <dd class="col-sm-12">
@@ -39,6 +48,27 @@
                 </div>
             </div>
         </div>
+        <!-- Middle: Image -->
+        <div class="col-md-3 mb-4">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <img src="@Model.Machine.ImageDisplay" alt="Gym machine image" style="max-width: 100%; height: auto; max-height: 20vw" />
+                </dd>
+            </dl>
+        </div>
 
+        <!-- Right: Video -->
+        <div class="col-md-6">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <iframe style="height: 20vw; width:inherit" src="@embedVideoUrl"
+                            title="YouTube Video Player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </dd>
+            </dl>
+        </div>
     </div>
 </div>
