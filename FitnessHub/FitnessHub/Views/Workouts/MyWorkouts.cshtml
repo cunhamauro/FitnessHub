@@ -1,0 +1,48 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymMachines.Workout>
+
+@{
+    ViewData["Title"] = "My Workouts";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">My Workouts</h2>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">You have no Workouts!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Instructor</th>
+                        <th>Exercises</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.Instructor.FullName<br />
+                                @item.Instructor.Email
+                            </td>
+                            <td>
+                                @item.Exercises.Count
+                            </td>
+                            <td>
+                                <div style="display: flex">
+                                    <a asp-action="ClientWorkoutDetails" asp-route-id="@item.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

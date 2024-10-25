@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241015092154_update")]
+    [Migration("20241025135754_update")]
     partial class update
     {
         /// <inheritdoc />
@@ -64,15 +64,19 @@ namespace FitnessHub.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("NumReviews")
@@ -121,9 +125,11 @@ namespace FitnessHub.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -208,9 +214,11 @@ namespace FitnessHub.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -218,7 +226,7 @@ namespace FitnessHub.Migrations
                     b.ToTable("MachineCategories");
                 });
 
-            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetail", b =>
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetails", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -230,6 +238,9 @@ namespace FitnessHub.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("MachineId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MachineNumber")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -285,9 +296,6 @@ namespace FitnessHub.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Tier")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -604,8 +612,14 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
+                    b.Property<string>("FullAddress")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("GymId")
                         .HasColumnType("int");
+
+                    b.Property<string>("IdentificationNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MembershipDetailsId")
                         .HasColumnType("int");
@@ -710,7 +724,7 @@ namespace FitnessHub.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetail", b =>
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.MachineDetails", b =>
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()
