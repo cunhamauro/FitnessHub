@@ -64,13 +64,14 @@ else
                                     <button type="submit" class="btn btn-primary me-2">
                                         @if (item.Status == true)
                                         {
-                                            <i class="fa-solid fa-turn-down me-2"></i>
+                                                <i style="color: darkred" class="fa-solid fa-turn-down me-2"></i>
+                                                <span style="color: darkred">Disable</span>
                                         }
                                         else
                                         {
-                                            <i class="fa-solid fa-turn-up me-2"></i>
+                                                <i style="color: #004900" class="fa-solid fa-turn-up me-2"></i>
+                                                <span style="color: #004900">Enable</span>
                                         }
-                                        Status
                                     </button>
                                 </form>
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>Details</a>

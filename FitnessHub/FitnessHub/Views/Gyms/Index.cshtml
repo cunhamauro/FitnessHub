@@ -68,7 +68,14 @@ else
                                 @Html.DisplayFor(modelItem => item.Address)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Rating)
+                                @if (item.NumReviews > 0)
+                                {
+                                    <span>item.Rating</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.NumReviews)

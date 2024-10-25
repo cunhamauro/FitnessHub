@@ -299,6 +299,15 @@ btn-info .btn-check:checked + .btn-info:focus, .btn-check:active + .btn-info:foc
     font-weight: 600;
     text-wrap: nowrap;
     font-size: 1.2em;
+    color: #ff6201;
+}
+
+.card-container .card .table th, td {
+    background-color: #000000cc;
+}
+
+.card-footer {
+    background-color: #2b2c2dc4;
 }
 
 .table th, .table td {
@@ -404,5 +413,20 @@ hr {
     font-size: 1.50rem;
     color: white;
     text-shadow: #000000 1px 0 10px;
+}
+
+#countryFilter, #cityFilter {
+    background-color: #0000008c;
+    width: 10vw;
+    color: white;
+}
+
+#countryFilter::placeholder, #cityFilter::placeholder {
+    color: white;
+}
+
+.card-header {
+    background-color: #000000cc;
+    color: #ff6201;
 }
 

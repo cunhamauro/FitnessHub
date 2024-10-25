@@ -29,7 +29,7 @@
                     </dl>
                     <form asp-action="Delete">
                         <input type="hidden" asp-for="Id" />
-                        <button type="submit" class="btn btn-danger me-4 mt-2">
+                        <button type="submit" class="btn btn-danger me-2 mt-2">
                             <i class="fa-solid fa-trash-can me-2"></i>Delete
                         </button>
                         <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
@@ -40,10 +40,10 @@
         </div>
 
         <!-- Right: Image -->
-        <div class="col-md-6 offset-md-2 mb-4">
+        <div class="col-md-4 mb-4">
             <dl class="row">
                 <dd class="col-sm-12">
-                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="border:solid; border-color: lightgray; border-width: 0.5px" />
+                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="max-width: 100%; height: auto;" />
                 </dd>
             </dl>
         </div>

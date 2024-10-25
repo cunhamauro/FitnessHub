@@ -294,9 +294,6 @@ namespace FitnessHub.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Tier")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Memberships");

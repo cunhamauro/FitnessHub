@@ -6,10 +6,6 @@ namespace FitnessHub.Data.Entities.Users
     {
         public int Id { get; set; }
 
-        [Range(1, 9, ErrorMessage = "Membership Tiers are from 1 to 9")]
-        [Required]
-        public int Tier {  get; set; } // 0, 1, 2, etc...
-
         [Required]
         public string? Name { get; set; }
 

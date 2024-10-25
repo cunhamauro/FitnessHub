@@ -4,18 +4,6 @@
     ViewData["Title"] = "Our Gyms";
 }
 
-<style>
-    #countryFilter, #cityFilter {
-        background-color: #ffffff3b;
-        width: 10vw;
-        color: white;
-    }
-
-        #countryFilter::placeholder, #cityFilter::placeholder {
-            color: white;
-        }
-</style>
-
 <div class="row">
     <div class="col-3" style="margin-top: -4px">
         <div class="mb-2">
@@ -31,6 +19,7 @@
     <hr style="margin-bottom:1.8rem"/>
 </div>
 
+
 @if (Model == null || Model.Any())
 {
     <div class="row justify-content-center mt-2" id="gymsContainer">
@@ -38,19 +27,16 @@
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@gym.Name</h5>
-                        <hr />
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@gym.Name</div>
+                      <div class="card-body">
                         <div class="card-text">
-                            <p>
-                                <strong>Country:</strong> @gym.Country <br />
-                                <strong>City:</strong> @gym.City <br />
-                                <strong>Address:</strong> @gym.Address <br />
-                            </p>
+                            <p><strong>Country:</strong> @gym.Country</p>
+                            <p><strong>City:</strong> @gym.City</p>
+                            <p style="margin-bottom: 0"><strong>Address:</strong> @gym.Address</p>
                         </div>
                     </div>
                     <div class="card-footer" style="color: #ff6201; font-size: 1.3em">
-                        <small><span>Rating: @{
+                        <small><span style="float:left">Rating: @{
                                     if (gym.NumReviews > 0)
                                     {
                                         @gym.Rating@Html.Raw("/5")
