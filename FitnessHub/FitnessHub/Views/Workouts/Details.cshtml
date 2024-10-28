@@ -33,27 +33,235 @@
 </div>
 
 
-<h4 class="view-text mt-2" style="color: #ff6201; font-size: 1.8em; text-align:center">Exercises</h4>
+<h4 class="view-text mt-2 mb-3" style="color: #ff6201; font-size: 1.8em; text-align:center">Exercises</h4>
 
-<div class="row justify-content-center mt-4">
-    @foreach (var exercise in Model.Exercises)
-    {
-        <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
-            <div class="card">
-                <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
-                <div class="card-body">
-                    <div class="card-text">
-                        <p><strong>Machine:</strong> @exercise.Machine.Name</p>
-                        <p><strong>Sets:</strong> @exercise.Sets</p>
-                        <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
-                        <p><strong>Time:</strong> @exercise.Time</p>
-                        <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+@if (ViewBag.Monday == true)
+{
+    <details>
+        <summary class="details-text">Monday</summary>
+        <div class="row mt-4">
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Monday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
-                    <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
-                </div>
-            </div>
+                }
+            }
         </div>
-    }
-</div>
+    </details>
+}
+
+@if (ViewBag.Tuesday == true)
+{
+    <details>
+        <summary class="details-text">Tuesday</summary>
+        <div class="row mt-4">
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+
+}
+
+@if (ViewBag.Wednesday == true)
+{
+    <details>
+        <summary class="details-text">Wednesday</summary>
+        <div class="row mt-4">
+
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Wednesday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+}
+
+@if (ViewBag.Thursday == true)
+{
+    <details>
+        <summary class="details-text">Thursday</summary>
+        <div class="row mt-4">
+
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+}
+
+@if (ViewBag.Friday == true)
+{
+    <details>
+        <summary class="details-text">Friday</summary>
+        <div class="row mt-4">
+
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Friday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+}
+
+@if (ViewBag.Saturday == true)
+{
+    <details>
+        <summary class="details-text">Saturday</summary>
+        <div class="row mt-4">
+
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+}
+
+@if (ViewBag.Sunday == true)
+{
+    <details>
+        <summary class="details-text">Sunday</summary>
+        <div class="row mt-4">
+
+            @foreach (var exercise in Model.Exercises)
+            {
+                @if (exercise.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2">
+                        <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@exercise.Name</div>
+                            <div class="card-body">
+                                <div class="card-text">
+                                    <p><strong>Machine:</strong> @exercise.Machine.Name</p>
+                                    <p><strong>Sets:</strong> @exercise.Sets</p>
+                                    <p><strong>Repetitions:</strong> @exercise.Repetitions</p>
+                                    <p><strong>Time:</strong> @exercise.Time</p>
+                                    <p style="margin-bottom: 0"><strong>Notes:</strong> @exercise.Notes</p>
+                                </div>
+                            </div>
+                            <div class="card-footer" style="color: #ff6201; font-size: 1.3em;">
+                                <p style="margin-bottom: 0">@exercise.DayOfWeek</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </details>
+}
+
