@@ -54,6 +54,38 @@ namespace FitnessHub.Controllers
                 return WorkoutNotFound();
             }
 
+            foreach (var exercise in workout.Exercises)
+            {
+                if (exercise.DayOfWeek == DayOfWeek.Monday)
+                {
+                    ViewBag.Monday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    ViewBag.Tuesday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Wednesday)
+                {
+                    ViewBag.Wednesday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    ViewBag.Thursday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Friday)
+                {
+                    ViewBag.Friday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    ViewBag.Saturday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    ViewBag.Sunday = true;
+                }
+            }
+
             return View(workout);
         }
 
@@ -270,6 +302,8 @@ namespace FitnessHub.Controllers
                 }
             }
 
+            List<int> newIds = new();
+
             if (ModelState.IsValid)
             {
                 // Update or add exercises
@@ -305,11 +339,21 @@ namespace FitnessHub.Controllers
                             Notes = exerModel.Notes
                         };
 
+                        await _exerciseRepository.CreateAsync(newExercise);
+
+                        newIds.Add(newExercise.Id);
+
                         workout.Exercises.Add(newExercise);
                     }
                 }
 
-                var exerciseIdsToKeep = model.Exercises.Select(e => e.Id).ToList();
+                var exerciseIdsToKeep = model.Exercises.Where(e => e.Id > 0).Select(e => e.Id).ToList();
+
+                foreach (var id in newIds)
+                {
+                    exerciseIdsToKeep.Add(id);
+                }
+                
                 var exercisesToRemove = workout.Exercises.Where(e => !exerciseIdsToKeep.Contains(e.Id)).ToList();
 
                 foreach (var exercise in exercisesToRemove)
@@ -348,6 +392,38 @@ namespace FitnessHub.Controllers
             if (workout == null)
             {
                 return WorkoutNotFound();
+            }
+
+            foreach (var exercise in workout.Exercises)
+            {
+                if (exercise.DayOfWeek == DayOfWeek.Monday)
+                {
+                    ViewBag.Monday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Tuesday)
+                {
+                    ViewBag.Tuesday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Wednesday)
+                {
+                    ViewBag.Wednesday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    ViewBag.Thursday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Friday)
+                {
+                    ViewBag.Friday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Saturday)
+                {
+                    ViewBag.Saturday = true;
+                }
+                else if (exercise.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    ViewBag.Sunday = true;
+                }
             }
 
             return View(workout);

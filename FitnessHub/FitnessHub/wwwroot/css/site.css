@@ -430,3 +430,14 @@ hr {
     color: #ff6201;
 }
 
+.details-text {
+    color: whitesmoke;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1.3em;
+}
+
+details .row {
+    justify-content: center;
+}
+
