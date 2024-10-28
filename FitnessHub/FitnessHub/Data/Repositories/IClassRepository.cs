@@ -16,5 +16,7 @@ namespace FitnessHub.Data.Repositories
         Task<OnlineClass> GetOnlineClassByIdInclude(int id);
 
         Task<VideoClass> GetVideoClassByIdInclude(int id);
+
+        Task<GymClass?> GetGymClassByIdIncludeTracked(int id);
     }
 }

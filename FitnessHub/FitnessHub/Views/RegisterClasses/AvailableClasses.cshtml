@@ -1,0 +1,44 @@
+﻿@model AvailableClassesViewModel
+
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available Classes</h2>
+    <hr style="margin-bottom: 2.2rem" />
+</div>
+
+@if (Model.Classes.Any())
+{
+    <div class="row justify-content-center mt-2">
+        @foreach (var classItem in Model.Classes)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@classItem.Category</h5>
+                        <hr />
+                        <div class="card-text">
+                            <p><strong>Instructor:</strong> @classItem.InstructorName</p>
+                            <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
+                            <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
+                            <p><strong>Location:</strong> @classItem.Location</p>
+                        </div>
+                        <form asp-action="Register" method="post" style="text-align: center">
+                            <input type="hidden" name="classId" value="@classItem.Id" />
+                            <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <div class="text-light">
+            There aren't any Classes currently available. <br />
+            But don't give up! <br />
+            Come back later or contact us for more information!
+        </div>
+    </div>
+}

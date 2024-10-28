@@ -1,0 +1,51 @@
+﻿@model ClassesDetailsViewModel
+
+<div class="container detailsdelete-text">
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Class Details</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Category)
+                        </dt>
+                        <dd class="col-sm-12">@Model.Category</dd>
+
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.InstructorName)
+                        </dt>
+                        <dd class="col-sm-12">@Model.InstructorName</dd>
+
+                        <dt class="col-sm-12">Start Time:</dt>
+                        <dd class="col-sm-12">@Model.DateStart.ToString("g")</dd>
+
+                        <dt class="col-sm-12">End Time:</dt>
+                        <dd class="col-sm-12">@Model.DateEnd.ToString("g")</dd>
+
+                        @if (!string.IsNullOrEmpty(Model.GymName))
+                        {
+                            <dt class="col-sm-12">Location:</dt>
+                            <dd class="col-sm-12">@Model.GymName</dd>
+                        }
+                        else if (!string.IsNullOrEmpty(Model.Platform))
+                        {
+                            <dt class="col-sm-12">Platform:</dt>
+                            <dd class="col-sm-12">@Model.Platform</dd>
+                            <dt class="col-sm-12">Location:</dt>
+                            <dd class="col-sm-12">Online</dd>
+                        }
+                    </dl>
+
+                    <div class="form-group">
+                        <a asp-action="MyClasses" class="btn btn-secondary">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back to My Classes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
