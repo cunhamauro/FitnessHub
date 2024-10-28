@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
-    [Authorize(Roles = "Instructor")]
     public class WorkoutsController : Controller
     {
         private readonly IWorkoutRepository _workoutRepository;
@@ -25,13 +24,48 @@ namespace FitnessHub.Controllers
             _exerciseRepository = exerciseRepository;
         }
 
+        // GET: Client Workouts
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> MyWorkouts()
+        {
+            // Get current client
+            var client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            List<Workout> clientWorkouts = await _workoutRepository.GetClientWorkoutsIncludeAsync(client);
+
+            return View(clientWorkouts);
+        }
+
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> ClientWorkoutDetails(int id)
+        {
+            var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id);
+
+            // Get current client
+            var client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (workout.Client != client)
+            {
+                return WorkoutNotFound();
+            }
+
+            if (workout == null)
+            {
+                return WorkoutNotFound();
+            }
+
+            return View(workout);
+        }
+
         // GET: Workouts
+        [Authorize(Roles = "Instructor")]
         public IActionResult Index()
         {
             return View(_workoutRepository.GetAll().Include(w => w.Client).Include(w => w.Instructor).Include(w => w.Exercises).ThenInclude(m => m.Machine).ThenInclude(m => m.Category));
         }
 
         // GET: Workouts/Create
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Create()
         {
             var machines = await _machineRepository.GetAll().ToListAsync();
@@ -57,6 +91,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Workouts/Create
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(WorkoutViewModel model)
@@ -143,6 +178,7 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -201,6 +237,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Workouts/Edit/5
+        [Authorize(Roles = "Instructor")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(WorkoutViewModel model)
@@ -303,6 +340,7 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Details(int id)
         {
             var workout = await _workoutRepository.GetWorkoutByIdIncludeAsync(id);
@@ -315,6 +353,7 @@ namespace FitnessHub.Controllers
             return View(workout);
         }
 
+        [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -333,6 +372,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Workouts/Delete/5
+        [Authorize(Roles = "Instructor")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

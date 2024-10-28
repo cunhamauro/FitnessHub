@@ -220,31 +220,8 @@ namespace FitnessHub.Controllers
 
         // GET: Memberships/Create
         [Authorize(Roles = "MasterAdmin")]
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
-            List<SelectListItem> tierList = new List<SelectListItem>();
-            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
-
-            for (int i = 1; i <= 9; i++)
-            {
-                bool tierTaken = false;
-                foreach (Membership membership in memberships)
-                {
-                    if (membership.Tier == i)
-                    {
-                        tierTaken = true;
-                        break;
-                    }
-                }
-
-                if (!tierTaken)
-                {
-                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
-                }
-            }
-
-            ViewBag.TierList = tierList;
-
             return View();
         }
 
@@ -258,39 +235,12 @@ namespace FitnessHub.Controllers
         {
             List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
 
-            if (memberships.Any(m => m.Tier == membership.Tier))
-            {
-                ModelState.AddModelError("Tier", "This Tier is already assigned to another Membership");
-            }
-
             if (ModelState.IsValid)
             {
                 await _membershipRepository.CreateAsync(membership);
 
                 return RedirectToAction(nameof(Index));
             }
-
-            List<SelectListItem> tierList = new List<SelectListItem>();
-
-            for (int i = 1; i <= 9; i++)
-            {
-                bool tierTaken = false;
-                foreach (Membership m in memberships)
-                {
-                    if (m.Tier == i)
-                    {
-                        tierTaken = true;
-                        break;
-                    }
-                }
-
-                if (!tierTaken)
-                {
-                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
-                }
-            }
-
-            ViewBag.TierList = tierList;
 
             return View(membership);
         }
@@ -310,32 +260,6 @@ namespace FitnessHub.Controllers
                 return MembershipNotFound();
             }
 
-            List<SelectListItem> tierList = new List<SelectListItem>();
-            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
-
-            for (int i = 1; i <= 9; i++)
-            {
-                bool tierTaken = false;
-                foreach (Membership m in memberships)
-                {
-                    if (m.Tier == i)
-                    {
-                        tierTaken = true;
-                        break;
-                    }
-                }
-
-                if (!tierTaken)
-                {
-                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
-                }
-            }
-
-            tierList.Add(new SelectListItem { Value = membership.Tier.ToString(), Text = membership.Tier.ToString() });
-            tierList = tierList.OrderBy(t => t.Value).ToList();
-
-            ViewBag.TierList = tierList;
-
             return View(membership);
         }
 
@@ -350,13 +274,6 @@ namespace FitnessHub.Controllers
             if (membership == null)
             {
                 return MembershipNotFound();
-            }
-
-            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
-
-            if (memberships.Any(m => m.Tier == membership.Tier && m.Id != membership.Id))
-            {
-                ModelState.AddModelError("Tier", "This Tier is already assigned to another Membership");
             }
 
             if (ModelState.IsValid)
@@ -378,30 +295,6 @@ namespace FitnessHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            List<SelectListItem> tierList = new List<SelectListItem>();
-
-            for (int i = 1; i <= 9; i++)
-            {
-                bool tierTaken = false;
-                foreach (Membership m in memberships)
-                {
-                    if (m.Tier == i)
-                    {
-                        tierTaken = true;
-                        break;
-                    }
-                }
-
-                if (!tierTaken)
-                {
-                    tierList.Add(new SelectListItem { Value = i.ToString(), Text = i.ToString() });
-                }
-            }
-
-            tierList.Add(new SelectListItem { Value = membership.Tier.ToString(), Text = membership.Tier.ToString() });
-            tierList = tierList.OrderBy(t => t.Value).ToList();
-
-            ViewBag.TierList = tierList;
 
             return View(membership);
         }
