@@ -2,6 +2,7 @@
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +28,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: MachineDetails
+        [Authorize(Roles = "Employee, Admin")]
         public async Task<IActionResult> Index()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -45,6 +47,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: MachineDetails/Details/5
+        [Authorize(Roles = "Employee, Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -62,6 +65,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: MachineDetails/Create
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create()
         {
             var model = new MachineDetailsViewModel
@@ -123,6 +127,7 @@ namespace FitnessHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Employee, Admin")]
         public async Task<IActionResult> ChangeStatus(int id)
         {
             try
@@ -153,6 +158,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: MachineDetails/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

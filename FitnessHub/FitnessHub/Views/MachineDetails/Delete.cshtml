@@ -26,6 +26,12 @@
                             @Html.DisplayFor(model => model.Machine.Name)
                         </dd>
                         <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Machine.Category)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.Machine.Category.Name)
+                        </dd>
+                        <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.StatusDisplay)
                         </dt>
                         <dd class="col-sm-12">
@@ -45,6 +51,13 @@
                 </div>
             </div>
         </div>
-
+        <!-- Right: Image -->
+        <div class="col-md-6 offset-md-2 mb-4">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <img src="@Model.Machine.ImageDisplay" alt="Gym machine image" style="max-width: 100%; height: auto; max-height: 20vw" />
+                </dd>
+            </dl>
+        </div>
     </div>
 </div>

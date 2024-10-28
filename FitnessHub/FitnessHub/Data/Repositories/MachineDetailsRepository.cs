@@ -17,7 +17,8 @@ namespace FitnessHub.Data.Repositories
             return _context.MachineDetails
                 .Where(mc => mc.Gym.Id == gymId)
                 .Include(mc => mc.Gym)
-                .Include(mc => mc.Machine);
+                .Include(mc => mc.Machine)
+                .ThenInclude(mc => mc.Category);
         }
 
         public Task<MachineDetails?> GetByIdWithMachines(int id)
@@ -25,6 +26,7 @@ namespace FitnessHub.Data.Repositories
             return _context.MachineDetails
                 .Where(mc => mc.Id == id)
                 .Include(mc => mc.Machine)
+                .ThenInclude(mc => mc.Category)
                 .FirstOrDefaultAsync();
         }
     }
