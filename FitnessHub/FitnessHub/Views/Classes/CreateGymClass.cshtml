@@ -20,13 +20,17 @@
 
             <div class="form-group">
                 <label asp-for="DateStart" class="control-label"></label>
-                <input asp-for="DateStart" class="form-control" />
+                <input id="dateStart" asp-for="DateStart" type="datetime-local" class="form-control"
+                       value="@Model.DateStart.ToString("yyyy-MM-ddTHH:mm")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateStart" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="DateEnd" class="control-label"></label>
-                <input asp-for="DateEnd" class="form-control" />
+                <input id="dateEnd" asp-for="DateEnd" type="datetime-local" class="form-control"
+                       value="@Model.DateEnd.ToString("yyyy-MM-ddTHH:mm")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateEnd" class="text-danger"></span>
             </div>
 
@@ -40,10 +44,16 @@
 
             <div class="form-group">
                 <label asp-for="InstructorId" class="control-label">Instructor</label>
-                <select asp-for="InstructorId" class="form-control" asp-items="@Model.InstructorsList">
+                <select asp-for="InstructorId" id="instructorSelect" class="form-control" asp-items="@Model.InstructorsList">
                     <option value="">Select an Instructor</option>
                 </select>
                 <span asp-validation-for="InstructorId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Capacity" class="control-label">Capacity</label>
+                <input asp-for="Capacity" class="form-control" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -63,7 +73,6 @@
     @{
         // Scripts for getting available aircrafts for given inputs
         <script type="text/javascript">
-
             $(document).ready(function () {
                 function UpdateAvailableInstructors() {
                     var dateStart = $("#dateStart").val();
@@ -81,10 +90,12 @@
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response
-                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>');
-                            $.each(instructors, function (index, instructors) {
+                            $("#instructorSelect").empty(); // Clear existing options
+                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>'); // Add placeholder
+
+                            $.each(instructors, function (index, instructor) {
                                 console.log('Instructor:', instructor); // Debug: log each instructor object
-                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + instructor.lastName '</option>');
+                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + ' ' + instructor.lastName + '</option>');
                             });
                         },
                         error: function (xhr, status, error) {
@@ -94,11 +105,11 @@
                     });
                 }
 
-                // Bind the change event to the OriginId dropdown
-                $("#dateStart").change(UpdateAvailableInstructors);
+                // Call UpdateAvailableInstructors immediately when the page loads
+                UpdateAvailableInstructors();
 
-                // // Bind the change event to the OriginId dropdown
-                $("#dateEnd").change(UpdateAvailableInstructors);
+                // Bind the change event to date and gym dropdowns
+                $("#dateStart, #dateEnd, #gymSelect").change(UpdateAvailableInstructors);
             });
         </script>
     }

@@ -48,8 +48,9 @@ else
                         <th>
                             @Html.DisplayNameFor(model => model.NumReviews)
                         </th>
+                        <th>Capacity</th>
                         <th>
-                            Client Count
+                            Clients
                         </th>
                         <th></th>
                     </tr>
@@ -71,10 +72,22 @@ else
                                 @Html.DisplayFor(modelItem => item.DateEnd)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Rating)
+                            @if (item.NumReviews > 0)
+                            {
+                                @item.Rating
+
+                                @Html.Raw("/5")
+                            }
+                            else
+                            {
+                                @Html.Raw("N/A")
+                            }
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.NumReviews)
+                                @item.NumReviews
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Capacity)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Clients.Count)

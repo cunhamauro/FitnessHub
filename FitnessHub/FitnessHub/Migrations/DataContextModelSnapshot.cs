@@ -541,6 +541,9 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
 
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateEnd")
                         .HasColumnType("datetime2");
 

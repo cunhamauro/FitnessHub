@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241025135754_update")]
-    partial class update
+    [Migration("20241029154401_classCapacity")]
+    partial class classCapacity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -543,6 +543,9 @@ namespace FitnessHub.Migrations
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.GymClass", b =>
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateEnd")
                         .HasColumnType("datetime2");
