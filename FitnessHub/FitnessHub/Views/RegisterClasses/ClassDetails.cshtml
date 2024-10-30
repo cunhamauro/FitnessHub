@@ -37,12 +37,38 @@
                             <dt class="col-sm-12">Location:</dt>
                             <dd class="col-sm-12">Online</dd>
                         }
-                    </dl>
+                          <dd class="col-sm-12">
+                            @if (Model.NumReviews > 0)
+                            {
+                                @Model.Rating
 
+                                @Html.Raw("/5")
+                            }
+                            else
+                            {
+                                @Html.Raw("N/A")
+                            }
+                        </dd>
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.NumReviews)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Html.DisplayFor(model => model.NumReviews)
+                        </dd>
+                    </dl>
                     <div class="form-group">
-                        <a asp-action="MyClasses" class="btn btn-secondary">
-                            <i class="fa-solid fa-chevron-left me-2"></i>Back to My Classes
-                        </a>
+                        @if (Context.Request.Headers["Referer"].ToString().Contains("MyClasses"))
+                        {
+                            <a asp-action="MyClasses" class="btn btn-secondary">
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back to My Classes
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="AvailableClasses" class="btn btn-secondary">
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back to Available Classes
+                            </a>
+                        }
                     </div>
                 </div>
             </div>
