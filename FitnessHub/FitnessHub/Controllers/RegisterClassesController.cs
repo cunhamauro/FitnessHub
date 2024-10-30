@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
@@ -28,10 +29,11 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
+            gymClasses = gymClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             var viewModel = new AvailableClassesViewModel
@@ -83,7 +85,7 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             if (isOnline)
@@ -104,9 +106,15 @@ namespace FitnessHub.Controllers
             else
             {
                 var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
+
+                if (gymClass.Clients.Count == gymClass.Capacity)
+                {
+                    return ClassNotFound();
+                }
+
                 if (gymClass == null)
                 {
-                    return NotFound();
+                    return ClassNotFound();
                 }
 
                 if (!gymClass.Clients.Any(c => c.Id == client.Id))
@@ -124,7 +132,7 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
@@ -178,7 +186,7 @@ namespace FitnessHub.Controllers
             var client = await _userHelper.GetUserAsync(User) as Client;
             if (client == null)
             {
-                return NotFound();
+                return UserNotFound();
             }
 
             var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(id);
@@ -230,7 +238,7 @@ namespace FitnessHub.Controllers
                 };
                 return View(viewModel);
             }
-            return NotFound();
+            return ClassNotFound();
         }
 
 
@@ -298,6 +306,7 @@ namespace FitnessHub.Controllers
             }
 
             var allClasses = await _classRepository.GetAllGymClassesInclude();
+            allClasses = allClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
 
             foreach (var gymClass in allClasses)
             {
@@ -332,6 +341,16 @@ namespace FitnessHub.Controllers
                 DateEnd = c.DateEnd,
                 Location = c.Gym.Name,
             }).ToList();
+        }
+
+        public IActionResult ClassNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
+        }
+
+        public IActionResult UserNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
         }
     }
 }

@@ -24,17 +24,24 @@
             </div>
 
             <div class="form-group">
+                <label class="control-label">Class Capacity</label>
+                <input  readonly value="@Model.Capacity" class="form-control" />
+            </div>
+
+            <div class="form-group">
                 <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
                     <option value="0">Select a Category</option>
                 </select>
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="DateStart" class="control-label"></label>
                 <input asp-for="DateStart" class="form-control" />
                 <span asp-validation-for="DateStart" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="DateEnd" class="control-label"></label>
                 <input asp-for="DateEnd" class="form-control" />
@@ -42,7 +49,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="InstructorId" class="control-label">Instructor</label>
-                <select asp-for="InstructorId" class="form-control" asp-items="@Model.InstructorsList">
+                <select asp-for="InstructorId" id="instructorSelect" class="form-control" asp-items="@Model.InstructorsList">
                     <option value="">Select an Instructor</option>
                 </select>
                 <span asp-validation-for="InstructorId" class="text-danger"></span>
@@ -63,7 +70,6 @@
     @{
         // Scripts for getting available instructors in given time
         <script type="text/javascript">
-
             $(document).ready(function () {
                 function UpdateAvailableInstructors() {
                     var dateStart = $("#dateStart").val();
@@ -83,10 +89,12 @@
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response
-                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>');
-                            $.each(instructors, function (index, instructors) {
+                            $("#instructorSelect").empty(); // Clear existing options
+                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>'); // Add placeholder
+
+                            $.each(instructors, function (index, instructor) {
                                 console.log('Instructor:', instructor); // Debug: log each instructor object
-                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + instructor.lastName '</option>');
+                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + ' ' + instructor.lastName + '</option>');
                             });
                         },
                         error: function (xhr, status, error) {
@@ -96,11 +104,11 @@
                     });
                 }
 
-                // Bind the change event to the OriginId dropdown
-                $("#dateStart").change(UpdateAvailableInstructors);
+                // Call UpdateAvailableInstructors immediately when the page loads
+                UpdateAvailableInstructors();
 
-                // // Bind the change event to the OriginId dropdown
-                $("#dateEnd").change(UpdateAvailableInstructors);
+                // Bind the change event to date inputs
+                $("#dateStart, #dateEnd").change(UpdateAvailableInstructors);
             });
         </script>
     }

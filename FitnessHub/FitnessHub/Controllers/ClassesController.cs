@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Repositories;
+using FitnessHub.Helpers;
+using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using FitnessHub.Data;
-using FitnessHub.Data.Entities.GymClasses;
-using FitnessHub.Data.Repositories;
-using FitnessHub.Models;
-using FitnessHub.Helpers;
-using FitnessHub.Data.Entities.Users;
-using FitnessHub.Data.Entities;
-using Microsoft.AspNetCore.Authorization;
 
 namespace FitnessHub.Controllers
 {
@@ -330,6 +325,8 @@ namespace FitnessHub.Controllers
                 InstructorsList = selectInstructorList,
                 GymsList = selectGymList,
                 CategoriesList = selectCategoryList,
+                DateStart = DateTime.UtcNow,
+                DateEnd = DateTime.UtcNow.AddMinutes(60),
             };
 
             return View(model);
@@ -342,14 +339,69 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateGymClass(GymClassViewModel model)
         {
+            List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
+            List<SelectListItem> selectGymList = new List<SelectListItem>();
+            List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
+
+            List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+            List<SelectListItem> selectInstructorList = new List<SelectListItem>();
+
+            foreach (Instructor inst in instructorsList)
+            {
+                selectInstructorList.Add(new SelectListItem
+                {
+                    Text = $"{inst.Id} - {inst.FirstName} {inst.LastName}",
+                    Value = inst.Id.ToString(),
+                });
+            }
+
+            foreach (Gym g in gymsList)
+            {
+                selectGymList.Add(new SelectListItem
+                {
+                    Text = $"{g.Id} - {g.Name} - {g.City}, {g.Country}",
+                    Value = g.Id.ToString(),
+                });
+            }
+
+            model.InstructorsList = selectInstructorList;
+            model.GymsList = selectGymList;
+            model.CategoriesList = selectCategoryList;
+
+            if (model.DateEnd < model.DateStart)
+            {
+                ModelState.AddModelError("DateEnd", "The ending date must be after the starting date");
+                return View(model);
+            }
+
+            if (model.DateStart < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("DateStart", "Please select a valid starting date");
+                return View(model);
+            }
+
+            if (model.DateEnd < DateTime.UtcNow)
+            {
+                ModelState.AddModelError("DateEnd", "Please select a valid ending date");
+                return View(model);
+            }
+
+            if (model.Capacity < 1)
+            {
+                ModelState.AddModelError("Capacity", "Please select a valid class Capacity");
+                return View(model);
+            }
+
             if (string.IsNullOrEmpty(model.InstructorId))
             {
                 ModelState.AddModelError("InstructorId", "Please select a valid Instructor");
+                return View(model);
             }
 
             if (model.CategoryId < 1)
             {
                 ModelState.AddModelError("CategoryId", "Please select a valid Category");
+                return View(model);
             }
 
             ClassCategory category = await _classCategoryRepository.GetByIdTrackAsync(model.CategoryId);
@@ -357,6 +409,7 @@ namespace FitnessHub.Controllers
             if (category == null)
             {
                 ModelState.AddModelError("CategoryId", "Category not found");
+                return View(model);
             }
 
             Instructor? instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
@@ -364,6 +417,13 @@ namespace FitnessHub.Controllers
             if (instructor == null)
             {
                 ModelState.AddModelError("InstructorId", "Instructor not found");
+                return View(model);
+            }
+
+            if (model.GymId < 1)
+            {
+                ModelState.AddModelError("GymId", "Please select a valid Gym");
+                return View(model);
             }
 
             Gym? gym = await _gymRepository.GetByIdTrackAsync(model.GymId);
@@ -371,6 +431,7 @@ namespace FitnessHub.Controllers
             if (gym == null)
             {
                 ModelState.AddModelError("GymId", "Gym not found");
+                return View(model);
             }
 
             if (ModelState.IsValid)
@@ -382,6 +443,7 @@ namespace FitnessHub.Controllers
                     DateStart = model.DateStart,
                     DateEnd = model.DateEnd,
                     Category = category,
+                    Capacity = model.Capacity,
                 };
 
                 await _classRepository.CreateAsync(gymClass);
@@ -405,7 +467,7 @@ namespace FitnessHub.Controllers
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
-            //instructorsList = instructorsList.Where(i => i.Gym.Id == gymClass.Gym.Id).ToList();
+            instructorsList = instructorsList.Where(i => i.GymId == gymClass.Gym.Id).ToList();
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
             List<SelectListItem> selectCategoriesList = await _classCategoryRepository.GetCategoriesSelectListAsync();
 
@@ -744,7 +806,7 @@ namespace FitnessHub.Controllers
                 }
             }
 
-            instructors = instructors.Where(i => i.Gym.Id == gymSelect).ToList();
+            instructors = instructors.Where(i => i.GymId == gymSelect).ToList();
 
             // Return the filtered list of available instructors
             return Json(instructors);
@@ -818,7 +880,7 @@ namespace FitnessHub.Controllers
                 }
             }
 
-            instructors = instructors.Where(i => i.Gym.Id == gymId).ToList();
+            instructors = instructors.Where(i => i.GymId == gymId).ToList();
 
             // Return the filtered list of available instructors
             return Json(instructors);

@@ -62,7 +62,6 @@
     @{ 
         // Scripts for getting available instructors for given inputs
         <script type="text/javascript">
-
             $(document).ready(function () {
                 function UpdateAvailableInstructors() {
                     var dateStart = $("#dateStart").val();
@@ -78,10 +77,12 @@
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response
-                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>');
-                            $.each(instructors, function (index, instructors) {
+                            $("#instructorSelect").empty(); // Clear existing options
+                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>'); // Add default option
+
+                            $.each(instructors, function (index, instructor) {
                                 console.log('Instructor:', instructor); // Debug: log each instructor object
-                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + instructor.lastName '</option>');
+                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + ' ' + instructor.lastName + '</option>');
                             });
                         },
                         error: function (xhr, status, error) {
@@ -91,11 +92,11 @@
                     });
                 }
 
-                // Bind the change event to the OriginId dropdown
-                $("#dateStart").change(UpdateAvailableInstructors);
+                // Call UpdateAvailableInstructors on page load
+                UpdateAvailableInstructors();
 
-                // // Bind the change event to the OriginId dropdown
-                $("#dateEnd").change(UpdateAvailableInstructors);
+                // Bind the change events for start and end dates to dynamically update instructors
+                $("#dateStart, #dateEnd").change(UpdateAvailableInstructors);
             });
         </script>
     }
