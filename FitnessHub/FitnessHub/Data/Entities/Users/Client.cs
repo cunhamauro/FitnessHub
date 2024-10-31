@@ -8,7 +8,7 @@ namespace FitnessHub.Data.Entities.Users
 
         public int? MembershipDetailsId { get; set; }
 
-        public List<OnlineClass>? OnlineClass {  get; set; }
+        public List<OnlineClass>? OnlineClass { get; set; }
 
         public List<GymClass>? GymClass { get; set; }
 
@@ -19,5 +19,7 @@ namespace FitnessHub.Data.Entities.Users
         public string? IdentificationNumber {  get; set; }
 
         public string? FullAddress {  get; set; }
+
+        //public List<ClassDetails>? ClassDetails { get; set; } = new();
     }
 }

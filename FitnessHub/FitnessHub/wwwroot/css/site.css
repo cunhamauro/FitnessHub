@@ -8,6 +8,19 @@ html {
     }
 }
 
+.videoButton {
+    color: red;
+}
+
+.videoButton:hover {
+    color: #dd0202;
+}
+
+.na-cell {
+    color: #999 !important;
+    font-size: small !important;
+}
+
 input.e-input, .e-input-group input.e-input, .e-input-group input, .e-input-group.e-control-wrapper input.e-input, .e-input-group.e-control-wrapper input, .e-float-input input, .e-float-input.e-input-group input, .e-float-input.e-control-wrapper input, .e-float-input.e-control-wrapper.e-input-group input, .e-input-group, .e-input-group.e-control-wrapper, .e-float-input, .e-float-input.e-control-wrapper, .e-input.e-corner, .e-input-group.e-corner.e-rtl input.e-input:only-child, .e-input-group.e-control-wrapper.e-corner.e-rtl input.e-input:only-child, .e-input-group.e-input-focus.e-corner, .e-input-group.e-control-wrapper.e-input-focus.e-corner, textarea.e-input, .e-input-group textarea.e-input, .e-input-group textarea, .e-input-group.e-control-wrapper textarea.e-input, .e-input-group.e-control-wrapper textarea, .e-float-input textarea, .e-float-input.e-input-group textarea, .e-float-input.e-control-wrapper textarea, .e-float-input.e-control-wrapper.e-input-group textarea {
     border-radius: 4px !important;
 }

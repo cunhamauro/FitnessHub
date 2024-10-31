@@ -9,13 +9,13 @@ using static FitnessHub.Models.RegisterClientInClassViewModel;
 
 namespace FitnessHub.Controllers
 {
-    public class RegisterClassesController : Controller
+    public class ClientClassesController : Controller
     {
 
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
 
-        public RegisterClassesController(IClassRepository classRepository,
+        public ClientClassesController(IClassRepository classRepository,
                                   IUserHelper userHelper)
         {
             _classRepository = classRepository;

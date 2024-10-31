@@ -49,7 +49,5 @@ namespace FitnessHub.Data.Repositories
                 .Include(g => g.Clients) // Ensure Clients are included
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
-
-
     }
 }

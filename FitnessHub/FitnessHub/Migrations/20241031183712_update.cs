@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class classCapacity : Migration
+    public partial class update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,6 +65,27 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClassCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClassHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    GymId = table.Column<int>(type: "int", nullable: true),
+                    InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateStart = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DateEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Capacity = table.Column<int>(type: "int", nullable: true),
+                    Platform = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VideoClassUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Canceled = table.Column<bool>(type: "bit", nullable: false),
+                    ClassType = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -745,6 +765,9 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ClassHistory");
 
             migrationBuilder.DropTable(
                 name: "ClientGymClass");
