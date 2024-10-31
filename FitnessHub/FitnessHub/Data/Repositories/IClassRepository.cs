@@ -7,7 +7,7 @@ namespace FitnessHub.Data.Repositories
     {
         Task<List<OnlineClass>> GetAllOnlineClassesInclude();
 
-        Task<List<VideoClass>> GetAllVideoClasses();
+        Task<List<VideoClass>> GetAllVideoClassesInclude();
 
         Task<List<GymClass>> GetAllGymClassesInclude();
 

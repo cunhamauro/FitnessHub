@@ -4,15 +4,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Models
 {
-    public class OnlineClassViewModel : OnlineClass
+    public class VideoClassViewModel : VideoClass
     {
-        public List<SelectListItem>? InstructorsList { get; set; }
-
         public List<SelectListItem>? CategoriesList { get; set; }
 
-        [Required]
-        public string? InstructorId {  get; set; }
-
+        [Required(ErrorMessage = "Please select a valid Category")]
         public int CategoryId { get; set; }
     }
 }

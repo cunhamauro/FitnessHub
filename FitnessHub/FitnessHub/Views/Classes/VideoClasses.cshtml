@@ -18,6 +18,18 @@
     </div>
 </div>
 
+<style>
+
+    .videoButton {
+        color: red;
+    }
+
+    .videoButton:hover {
+        color: #dd0202;
+    }
+
+</style>
+
 @if (!Model.Any())
 {
     <hr />
@@ -31,13 +43,10 @@ else
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Category)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.VideoClassUrl)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.NumReviews)
                         </th>
                         <th></th>
                     </tr>
@@ -47,13 +56,10 @@ else
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.VideoClassUrl)
+                                @item.Category.Name
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Rating)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.NumReviews)
+                                <a class="videoButton" target="_blank" href="@item.VideoClassUrl"><i style="font-size: 1.6em" class="fa-brands fa-youtube"></i></a>
                             </td>
                             <td>
                                 <div style="display: flex">
