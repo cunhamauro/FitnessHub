@@ -1,11 +1,10 @@
 ﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.Communication;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Entities.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using FitnessHub.Models;
 
 namespace FitnessHub.Data
 {
@@ -29,9 +28,9 @@ namespace FitnessHub.Data
 
         // Classes
 
-        public DbSet<Class> Class {  get; set; }
+        public DbSet<Class> Class { get; set; }
 
-        public DbSet<GymClass> GymClasses {  get; set; }
+        public DbSet<GymClass> GymClasses { get; set; }
 
         public DbSet<OnlineClass> OnlineClasses { get; set; }
 
@@ -50,6 +49,19 @@ namespace FitnessHub.Data
         public DbSet<MachineDetails> MachineDetails { get; set; }
 
         public DbSet<Workout> Workouts { get; set; }
+
+        // Communication
+
+        public DbSet<RequestInstructor> RequestsIntructor { get; set; }
+
+        public DbSet<ClientInstructorAppointment> ClientInstructorAppointments { get; set; }
+
+        // History
+
+        public DbSet<RequestInstructorHistory> RequestsIntructorHistory { get; set; }
+
+        public DbSet<ClientInstructorAppointmentHistory> ClientInstructorAppointmentsHistory { get; set; }
+
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -74,7 +86,16 @@ namespace FitnessHub.Data
                        .Property(m => m.Price)
                        .HasColumnType("decimal(18,2)");
 
+            // Disable database ID generation
+            builder.Entity<RequestInstructorHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
+            builder.Entity<ClientInstructorAppointmentHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
             base.OnModelCreating(builder);
-        }        
+        }
     }
 }

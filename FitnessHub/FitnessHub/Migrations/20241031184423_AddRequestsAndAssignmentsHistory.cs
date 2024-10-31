@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class Update2 : Migration
+    public partial class AddRequestsAndAssignmentsHistory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,6 +69,22 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClientInstructorAppointmentsHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmployeeId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: false),
+                    AssignDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientInstructorAppointmentsHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Gyms",
                 columns: table => new
                 {
@@ -106,7 +122,6 @@ namespace FitnessHub.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Tier = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -114,6 +129,21 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Memberships", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestsIntructorHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestsIntructorHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -513,6 +543,28 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClientInstructorAppointments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    EmployeeId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssignDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientInstructorAppointments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ClientInstructorAppointments_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClientOnlineClass",
                 columns: table => new
                 {
@@ -532,6 +584,34 @@ namespace FitnessHub.Migrations
                         name: "FK_ClientOnlineClass_OnlineClasses_OnlineClassId",
                         column: x => x.OnlineClassId,
                         principalTable: "OnlineClasses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RequestsIntructor",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    GymId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RequestDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RequestsIntructor", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RequestsIntructor_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RequestsIntructor_Gyms_GymId",
+                        column: x => x.GymId,
+                        principalTable: "Gyms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -645,6 +725,11 @@ namespace FitnessHub.Migrations
                 column: "GymClassId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ClientInstructorAppointments_ClientId",
+                table: "ClientInstructorAppointments",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClientOnlineClass_OnlineClassId",
                 table: "ClientOnlineClass",
                 column: "OnlineClassId");
@@ -715,6 +800,16 @@ namespace FitnessHub.Migrations
                 column: "InstructorId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RequestsIntructor_ClientId",
+                table: "RequestsIntructor",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RequestsIntructor_GymId",
+                table: "RequestsIntructor",
+                column: "GymId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Workouts_ClientId",
                 table: "Workouts",
                 column: "ClientId");
@@ -750,6 +845,12 @@ namespace FitnessHub.Migrations
                 name: "ClientGymClass");
 
             migrationBuilder.DropTable(
+                name: "ClientInstructorAppointments");
+
+            migrationBuilder.DropTable(
+                name: "ClientInstructorAppointmentsHistory");
+
+            migrationBuilder.DropTable(
                 name: "ClientOnlineClass");
 
             migrationBuilder.DropTable(
@@ -760,6 +861,12 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "MachineDetails");
+
+            migrationBuilder.DropTable(
+                name: "RequestsIntructor");
+
+            migrationBuilder.DropTable(
+                name: "RequestsIntructorHistory");
 
             migrationBuilder.DropTable(
                 name: "VideoClasses");

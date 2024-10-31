@@ -1,17 +1,15 @@
-﻿using System.Text;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
-using FitnessHub.Data.Classes;
+﻿using FitnessHub.Data.Classes;
 using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
-using FitnessHub.Data.Repositories;
-using FitnessHub.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace FitnessHub.Controllers
 {
@@ -74,14 +72,14 @@ namespace FitnessHub.Controllers
         public IActionResult Register()
         {
             var model = new RegisterNewUserViewModel()
+            {
+                Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                 {
-                    Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-                    {
-                        Value = gym.Id.ToString(),
-                        Text = $"{gym.Data}",
-                    })
+                    Value = gym.Id.ToString(),
+                    Text = $"{gym.Data}",
+                })
             };
-                    
+
             return View(model);
         }
 
@@ -120,7 +118,7 @@ namespace FitnessHub.Controllers
                     {
                         foreach (var error in result.Errors)
                         {
-                            ModelState.AddModelError(string.Empty, error.Description); 
+                            ModelState.AddModelError(string.Empty, error.Description);
                         }
                         return View(model);
                     }
@@ -392,15 +390,15 @@ namespace FitnessHub.Controllers
                     return RedirectToAction(nameof(Login));
                 }
 
-                ModelState.AddModelError("","Error while resetting the password");
+                ModelState.AddModelError("", "Error while resetting the password");
 
                 return View(model);
             }
 
-            ModelState.AddModelError("","User not found");
+            ModelState.AddModelError("", "User not found");
 
             return View(model);
-        }   
+        }
 
         public async Task<IActionResult> ConfirmEmailChangePassword(string userId, string token)
         {
@@ -473,7 +471,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> Clients()
         {
             var employee = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-            if(employee == null)
+            if (employee == null)
             {
                 return UserNotFound();
             }
@@ -490,7 +488,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Account/RegisterNewClient
-        [Authorize(Roles ="Employee")]
+        [Authorize(Roles = "Employee")]
         public IActionResult RegisterNewClient()
         {
             return View();

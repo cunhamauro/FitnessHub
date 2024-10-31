@@ -47,6 +47,8 @@ namespace FitnessHub.Helpers
 
         Task<IList<User>> GetClientsByGymAsync(int gymId);
 
+        Task<IList<User>> GetInstructorsByGymAsync(int gymId);
+
         Task<IList<string>> GetUserRolesAsync(User user);
 
         IQueryable<IdentityRole> GetAllRoles();

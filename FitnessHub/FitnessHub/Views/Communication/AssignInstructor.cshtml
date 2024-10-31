@@ -1,0 +1,44 @@
+﻿@model FitnessHub.Models.AssignInstructorViewModel
+
+@{
+    ViewData["Title"] = "AssignInstructor";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Assign Instructor</h2>
+<hr />
+
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
+        <form asp-action="AssignInstructor">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ClientId" />
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="RequestId" />
+            <input type="hidden" asp-for="GymId" />
+
+            <div class="form-group">
+                <label asp-for="InstructorId" class="control-label">Instructor</label>
+                <select asp-for="InstructorId" asp-items="Model.Instructors" class="form-control">
+                    <option value="" disabled selected>Select an instructor</option>
+                </select>
+                <span asp-validation-for="InstructorId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Schedule
+                </button>
+                <a asp-action="ClientRequests" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

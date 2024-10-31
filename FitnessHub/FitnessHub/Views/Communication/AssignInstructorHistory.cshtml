@@ -1,0 +1,75 @@
+﻿@model IEnumerable<FitnessHub.Models.ClientInstructorAppointmentHistoryViewModel>
+
+@{
+    ViewData["Title"] = "AssignInstructorHistory";
+}
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            Intructor Assignments History
+        </h2>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Assignments on the history!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ClientName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.InstructorName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EmployeeName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AssignDate)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ClientName)<br />
+                                (@Html.DisplayFor(modelItem => item.ClientEmail))
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.InstructorName)<br />
+                                (@Html.DisplayFor(modelItem => item.InstructorEmail))
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EmployeeName)<br />
+                                (@Html.DisplayFor(modelItem => item.EmployeeEmail))
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AssignDate)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
