@@ -18,7 +18,6 @@ namespace FitnessHub.Models
 
         public List<SelectListItem>? CategoriesList { get; set; }
 
-        [Required(ErrorMessage = "Please select a valid Category")]
         public int CategoryId { get; set; }
     }
 }

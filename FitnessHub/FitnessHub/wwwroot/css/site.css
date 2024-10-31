@@ -22,6 +22,11 @@ input.e-input, .e-input-group input, .e-input-group.e-control-wrapper input, .e-
     color: black !important;
 }
 
+.fa-star {
+    color: gold !important;
+    text-shadow: 0px 0px 6px black;
+}
+
 .view-text {
     text-shadow: #000000 1px 0 10px;
 }
@@ -357,6 +362,10 @@ hr {
     color: white !important;
     text-shadow: #000000 1px 0 10px;
     font-weight: bold;
+}
+
+.detailsdelete-text dd:not(:last-child) {
+    margin-bottom: 20px !important;
 }
 
 #link-recoverpassword {

@@ -31,6 +31,9 @@ else
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Category)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.Gym)
                         </th>
                         <th>
@@ -41,12 +44,6 @@ else
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.DateEnd)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.NumReviews)
                         </th>
                         <th>Capacity</th>
                         <th>
@@ -60,31 +57,20 @@ else
                     {
                         <tr>
                             <td>
+                                @item.Category.Name
+                            </td>
+                            <td>
                                 @item.Gym.Id - @item.Gym.Name - @item.Gym.Country, @item.Gym.City
                             </td>
                             <td>
-                                @item.Instructor.FirstName - @item.Instructor.LastName
+                                @item.Instructor.FullName
+                                <br />(@item.Instructor.Email)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DateStart)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DateEnd)
-                            </td>
-                            <td>
-                            @if (item.NumReviews > 0)
-                            {
-                                @item.Rating
-
-                                @Html.Raw("/5")
-                            }
-                            else
-                            {
-                                @Html.Raw("N/A")
-                            }
-                            </td>
-                            <td>
-                                @item.NumReviews
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Capacity)
