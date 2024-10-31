@@ -219,7 +219,10 @@ namespace FitnessHub.Controllers
                     DateEnd = gymClass.DateEnd,
                     Location = gymClass.Gym?.Name ?? "N/A",
                     Category = gymClass.Category.Name,
-                    GymName = gymClass.Gym?.Name
+                    GymName = gymClass.Gym?.Name,
+                    Rating = gymClass.Rating,
+                    NumReviews = gymClass.NumReviews
+                    
                 };
                 return View(viewModel);
             }
