@@ -31,6 +31,9 @@ else
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Category)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.Gym)
                         </th>
                         <th>
@@ -42,14 +45,9 @@ else
                         <th>
                             @Html.DisplayNameFor(model => model.DateEnd)
                         </th>
+                        <th>Capacity</th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </th>
-                        <th>
-                            Client Count
+                            Clients
                         </th>
                         <th></th>
                     </tr>
@@ -59,10 +57,14 @@ else
                     {
                         <tr>
                             <td>
+                                @item.Category.Name
+                            </td>
+                            <td>
                                 @item.Gym.Id - @item.Gym.Name - @item.Gym.Country, @item.Gym.City
                             </td>
                             <td>
-                                @item.Instructor.FirstName - @item.Instructor.LastName
+                                @item.Instructor.FullName
+                                <br />(@item.Instructor.Email)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DateStart)
@@ -71,10 +73,7 @@ else
                                 @Html.DisplayFor(modelItem => item.DateEnd)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Rating)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.NumReviews)
+                                @Html.DisplayFor(modelItem => item.Capacity)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Clients.Count)

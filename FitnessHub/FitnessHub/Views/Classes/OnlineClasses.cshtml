@@ -42,12 +42,6 @@ else
                         <th>
                             @Html.DisplayNameFor(model => model.Platform)
                         </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -56,7 +50,8 @@ else
                     {
                         <tr>
                             <td>
-                                @item.Instructor.FirstName @item.Instructor.LastName
+                                @item.Instructor.FullName
+                                <br />(@item.Instructor.Email)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.DateStart)
@@ -66,12 +61,6 @@ else
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Platform)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Rating)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.NumReviews)
                             </td>
                             <td>
                                 <div style="display: flex">

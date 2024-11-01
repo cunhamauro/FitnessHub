@@ -17,6 +17,12 @@
                 <input id="videoClassId" readonly value="@Model.Id" class="form-control" />
             </div>
 
+
+            <div class="form-group">
+                <label class="control-label">Category</label>
+                <input readonly value="@Model.Category.Name" class="form-control" />
+            </div>
+
             <div class="form-group">
                 <label asp-for="VideoClassUrl" class="control-label">VideovClassvUrl</label>
                 <input asp-for="VideoClassUrl" class="form-control" />

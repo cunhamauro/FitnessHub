@@ -14,26 +14,27 @@
 
             <div class="form-group">
                 <label class="control-label">Online Class ID</label>
-                <input id="gymId" readonly value="@Model.Id" class="form-control" />
+                <input id="classId" readonly value="@Model.Id" class="form-control" />
             </div>
 
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label">Category</label>
-                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
-                    <option value="">Select a Category</option>
-                </select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                <label class="control-label">Category</label>
+                <input readonly value="@Model.Category.Name" class="form-control" />
             </div>
 
             <div class="form-group">
                 <label asp-for="DateStart" class="control-label"></label>
-                <input asp-for="DateStart" class="form-control" />
+                <input id="dateStart" asp-for="DateStart" type="datetime-local" class="form-control"
+                       value="@Model.DateStart.ToString("yyyy-MM-ddTHH:mm")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateStart" class="text-danger"></span>
             </div>
 
             <div class="form-group">
                 <label asp-for="DateEnd" class="control-label"></label>
-                <input asp-for="DateEnd" class="form-control" />
+                <input id="dateEnd" asp-for="DateEnd" type="datetime-local" class="form-control"
+                       value="@Model.DateEnd.ToString("yyyy-MM-ddTHH:mm")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateEnd" class="text-danger"></span>
             </div>
 
@@ -65,7 +66,7 @@
 
 @section Scripts {
     @{
-        // Scripts for getting available aircrafts for given inputs
+        // Scripts for getting available instructors for given inputs
         <script type="text/javascript">
 
             $(document).ready(function () {
@@ -85,10 +86,12 @@
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response
-                            $("#instructorSelect").append('<option value="0">Select an Instructor</option>');
-                            $.each(instructors, function (index, instructors) {
+                            $("#instructorSelect").empty(); // Clear existing options
+                            $("#instructorSelect").append('<option value="">Select an Instructor</option>'); // Default option
+
+                            $.each(instructors, function (index, instructor) {
                                 console.log('Instructor:', instructor); // Debug: log each instructor object
-                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + instructor.lastName '</option>');
+                                $("#instructorSelect").append('<option value="' + instructor.id + '">' + instructor.firstName + ' ' + instructor.lastName + '</option>');
                             });
                         },
                         error: function (xhr, status, error) {
@@ -98,11 +101,11 @@
                     });
                 }
 
-                // Bind the change event to the OriginId dropdown
-                $("#dateStart").change(UpdateAvailableInstructors);
+                // Call UpdateAvailableInstructors on page load
+                UpdateAvailableInstructors();
 
-                // // Bind the change event to the OriginId dropdown
-                $("#dateEnd").change(UpdateAvailableInstructors);
+                // Bind the change events for start and end dates to dynamically update instructors
+                $("#dateStart, #dateEnd").change(UpdateAvailableInstructors);
             });
         </script>
     }

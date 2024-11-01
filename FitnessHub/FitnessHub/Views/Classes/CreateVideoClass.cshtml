@@ -1,7 +1,7 @@
-﻿@model FitnessHub.Data.Entities.GymClasses.VideoClass
+﻿@model FitnessHub.Models.VideoClassViewModel
 
 @{
-    ViewData["Title"] = "CreateVideoClass";
+    ViewData["Title"] = "Create Video Class";
 }
 
 
@@ -14,9 +14,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
-                <label asp-for="VideoClassUrl" class="control-label">Video Class Url</label>
-                <input asp-for="VideoClassUrl" class="form-control" />
+                <label asp-for="VideoClassUrl" class="control-label">Youtube Video Class URL</label>
+                <input asp-for="VideoClassUrl" class="form-control" placeholder="https://www.youtube.com..." />
                 <span asp-validation-for="VideoClassUrl" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Category</label>
+                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
+                    <option value="0">Select a Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
 
             <div class="form-group">

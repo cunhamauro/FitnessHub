@@ -384,6 +384,46 @@ namespace FitnessHub.Migrations
                     b.ToTable("Workouts");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.ClassHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClassType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DateEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("GymId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InstructorId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Platform")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VideoClassUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.Users.Membership", b =>
                 {
                     b.Property<int>("Id")
@@ -649,6 +689,9 @@ namespace FitnessHub.Migrations
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.GymClass", b =>
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("DateEnd")
                         .HasColumnType("datetime2");

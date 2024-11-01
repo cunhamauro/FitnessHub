@@ -8,14 +8,19 @@ namespace FitnessHub.Data.Entities.GymClasses
         public Instructor? Instructor {  get; set; }
 
         [Required]
+        [Display(Name = "Date Start")]
         public DateTime DateStart {  get; set; }
 
         [Required]
+        [Display(Name = "Date End")]
         public DateTime DateEnd { get; set; }
 
         [Required]
         public string? Platform {  get; set; }
 
         public List<Client>? Clients { get; set; }
+
+        //public List<ClassDetails> ClassDetails { get; set; } = new();
+
     }
 }

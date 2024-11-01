@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Entities.Users;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Data.Entities.GymClasses
 {
@@ -8,10 +9,16 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public Instructor? Instructor { get; set; }
 
+        [Display(Name = "Date Start")]
         public DateTime DateStart { get; set; }
 
+        [Display(Name = "Date End")]
         public DateTime DateEnd { get; set; }
 
         public List<Client>? Clients { get; set; }
+
+        public int Capacity { get; set; }
+
+        //public List<ClassDetails> ClassDetails { get; set; } = new();
     }
 }

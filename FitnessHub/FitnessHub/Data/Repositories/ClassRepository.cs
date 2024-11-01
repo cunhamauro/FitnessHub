@@ -23,7 +23,7 @@ namespace FitnessHub.Data.Repositories
             return await _context.Class.OfType<OnlineClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).FirstOrDefaultAsync();
         }
 
-        public async Task<List<VideoClass>> GetAllVideoClasses()
+        public async Task<List<VideoClass>> GetAllVideoClassesInclude()
         {
             return await _context.Class.OfType<VideoClass>().Include(c => c.Category).ToListAsync();
         }
@@ -49,7 +49,5 @@ namespace FitnessHub.Data.Repositories
                 .Include(g => g.Clients) // Ensure Clients are included
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
-
-
     }
 }

@@ -8,17 +8,16 @@ namespace FitnessHub.Models
     {
         public List<SelectListItem>? InstructorsList { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a valid Instructor")]
         public string? InstructorId { get; set; }
 
         public List<SelectListItem>? GymsList { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a valid Gym")]
         public int GymId { get; set; }
 
         public List<SelectListItem>? CategoriesList { get; set; }
 
-        [Required]
         public int CategoryId { get; set; }
     }
 }

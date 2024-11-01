@@ -1,7 +1,11 @@
-﻿@model FitnessHub.Data.Entities.GymClasses.VideoClass
+﻿@using FitnessHub.Helpers
+@model FitnessHub.Data.Entities.GymClasses.VideoClass
+
+@inject IConverterHelper converterHelper
 
 @{
-    ViewData["Title"] = "VideoClassDetails";
+    ViewData["Title"] = "Video Class Details";
+    string embedVideoUrl = converterHelper.YoutubeUrlToEmbed(Model.VideoClassUrl);
 }
 
 <div class="container detailsdelete-text">
@@ -12,23 +16,28 @@
             <div class="card">
                 <div class="card-body">
                     <dl class="row">
+                        <dd class="col-sm-12 mb-2">
+                            @if (Model.NumReviews < 1)
+                            {
+                                <span>N/A</span>
+
+                                <i class="fa-solid fa-star"></i>
+                            }
+                            else
+                            {
+                                <span>@Model.Rating/5</span>
+
+                                <i class="fa-solid fa-star"></i>
+                            }
+                            (@Model.NumReviews)
+                        </dd>
+
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.VideoClassUrl)
+                            Video Class:
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.VideoClassUrl)
-                        </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </dt>
-                        <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.Rating)
-                        </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </dt>
-                        <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.NumReviews)
+                            <br /><div class="mt-2"><a class="videoButton" target="_blank" href="@Model.VideoClassUrl"><i style="font-size: 2.5em" class="fa-brands fa-youtube"></i></a></div>
                         </dd>
                     </dl>
 
@@ -37,11 +46,25 @@
                             <i class="fa-solid fa-pen me-2"></i>Edit
                         </a>
                         <a asp-action="VideoClasses" class="btn btn-secondary">
-                            <i class="fa-solid fa-chevron-left me-2"></i>Back to List
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back
                         </a>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- Right: Video -->
+        <div class="col-md-6">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <iframe style="height: 20vw; width:inherit" src="@embedVideoUrl"
+                            title="YouTube Video Player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </dd>
+            </dl>
         </div>
     </div>
 </div>

@@ -12,21 +12,25 @@
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
                 <div class="card">
-                    <div class="card-body">
-                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@classItem.Category</h5>
-                        <hr />
-                        <div class="card-text">
-                            <p><strong>Instructor:</strong> @classItem.InstructorName</p>
-                            <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
-                            <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
-                            <p><strong>Location:</strong> @classItem.Location</p>
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@classItem.Category</div>
+                        <div class="card-body">
+                            <div class="card-text">
+                                <p><strong>Instructor:</strong> @classItem.InstructorName</p>
+                                <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
+                                <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
+                                <p><strong>Location:</strong> @classItem.Location</p>
+                            </div>
+                            <form asp-action="Register" method="post" style="text-align: center">
+                                <input type="hidden" name="classId" value="@classItem.Id" />
+                                <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
+                                <button type="submit" class="btn btn-primary me-2"><i class="fa-solid fa-pen me-2"></i>Register</button>
+                                <a asp-action="ClassDetails" asp-route-id="@classItem.Id" class="btn btn-info">
+                                    <i class="fa-solid fa-list me-2 "></i>
+                                    Details
+                                </a>
+                            </form>
+
                         </div>
-                        <form asp-action="Register" method="post" style="text-align: center">
-                            <input type="hidden" name="classId" value="@classItem.Id" />
-                            <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </form>
-                    </div>
                 </div>
             </div>
         }
