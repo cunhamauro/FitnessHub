@@ -19,5 +19,8 @@ namespace FitnessHub.Data.Entities.GymClasses
         public string? Platform {  get; set; }
 
         public List<Client>? Clients { get; set; }
+
+        //public List<ClassDetails> ClassDetails { get; set; } = new();
+
     }
 }

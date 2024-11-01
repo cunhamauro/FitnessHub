@@ -1,11 +1,10 @@
 ﻿using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
-using FitnessHub.Models;
 
 namespace FitnessHub.Data
 {
@@ -21,6 +20,8 @@ namespace FitnessHub.Data
 
         public DbSet<Employee> Employees { get; set; }
 
+        //public DbSet<ClassDetails> ClassDetails { get; set; }
+
         public DbSet<Instructor> Instructors { get; set; }
 
         public DbSet<Membership> Memberships { get; set; }
@@ -29,9 +30,9 @@ namespace FitnessHub.Data
 
         // Classes
 
-        public DbSet<Class> Class {  get; set; }
+        public DbSet<Class> Class { get; set; }
 
-        public DbSet<GymClass> GymClasses {  get; set; }
+        public DbSet<GymClass> GymClasses { get; set; }
 
         public DbSet<OnlineClass> OnlineClasses { get; set; }
 
@@ -51,6 +52,12 @@ namespace FitnessHub.Data
 
         public DbSet<Workout> Workouts { get; set; }
 
+        // History
+
+        public DbSet<ClassHistory> ClassHistory { get; set; }
+
+
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -65,9 +72,14 @@ namespace FitnessHub.Data
             builder.Entity<Instructor>().ToTable("Instructors");
 
             builder.Entity<Class>().ToTable("Classes");
-            builder.Entity<GymClass>().ToTable("GymClasses").HasBaseType<Class>(); ;
-            builder.Entity<OnlineClass>().ToTable("OnlineClasses").HasBaseType<Class>(); ;
-            builder.Entity<VideoClass>().ToTable("VideoClasses").HasBaseType<Class>(); ;
+            builder.Entity<GymClass>().ToTable("GymClasses").HasBaseType<Class>();
+            builder.Entity<OnlineClass>().ToTable("OnlineClasses").HasBaseType<Class>();
+            builder.Entity<VideoClass>().ToTable("VideoClasses").HasBaseType<Class>();
+
+            // Make database not generate IDs for ClassHistory
+            builder.Entity<ClassHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
 
             // Make price with two decimals
             builder.Entity<Membership>()
@@ -75,6 +87,6 @@ namespace FitnessHub.Data
                        .HasColumnType("decimal(18,2)");
 
             base.OnModelCreating(builder);
-        }        
+        }
     }
 }

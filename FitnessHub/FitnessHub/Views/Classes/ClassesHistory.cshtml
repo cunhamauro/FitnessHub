@@ -1,0 +1,259 @@
+﻿@model IEnumerable<FitnessHub.Models.ClassHistoryViewModel>
+
+@{
+    ViewData["Title"] = "Classes History";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Classes History</h2>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There is no Class History!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Type
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Gym
+                        </th>
+                        <th>
+                            Instructor
+                        </th>
+                        <th>
+                            Date Start
+                        </th>
+                        <th>
+                            Date End
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Capacity)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Platform)
+                        </th>
+                        <th>
+                            Video
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Capacity
+                        </th>
+                        <th>Clients</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.ClassType == "OnlineClass")
+                                {
+                                    <span>Online</span>
+                                }
+                                else if (item.ClassType == "GymClass")
+                                {
+                                    <span>Gym</span>
+                                }
+                                else
+                                {
+                                    <span>Video</span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td>
+                                @if (item.GymId != null)
+                                {
+                                    <span>@item.GymName</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.InstructorId != null)
+                                {
+                                    <span>@item.InstructorFullName</span>
+                                    <br />
+                                    <span>(@item.InstructorEmail)</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.DateStart != null)
+                                {
+                                    <span>@item.DateStart</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.DateEnd != null)
+                                {
+                                    <span>@item.DateEnd</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Capacity == null)
+                                {
+                                    <span>N/A</span>
+                                }
+                                else
+                                {
+                                    <span>@item.Capacity</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Platform == null)
+                                {
+                                    <span>N/A</span>
+                                }
+                                else
+                                {
+                                    <span>@item.Platform</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.VideoClassUrl != null && item.VideoClassUrl.Length > 4)
+                                {
+                                    <a class="videoButton" target="_blank" href="@item.VideoClassUrl"><i style="font-size: 1.6em" class="fa-brands fa-youtube"></i></a>
+                                }
+                                else
+                                {
+                                    @Html.Raw("N/A")
+                                }
+                            </td>
+                            <td>
+                                @if (item.Canceled)
+                                {
+                                    <span>Canceled</span>
+                                }
+                                else
+                                {
+                                    @if (item.DateStart != null && item.DateStart > DateTime.UtcNow)
+                                    {
+                                        <span>Scheduled</span>
+                                    }
+                                    else if (item.DateStart != null && item.DateEnd != null && item.DateStart <= DateTime.UtcNow && item.DateEnd > DateTime.UtcNow)
+                                    {
+                                        <span>Started</span>
+                                    }
+                                    else if (item.DateStart != null && item.DateEnd != null && item.DateEnd > DateTime.UtcNow)
+                                    {
+                                        <span>Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span>N/A</span>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (item.Capacity != null && item.Capacity > 0)
+                                {
+                                    <span>@item.Capacity</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Capacity != null && item.Capacity > 0 @* && item.ClientsList.Count > 0 *@)
+                                {
+                                    <div class="form-group">
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#clientListModal"
+                                        data-clients="@System.Text.Json.JsonSerializer.Serialize(item.ClientList)">
+                                            <i class="fa-solid fa-users me-2"></i>List
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="clientListModal" tabindex="-1" aria-labelledby="clientListModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientListModalLabel">List of Clients</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="clientList">
+                        <!-- Clients will be dynamically added here -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("td").forEach(td => {
+                if (td.textContent.trim() === "N/A") {
+                    td.classList.add("na-cell");
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const clientListModal = document.getElementById('clientListModal');
+
+            clientListModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const clients = JSON.parse(button.getAttribute('data-clients'));
+
+                const clientListElement = document.getElementById('clientList');
+                clientListElement.innerHTML = '';  // Clear existing content
+
+                clients.forEach(client => {
+                    const li = document.createElement('li');
+                    li.textContent = client;  // Assuming client is a string, adjust as necessary
+                    clientListElement.appendChild(li);
+                });
+            });
+        });
+    </script>
+}

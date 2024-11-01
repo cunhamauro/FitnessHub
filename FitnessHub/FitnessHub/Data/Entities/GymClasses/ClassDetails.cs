@@ -3,14 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FitnessHub.Data.Entities.GymClasses
 {
-    // NAO ESTÁ EM USO ACHO EU
-    [NotMapped]
     public class ClassDetails
     {
-        [NotMapped]
-        public Client? Client { get; set; }
+        public string ClientId { get; set; }
+        public Client Client { get; set; }
 
-        [NotMapped]
-        public Class? Class { get; set; }
+        public int ClassId {  get; set; }
+        public Class Class { get; set; }
+
+        // Additional property to help EF Core identify the class type
+        public string ClassType { get; set; } // Store the type of class (GymClass, OnlineClass)
     }
 }
