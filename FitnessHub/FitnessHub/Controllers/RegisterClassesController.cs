@@ -14,12 +14,15 @@ namespace FitnessHub.Controllers
 
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
         public RegisterClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper)
+                                  IUserHelper userHelper,
+                                  IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
+            _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
         }
 
         // User side actions
@@ -88,6 +91,14 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            var history = new RegisteredInClassesHistory
+            {
+                UserId = client.Id,
+                ClassId = classId,
+                RegistrationDate = DateTime.UtcNow,
+                Canceled = false,
+            };
+
             if (isOnline)
             {
                 var onlineClass = await _classRepository.GetOnlineClassByIdInclude(classId);
@@ -101,6 +112,7 @@ namespace FitnessHub.Controllers
                 {
                     onlineClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(onlineClass);
+                    await _registeredInClassesHistoryRepository.CreateAsync(history);
                 }
             }
             else
@@ -121,6 +133,7 @@ namespace FitnessHub.Controllers
                 {
                     gymClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(gymClass);
+                    await _registeredInClassesHistoryRepository.CreateAsync(history);
                 }
             }
             return RedirectToAction(nameof(AvailableClasses));
@@ -189,6 +202,14 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            var historyEntry = await _registeredInClassesHistoryRepository.GetHistoryEntryAsync(id, client.Id);
+
+            if (historyEntry != null)
+            {
+                historyEntry.Canceled = true;
+                await _registeredInClassesHistoryRepository.UpdateAsync(historyEntry);
+            }
+
             var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(id);
             if (gymClass != null && gymClass.Clients.Contains(client))
             {
@@ -196,7 +217,7 @@ namespace FitnessHub.Controllers
                 await _classRepository.UpdateAsync(gymClass);
                 return RedirectToAction(nameof(MyClasses));
             }
-            
+
             var onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
             if (onlineClass != null && onlineClass.Clients.Contains(client))
             {
@@ -222,7 +243,7 @@ namespace FitnessHub.Controllers
                     GymName = gymClass.Gym?.Name,
                     Rating = gymClass.Rating,
                     NumReviews = gymClass.NumReviews
-                    
+
                 };
                 return View(viewModel);
             }
@@ -237,7 +258,7 @@ namespace FitnessHub.Controllers
                     DateEnd = onlineClass.DateEnd,
                     Location = "Online",
                     Category = onlineClass.Category.Name,
-                    Platform = onlineClass.Platform 
+                    Platform = onlineClass.Platform
                 };
                 return View(viewModel);
             }
@@ -308,16 +329,27 @@ namespace FitnessHub.Controllers
                 return View("RegisterClientInClass", model);
             }
 
+            var employee = await _userHelper.GetUserAsync(this.User);
+
             var allClasses = await _classRepository.GetAllGymClassesInclude();
             allClasses = allClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
 
             foreach (var gymClass in allClasses)
             {
+                var history = new RegisteredInClassesHistory
+                {
+                    UserId = client.Id,
+                    ClassId = gymClass.Id,
+                    EmployeeId = employee.Id,
+                    RegistrationDate = DateTime.UtcNow,
+                    Canceled = false,
+                };
                 if (model.SelectedClassIds.Contains(gymClass.Id))
                 {
                     if (!gymClass.Clients.Any(c => c.Id == client.Id))
                     {
                         gymClass.Clients.Add(client);
+                        await _registeredInClassesHistoryRepository.CreateAsync(history);
                     }
                 }
                 else
@@ -325,6 +357,14 @@ namespace FitnessHub.Controllers
                     if (gymClass.Clients.Any(c => c.Id == client.Id))
                     {
                         gymClass.Clients.Remove(client);
+
+                        var historyEntry = await _registeredInClassesHistoryRepository.GetHistoryEntryAsync(gymClass.Id, client.Id);
+
+                        if (historyEntry != null)
+                        {
+                            historyEntry.Canceled = true;
+                            await _registeredInClassesHistoryRepository.UpdateAsync(historyEntry);
+                        }
                     }
                 }
                 await _classRepository.UpdateAsync(gymClass);

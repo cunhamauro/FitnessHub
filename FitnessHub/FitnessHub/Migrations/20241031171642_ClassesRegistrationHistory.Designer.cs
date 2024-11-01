@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241029154401_classCapacity")]
-    partial class classCapacity
+    [Migration("20241031171642_ClassesRegistrationHistory")]
+    partial class ClassesRegistrationHistory
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,35 @@ namespace FitnessHub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ClassCategories");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.RegisteredInClassesHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassesRegistrationHistory");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>

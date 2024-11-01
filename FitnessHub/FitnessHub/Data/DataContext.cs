@@ -39,6 +39,8 @@ namespace FitnessHub.Data
 
         public DbSet<ClassCategory> ClassCategories { get; set; }
 
+        public DbSet<RegisteredInClassesHistory> ClassesRegistrationHistory { get; set; }
+
         // Machines
 
         public DbSet<Machine> Machines { get; set; }

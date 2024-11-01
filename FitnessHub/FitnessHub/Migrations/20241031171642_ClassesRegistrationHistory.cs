@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class classCapacity : Migration
+    public partial class ClassesRegistrationHistory : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -66,6 +66,23 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ClassCategories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ClassesRegistrationHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ClassId = table.Column<int>(type: "int", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: true),
+                    Canceled = table.Column<bool>(type: "bit", nullable: false),
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassesRegistrationHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -745,6 +762,9 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "ClassesRegistrationHistory");
 
             migrationBuilder.DropTable(
                 name: "ClientGymClass");
