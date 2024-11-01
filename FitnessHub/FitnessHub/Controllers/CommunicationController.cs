@@ -1,5 +1,6 @@
 ﻿using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.Communication;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -78,7 +79,7 @@ namespace FitnessHub.Controllers
                 {
                     return GymNotFound();
                 }
-                
+
                 try
                 {
                     var requestInstructor = new RequestInstructor
@@ -180,7 +181,7 @@ namespace FitnessHub.Controllers
 
             List<RequestInstructorHistoryViewModel> requestsModel = new List<RequestInstructorHistoryViewModel>();
 
-            foreach(var request in requests)
+            foreach (var request in requests)
             {
                 var client = await _userHelper.GetUserByIdAsync(request.ClientId);
                 if (client == null)

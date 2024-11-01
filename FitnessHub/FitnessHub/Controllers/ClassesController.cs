@@ -42,7 +42,7 @@ namespace FitnessHub.Controllers
             List<ClassHistory> classes = await _classHistoryRepository.GetAll().ToListAsync();
             List<ClassHistoryViewModel> classesHistory = new();
 
-            List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
+            //List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
 
             foreach (var ch in classes)
             {
@@ -70,13 +70,13 @@ namespace FitnessHub.Controllers
 
                 List<string> clientEmailsList = new List<string>();
 
-                foreach (var registration in registrations)
-                {
-                    if (registration.ClassId == ch.Id)
-                    {
-                        clientEmailsList.Add(registration.Email);
-                    }
-                }
+                //foreach (var registration in registrations)
+                //{
+                //    if (registration.ClassId == ch.Id)
+                //    {
+                //        clientEmailsList.Add(registration.Email);
+                //    }
+                //}
 
                 classesHistory.Add(new ClassHistoryViewModel
                 {

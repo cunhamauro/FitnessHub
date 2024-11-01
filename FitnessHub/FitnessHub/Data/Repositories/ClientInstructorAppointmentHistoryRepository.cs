@@ -1,4 +1,4 @@
-﻿using FitnessHub.Data.Entities.Communication;
+﻿using FitnessHub.Data.Entities.History;
 
 namespace FitnessHub.Data.Repositories
 {

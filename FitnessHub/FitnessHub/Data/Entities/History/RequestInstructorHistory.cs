@@ -1,4 +1,4 @@
-﻿namespace FitnessHub.Data.Entities.Communication
+﻿namespace FitnessHub.Data.Entities.History
 {
     public class RequestInstructorHistory : IEntity
     {
