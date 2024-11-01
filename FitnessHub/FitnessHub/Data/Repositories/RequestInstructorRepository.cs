@@ -26,5 +26,16 @@ namespace FitnessHub.Data.Repositories
                 .Include(requests => requests.Gym)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<bool> ClientHasPendingRequestForGym(string clientId, int gymId)
+        {
+            var request = await _context.RequestsIntructor
+                .Where(request => request.Client.Id == clientId && request.Gym.Id == gymId)
+                .FirstOrDefaultAsync();
+
+            if(request != null)
+                return true;
+            return false;
+        }
     }
 }

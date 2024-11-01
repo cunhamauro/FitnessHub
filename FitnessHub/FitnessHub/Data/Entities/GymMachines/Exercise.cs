@@ -1,10 +1,8 @@
-﻿using System.Numerics;
-
-namespace FitnessHub.Data.Entities.GymMachines
+﻿namespace FitnessHub.Data.Entities.GymMachines
 {
     public class Exercise : IEntity
     {
-        public int Id {  get; set; }
+        public int Id { get; set; }
 
         public string? Name { get; set; }
 

@@ -15,5 +15,10 @@ namespace FitnessHub.Data.Repositories
         {
             return _context.RequestsIntructorHistory.Where(requests => requests.GymId == gymId).ToList();
         }
+
+        public List<RequestInstructorHistory> GetAllByClient(string clientId)
+        {
+            return _context.RequestsIntructorHistory.Where(requests => requests.ClientId == clientId).ToList();
+        }
     }
 }
