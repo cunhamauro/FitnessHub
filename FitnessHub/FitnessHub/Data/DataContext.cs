@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.Communication;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Entities.History;
@@ -58,6 +59,19 @@ namespace FitnessHub.Data
 
 
 
+        // Communication
+
+        public DbSet<RequestInstructor> RequestsIntructor { get; set; }
+
+        public DbSet<ClientInstructorAppointment> ClientInstructorAppointments { get; set; }
+
+        // History
+
+        public DbSet<RequestInstructorHistory> RequestsIntructorHistory { get; set; }
+
+        public DbSet<ClientInstructorAppointmentHistory> ClientInstructorAppointmentsHistory { get; set; }
+
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -85,6 +99,15 @@ namespace FitnessHub.Data
             builder.Entity<Membership>()
                        .Property(m => m.Price)
                        .HasColumnType("decimal(18,2)");
+
+            // Disable database ID generation
+            builder.Entity<RequestInstructorHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
+            builder.Entity<ClientInstructorAppointmentHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
 
             base.OnModelCreating(builder);
         }

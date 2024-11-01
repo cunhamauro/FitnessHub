@@ -1,0 +1,67 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.Communication.ClientInstructorAppointment>
+
+@{
+    ViewData["Title"] = "Clients Assignments";
+}
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            Clients Assignments
+        </h2>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Assignments!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Client.FullName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Client.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.AssignDate)
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Client.FullName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Client.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.AssignDate)
+                            </td>
+                            <td>
+                                <div style="display: flex">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-2"><i class="fa-solid fa-pen me-2"></i>Por Definir</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

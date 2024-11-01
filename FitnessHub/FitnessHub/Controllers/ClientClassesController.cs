@@ -4,8 +4,6 @@ using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
-using static FitnessHub.Models.AvailableClassesViewModel;
-using static FitnessHub.Models.RegisterClientInClassViewModel;
 
 namespace FitnessHub.Controllers
 {
@@ -196,7 +194,7 @@ namespace FitnessHub.Controllers
                 await _classRepository.UpdateAsync(gymClass);
                 return RedirectToAction(nameof(MyClasses));
             }
-            
+
             var onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
             if (onlineClass != null && onlineClass.Clients.Contains(client))
             {
@@ -237,7 +235,7 @@ namespace FitnessHub.Controllers
                     DateEnd = onlineClass.DateEnd,
                     Location = "Online",
                     Category = onlineClass.Category.Name,
-                    Platform = onlineClass.Platform 
+                    Platform = onlineClass.Platform
                 };
                 return View(viewModel);
             }
@@ -254,7 +252,7 @@ namespace FitnessHub.Controllers
             var model = new RegisterClientInClassViewModel
             {
                 ClientEmail = "",
-                Classes = classes.Select(c => new RegisterClientInClassViewModel.ClassDetailsViewModel
+                Classes = classes.Select(c => new ClassDetailsViewModel
                 {
                     Id = c.Id,
                     Category = c.Category.Name,

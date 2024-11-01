@@ -7,7 +7,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace FitnessHub.Controllers
 {
@@ -20,9 +19,9 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
 
         public UsersController(
-            IUserHelper userHelper, 
-            IMailHelper mailHelper, 
-            ILoadRolesHelper loadRolesHelper, 
+            IUserHelper userHelper,
+            IMailHelper mailHelper,
+            ILoadRolesHelper loadRolesHelper,
             IGymRepository gymRepository)
         {
             _userHelper = userHelper;
@@ -94,7 +93,7 @@ namespace FitnessHub.Controllers
             }
 
             var userGym = await _gymRepository.GetGymByUserAsync(user);
-            if(userGym == null)
+            if (userGym == null)
             {
                 return GymNotFound();
             }
@@ -129,14 +128,14 @@ namespace FitnessHub.Controllers
                     Value = gym.Id.ToString(),
                     Text = $"{gym.Data}",
                 });
-                
+
                 _loadRolesHelper.LoadMasterAdminRoles(model);
             }
 
             if (this.User.IsInRole("Admin"))
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-                if(user == null)
+                if (user == null)
                 {
                     return UserNotFound();
                 }
@@ -195,7 +194,7 @@ namespace FitnessHub.Controllers
                     var gym = new Gym();
                     user = new User();
 
-                    if(this.User.Identity?.IsAuthenticated == true && this.User.IsInRole("Admin"))
+                    if (this.User.Identity?.IsAuthenticated == true && this.User.IsInRole("Admin"))
                     {
                         var admin = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                         if (admin == null)
@@ -355,14 +354,14 @@ namespace FitnessHub.Controllers
 
             if (this.User.IsInRole("MasterAdmin"))
             {
-                if(user is Admin admin)
+                if (user is Admin admin)
                 {
                     model.GymId = admin.GymId.Value;
                     model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                     {
                         Value = gym.Id.ToString(),
                         Text = $"{gym.Data}",
-                        
+
                     });
                 }
             }
@@ -376,7 +375,7 @@ namespace FitnessHub.Controllers
                     {
                         Value = gym.Id.ToString(),
                         Text = $"{gym.Data}",
-                        
+
                     });
                 }
 
@@ -387,7 +386,7 @@ namespace FitnessHub.Controllers
                     {
                         Value = gym.Id.ToString(),
                         Text = $"{gym.Data}",
-                        
+
                     });
                 }
 
@@ -424,15 +423,15 @@ namespace FitnessHub.Controllers
                 }
 
                 var gym = await _gymRepository.GetByIdTrackAsync(model.GymId);
-                if(gym == null)
+                if (gym == null)
                 {
                     return GymNotFound();
                 }
 
                 user.Email = model.Email;
                 user.UserName = model.Email;
-                
-                if(user is Admin admin)
+
+                if (user is Admin admin)
                 {
                     admin.Gym = gym;
                 }
