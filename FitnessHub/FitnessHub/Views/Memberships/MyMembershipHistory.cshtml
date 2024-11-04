@@ -1,0 +1,68 @@
+﻿@model IEnumerable<FitnessHub.Models.ClientMembershipHistoryViewModel>
+
+@{
+    ViewData["Title"] = "My Membership History";
+}
+
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">My Membership History</h2>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There is no Membership History!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                           Type
+                        </th>
+                        <th>
+                            Fee / Month
+                        </th>
+                        <th>
+                            SignUp Date
+                        </th>
+                        <th>
+                            Active
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Price.ToString("C2"))
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SignUpDate)
+                            </td>
+                            <td>
+                                @if (item.Status == false)
+                                {
+                                    <span>Active</span>
+                                }
+                                else
+                                {
+                                    <span>Inactive</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
