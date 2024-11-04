@@ -80,6 +80,19 @@ namespace FitnessHub.Controllers
                     return GymNotFound();
                 }
 
+                if(await _requestInstructorRepository.ClientHasPendingRequestForGym(client.Id, gym.Id))
+                {
+                    ModelState.AddModelError("GymId", "There is already a pending request for the selected gym.");
+
+                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    {
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}",
+                    });
+
+                    return View(model);
+                }
+
                 try
                 {
                     var requestInstructor = new RequestInstructor
@@ -98,11 +111,12 @@ namespace FitnessHub.Controllers
                         GymId = gym.Id,
                         Notes = model.Notes,
                         RequestDate = requestInstructor.RequestDate,
+                        IsResolved = false,
                     };
 
                     await _requestInstructorHistoryRepository.CreateAsync(requestHistory);
 
-                    return RedirectToAction(nameof(Index), "Home");
+                    return RedirectToAction(nameof(MyRequests));
                 }
                 catch (Exception ex)
                 {
@@ -117,6 +131,47 @@ namespace FitnessHub.Controllers
             });
 
             return View(model);
+        }
+
+        [Authorize(Roles = "Client")]
+        [HttpGet]
+        public async Task<IActionResult> MyRequests()
+        {
+            var client = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name) as Client;
+            if (client == null)
+            {
+                return ClientNotFound();
+            }
+
+            var requests = _requestInstructorHistoryRepository.GetAllByClient(client.Id);
+
+            List<MyRequestInstructorHistoryViewModel> requestsModel = new List<MyRequestInstructorHistoryViewModel>();
+
+            foreach (var request in requests)
+            {
+                var gym = await _gymRepository.GetByIdAsync(request.GymId);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                string status = string.Empty;
+
+                if (request.IsResolved)
+                    status = "Resolved";
+                else
+                    status = "Pending";
+
+                requestsModel.Add(new MyRequestInstructorHistoryViewModel()
+                {
+                    Gym = gym.Name,
+                    Notes = request.Notes,
+                    RequestDate = request.RequestDate,
+                    Status = status,
+                });
+            }
+
+            return View(requestsModel);
         }
 
         [Authorize(Roles = "Employee")]
@@ -139,7 +194,6 @@ namespace FitnessHub.Controllers
 
             return View(requests);
         }
-
 
         [Authorize(Roles = "Employee, Admin")]
         [HttpGet]
@@ -277,6 +331,12 @@ namespace FitnessHub.Controllers
                     return RequestNotFound();
                 }
 
+                var requestHistory = await _requestInstructorHistoryRepository.GetByIdTrackAsync(model.RequestId);
+                if (requestHistory == null)
+                {
+                    return RequestNotFound();
+                }
+
                 try
                 {
                     var appointment = new ClientInstructorAppointment
@@ -299,6 +359,9 @@ namespace FitnessHub.Controllers
                     };
 
                     await _clientInstructorAppointmentHistoryRepository.CreateAsync(appointmentHistory);
+
+                    requestHistory.IsResolved = true;
+                    await _requestInstructorHistoryRepository.UpdateAsync(requestHistory);
 
                     await _requestInstructorRepository.DeleteAsync(request);
 

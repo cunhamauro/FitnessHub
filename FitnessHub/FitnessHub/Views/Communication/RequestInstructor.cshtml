@@ -14,7 +14,7 @@
 
             <div class="form-group">
                 <label asp-for="GymId" class="control-label">Gym</label>
-                <select asp-for="GymId" asp-items="Model.Gyms" class="form-control" id="gymSelect">
+                <select asp-for="GymId" asp-items="Model.Gyms" class="form-control">
                     <option value="0" disabled selected>Select a gym</option>
                 </select>
                 <span asp-validation-for="GymId" class="text-danger"></span>
@@ -30,7 +30,7 @@
                 <button type="submit" class="btn btn-primary me-4">
                     <i class="fa-solid fa-check me-2"></i>Send
                 </button>
-                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                <a asp-action="MyRequests" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
 
         </form>

@@ -1,6 +1,5 @@
 ﻿using FitnessHub.Data.Entities.GymClasses;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace FitnessHub.Data.Repositories
 {

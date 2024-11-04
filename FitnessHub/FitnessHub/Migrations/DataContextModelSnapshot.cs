@@ -196,6 +196,35 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClassCategories");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.RegisteredInClassesHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassesRegistrationHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>
                 {
                     b.Property<int>("Id")
@@ -412,6 +441,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<int>("GymId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");

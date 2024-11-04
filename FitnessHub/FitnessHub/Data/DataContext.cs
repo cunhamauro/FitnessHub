@@ -41,6 +41,8 @@ namespace FitnessHub.Data
 
         public DbSet<ClassCategory> ClassCategories { get; set; }
 
+        public DbSet<RegisteredInClassesHistory> ClassesRegistrationHistory { get; set; }
+
         // Machines
 
         public DbSet<Machine> Machines { get; set; }
@@ -68,7 +70,6 @@ namespace FitnessHub.Data
         public DbSet<ClientMembershipHistory> ClientMembershipHistory { get; set; }
 
         public DbSet<ClassHistory> ClassHistory { get; set; }
-
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -111,6 +112,10 @@ namespace FitnessHub.Data
                        .ValueGeneratedNever();
 
             builder.Entity<ClientMembershipHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+                       
+            builder.Entity<ClassHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
 

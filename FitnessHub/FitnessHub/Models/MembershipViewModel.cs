@@ -1,6 +1,4 @@
-﻿using FitnessHub.Data.Entities.Users;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Models
@@ -14,12 +12,12 @@ namespace FitnessHub.Models
         public List<SelectListItem>? SelectMembership { get; set; }
 
         [Required]
-        [Length(minimumLength:8,maximumLength:15, ErrorMessage = "The Identification Number must contain between {1} and {2} digits")]
+        [Length(minimumLength: 8, maximumLength: 15, ErrorMessage = "The Identification Number must contain between {1} and {2} digits")]
         [Display(Name = "Identification Number")]
         public string? IdNumber { get; set; }
 
         [Required]
-        [Length(minimumLength:5,maximumLength:100, ErrorMessage = "The Address must have a length between {1} and {2} characters")]
+        [Length(minimumLength: 5, maximumLength: 100, ErrorMessage = "The Address must have a length between {1} and {2} characters")]
         [Display(Name = "Full Address")]
         public string? FullAddress { get; set; }
     }

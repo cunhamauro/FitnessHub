@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241101152338_update")]
-    partial class update
+    [Migration("20241101181303_AddRequestHistoryStatus")]
+    partial class AddRequestHistoryStatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -415,6 +415,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<int>("GymId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
