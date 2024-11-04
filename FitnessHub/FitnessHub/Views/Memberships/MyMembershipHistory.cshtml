@@ -23,13 +23,10 @@ else
                            Type
                         </th>
                         <th>
-                            Fee / Month
+                            Price
                         </th>
                         <th>
-                            SignUp Date
-                        </th>
-                        <th>
-                            Active
+                            Sign Up
                         </th>
                         <th>
                             Status
@@ -44,19 +41,19 @@ else
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Price.ToString("C2"))
+                                @item.Price.ToString("C2")
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.SignUpDate)
+                                @item.SignUpDate.ToShortDateString()
                             </td>
                             <td>
                                 @if (item.Status == false)
                                 {
-                                    <span>Active</span>
+                                    <span>Canceled</span>
                                 }
                                 else
                                 {
-                                    <span>Inactive</span>
+                                    <span>Active</span>
                                 }
                             </td>
                         </tr>

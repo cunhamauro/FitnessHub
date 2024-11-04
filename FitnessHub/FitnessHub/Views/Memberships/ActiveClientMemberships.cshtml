@@ -1,0 +1,76 @@
+﻿@model IEnumerable<FitnessHub.Models.ClientMembershipViewModel>
+
+@{
+    ViewData["Title"] = "Clients Memberships";
+}
+
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Clients Memberships</h2>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Clients with Memberships!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Client
+                        </th>
+                        <th>
+                            Sign Up
+                        </th>
+                        <th>
+                            Date of Renewal
+                        </th>
+                        <th>
+                            Membership
+                        </th>
+                        @if (ViewBag.IsEmployee == true)
+                        {
+                            <th>
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @item.ClientFullName
+                                <br />(@item.ClientEmail)
+                            </td>
+                            <td>
+                                @item.SignUpDate.ToShortDateString()
+                            </td>
+                            <td>
+                                @item.DateRenewal.ToShortDateString()
+                            </td>
+                            <td>
+                                @item.Membership.Name
+                            </td>
+                            @if (ViewBag.IsEmployee == true)
+                            {
+                                <td>
+                                    <form asp-action="CancelClientMembership">
+                                        <input type="hidden" name="clientEmail" value="@item.ClientEmail" />
+                                        <button type="submit" class="btn btn-danger me-2 mt-2">
+                                            <i class="fa-solid fa-trash-can me-2"></i>Cancel
+                                        </button>
+                                    </form>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
