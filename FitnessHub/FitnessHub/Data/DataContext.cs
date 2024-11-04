@@ -53,12 +53,6 @@ namespace FitnessHub.Data
 
         public DbSet<Workout> Workouts { get; set; }
 
-        // History
-
-        public DbSet<ClassHistory> ClassHistory { get; set; }
-
-
-
         // Communication
 
         public DbSet<RequestInstructor> RequestsIntructor { get; set; }
@@ -71,6 +65,7 @@ namespace FitnessHub.Data
 
         public DbSet<ClientInstructorAppointmentHistory> ClientInstructorAppointmentsHistory { get; set; }
 
+        public DbSet<ClassHistory> ClassHistory { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -90,11 +85,6 @@ namespace FitnessHub.Data
             builder.Entity<OnlineClass>().ToTable("OnlineClasses").HasBaseType<Class>();
             builder.Entity<VideoClass>().ToTable("VideoClasses").HasBaseType<Class>();
 
-            // Make database not generate IDs for ClassHistory
-            builder.Entity<ClassHistory>()
-                       .Property(e => e.Id)
-                       .ValueGeneratedNever();
-
             // Make price with two decimals
             builder.Entity<Membership>()
                        .Property(m => m.Price)
@@ -106,6 +96,10 @@ namespace FitnessHub.Data
                        .ValueGeneratedNever();
 
             builder.Entity<ClientInstructorAppointmentHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
+            builder.Entity<ClassHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
 

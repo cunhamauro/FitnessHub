@@ -1,7 +1,5 @@
-﻿using FitnessHub.Data.Entities.GymMachines;
-using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities.Users;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace FitnessHub.Data.Repositories
 {

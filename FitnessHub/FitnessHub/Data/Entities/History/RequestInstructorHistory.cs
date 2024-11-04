@@ -11,5 +11,7 @@
         public string? Notes { get; set; }
 
         public DateTime? RequestDate { get; set; }
+
+        public bool IsResolved { get; set; }
     }
 }

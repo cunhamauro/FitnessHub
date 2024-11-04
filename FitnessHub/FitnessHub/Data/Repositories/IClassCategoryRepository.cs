@@ -1,5 +1,4 @@
 ﻿using FitnessHub.Data.Entities.GymClasses;
-using FitnessHub.Data.Entities.GymMachines;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Data.Repositories

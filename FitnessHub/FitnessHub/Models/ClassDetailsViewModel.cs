@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FitnessHub.Models
+﻿namespace FitnessHub.Models
 {
     public class ClassDetailsViewModel
     {

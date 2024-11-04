@@ -1,0 +1,68 @@
+﻿@model IEnumerable<FitnessHub.Models.MyRequestInstructorHistoryViewModel>
+
+@{
+    ViewData["Title"] = "My Requests";
+}
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            My Requests
+        </h2>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Requests on the history!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Gym)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Notes)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.RequestDate)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Gym)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Notes)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.RequestDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+

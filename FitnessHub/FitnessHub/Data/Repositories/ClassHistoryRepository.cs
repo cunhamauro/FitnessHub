@@ -1,5 +1,4 @@
 ﻿using FitnessHub.Data.Entities.History;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
 {
