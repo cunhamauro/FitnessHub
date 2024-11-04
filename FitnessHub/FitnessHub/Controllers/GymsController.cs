@@ -7,6 +7,7 @@ using FitnessHub.Data.Repositories;
 using FitnessHub.Services;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
+using FitnessHub.Data.Entities.History;
 
 namespace FitnessHub.Controllers
 {
@@ -15,11 +16,13 @@ namespace FitnessHub.Controllers
     {
         private readonly IGymRepository _gymRepository;
         private readonly CountryService _countryService;
+        private readonly IGymHistoryRepository _gymHistoryRepository;
 
-        public GymsController(IGymRepository gymRepository, CountryService countryService)
+        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository)
         {
             _gymRepository = gymRepository;
             _countryService = countryService;
+            _gymHistoryRepository = gymHistoryRepository;
         }
 
         // GET: Gyms
@@ -80,8 +83,27 @@ namespace FitnessHub.Controllers
 
             if (ModelState.IsValid)
             {
-                await _gymRepository.CreateAsync(gym);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    await _gymRepository.CreateAsync(gym);
+
+                    var gymHistory = new GymHistory()
+                    {
+                        Id = gym.Id,
+                        Name = gym.Name,
+                        Country = gym.Country,
+                        City = gym.City,
+                        Address = gym.Address,
+                    };
+
+                    await _gymHistoryRepository.CreateAsync(gymHistory);
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                }
             }
 
             var countriesResponse = await _countryService.GetCountriesAsync();
@@ -123,6 +145,20 @@ namespace FitnessHub.Controllers
                 try
                 {
                     await _gymRepository.UpdateAsync(gym);
+
+                    var gymHistory = await _gymHistoryRepository.GetByIdTrackAsync(gym.Id);
+                    if (gymHistory == null)
+                    {
+                        return GymNotFound();
+                    }
+
+                    gymHistory.Id = gym.Id;
+                    gymHistory.Name = gym.Name;
+                    gymHistory.Country = gym.Country;
+                    gymHistory.City = gym.City;
+                    gymHistory.Address = gym.Address;
+
+                    await _gymHistoryRepository.UpdateAsync(gymHistory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -184,6 +220,11 @@ namespace FitnessHub.Controllers
         public IActionResult Available()
         {
             return View(_gymRepository.GetAll());
+        }
+
+        public IActionResult GymsHistory()
+        {
+            return View(_gymHistoryRepository.GetAll());
         }
 
         public IActionResult GymNotFound()

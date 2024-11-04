@@ -1,5 +1,4 @@
 using FitnessHub.Data;
-using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -68,7 +67,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IMailHelper, MailHelper>();
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
             builder.Services.AddScoped<ILoadRolesHelper, LoadRolesHelper>();
-            builder.Services.AddScoped<IConverterHelper,  ConverterHelper>();
+            builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
 
             // Repositories
             builder.Services.AddScoped<IClassRepository, ClassRepository>();
@@ -90,6 +89,9 @@ namespace FitnessHub
             builder.Services.AddScoped<IClientMembershipHistoryRepository, ClientMembershipHistoryRepository>();
             builder.Services.AddScoped<IMembershipHistoryRepository, MembershipHistoryRepository>();
             builder.Services.AddScoped<IRegisteredInClassesHistoryRepository, RegisteredInClassesHistoryRepository>();
+            builder.Services.AddScoped<IGymHistoryRepository, GymHistoryRepository>();
+            builder.Services.AddScoped<IClientHistoryRepository, ClientHistoryRepository>();
+            builder.Services.AddScoped<IStaffHistoryRepository, StaffHistoryRepository>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {

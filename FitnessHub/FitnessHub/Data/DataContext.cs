@@ -71,6 +71,12 @@ namespace FitnessHub.Data
 
         public DbSet<ClassHistory> ClassHistory { get; set; }
 
+        public DbSet<GymHistory> GymsHistory { get; set; }
+
+        public DbSet<ClientHistory> ClientsHistory { get; set; }
+
+        public DbSet<StaffHistory> StaffHistory { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -119,7 +125,7 @@ namespace FitnessHub.Data
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
                        
-            builder.Entity<ClassHistory>()
+            builder.Entity<GymHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
 
