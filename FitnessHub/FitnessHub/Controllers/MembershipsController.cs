@@ -1,14 +1,11 @@
-﻿using FitnessHub.Data;
-using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Sqlite.Diagnostics.Internal;
 
 namespace FitnessHub.Controllers
 {

@@ -4,21 +4,18 @@ using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
-using static FitnessHub.Models.AvailableClassesViewModel;
-using static FitnessHub.Models.RegisterClientInClassViewModel;
 
 namespace FitnessHub.Controllers
 {
-    public class RegisterClassesController : Controller
+    public class ClientClassesController : Controller
     {
 
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
-        public RegisterClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper,
-                                  IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
+        public ClientClassesController(IClassRepository classRepository,
+                                  IUserHelper userHelper)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -275,7 +272,7 @@ namespace FitnessHub.Controllers
             var model = new RegisterClientInClassViewModel
             {
                 ClientEmail = "",
-                Classes = classes.Select(c => new RegisterClientInClassViewModel.ClassDetailsViewModel
+                Classes = classes.Select(c => new ClassDetailsViewModel
                 {
                     Id = c.Id,
                     Category = c.Category.Name,

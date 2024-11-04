@@ -1,6 +1,5 @@
 ﻿using FitnessHub.Data.Entities.GymClasses;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace FitnessHub.Data.Repositories
 {
@@ -49,7 +48,5 @@ namespace FitnessHub.Data.Repositories
                 .Include(g => g.Clients) // Ensure Clients are included
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
-
-
     }
 }

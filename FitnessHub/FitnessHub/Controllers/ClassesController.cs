@@ -1,5 +1,6 @@
 ﻿using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -11,20 +12,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class ClassesController : Controller
     {
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
         private readonly IGymRepository _gymRepository;
         private readonly IClassCategoryRepository _classCategoryRepository;
+        private readonly IClassHistoryRepository _classHistoryRepository;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
             _gymRepository = gymRepository;
             _classCategoryRepository = classCategoryRepository;
+            _classHistoryRepository = classHistoryRepository;
         }
 
         // Index not in use
@@ -34,9 +36,76 @@ namespace FitnessHub.Controllers
         //    return View(await _context.Class.ToListAsync());
         //}
 
+        [Authorize(Roles = "Admin, Employee")]
+        public async Task<IActionResult> ClassesHistory()
+        {
+            List<ClassHistory> classes = await _classHistoryRepository.GetAll().ToListAsync();
+            List<ClassHistoryViewModel> classesHistory = new();
+
+            //List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
+
+            foreach (var ch in classes)
+            {
+                Gym? gym = null;
+
+                if (ch.GymId != null)
+                {
+                    gym = await _gymRepository.GetByIdAsync(ch.GymId.Value);
+                }
+
+                Instructor? instructor = null;
+
+                if (ch.InstructorId != null)
+                {
+                    instructor = await _userHelper.GetUserByIdAsync(ch.InstructorId) as Instructor;
+                }
+
+                ClassCategory? classCategory = null;
+
+                if (ch.CategoryId != null)
+                {
+                    classCategory = await _classCategoryRepository.GetByIdAsync(ch.CategoryId);
+
+                }
+
+                List<string> clientEmailsList = new List<string>();
+
+                //foreach (var registration in registrations)
+                //{
+                //    if (registration.ClassId == ch.Id)
+                //    {
+                //        clientEmailsList.Add(registration.Email);
+                //    }
+                //}
+
+                classesHistory.Add(new ClassHistoryViewModel
+                {
+                    Id = ch.Id,
+                    ClassType = ch.ClassType,
+                    Capacity = ch.Capacity,
+                    CategoryId = ch.CategoryId,
+                    CategoryName = classCategory?.Name,
+                    VideoClassUrl = ch.VideoClassUrl,
+                    DateStart = ch.DateStart,
+                    DateEnd = ch.DateEnd,
+                    GymId = ch.GymId,
+                    GymName = gym?.Name,
+                    Platform = ch.Platform,
+                    InstructorId = ch.InstructorId,
+                    InstructorEmail = instructor?.Email,
+                    InstructorFullName = instructor?.FullName,
+                    Canceled = ch.Canceled,
+                    ClientList = clientEmailsList,
+                });
+            }
+
+            return View(classesHistory);
+        }
+
         #region Online Classes
 
         // GET: OnlineClasses
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> OnlineClasses() // Index for Online Classes
         {
             List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
@@ -44,6 +113,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/OnlineClassDetails/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> OnlineClassDetails(int? id)
         {
             if (id == null)
@@ -62,6 +132,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/CreateOnlineClass
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateOnlineClass()
         {
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
@@ -91,6 +162,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/CreateOnlineClass
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateOnlineClass(OnlineClassViewModel model)
@@ -152,6 +224,19 @@ namespace FitnessHub.Controllers
 
                 await _classRepository.CreateAsync(onlineClass);
 
+                ClassHistory record = new ClassHistory()
+                {
+                    Id = onlineClass.Id,
+                    ClassType = "OnlineClass",
+                    CategoryId = category.Id,
+                    InstructorId = instructor.Id,
+                    DateStart = model.DateStart,
+                    DateEnd = model.DateEnd,
+                    Platform = model.Platform,
+                };
+
+                await _classHistoryRepository.CreateAsync(record);
+
                 return RedirectToAction(nameof(OnlineClasses));
             }
 
@@ -175,6 +260,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/UpdateOnlineClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateOnlineClass(int? id)
         {
             if (id == null)
@@ -218,6 +304,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/UpdateOnlineClass/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateOnlineClass(OnlineClassViewModel model)
@@ -276,9 +363,18 @@ namespace FitnessHub.Controllers
                 onlineClass.Platform = model.Platform;
                 onlineClass.Instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
 
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
+
+                record.InstructorId = model.InstructorId;
+                record.DateStart = model.DateStart;
+                record.DateEnd = model.DateEnd;
+                record.Platform = model.Platform;
+
                 try
                 {
                     await _classRepository.UpdateAsync(onlineClass);
+
+                    await _classHistoryRepository.UpdateAsync(record);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -298,6 +394,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/DeleteOnlineClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteOnlineClass(int? id)
         {
             if (id == null)
@@ -316,6 +413,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Classes/DeleteOnlineClass/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("DeleteOnlineClass")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteOnlineClassConfirmed(int id)
@@ -325,6 +423,12 @@ namespace FitnessHub.Controllers
             if (onlineClass != null)
             {
                 await _classRepository.DeleteAsync(onlineClass);
+
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
+
+                record.Canceled = true;
+
+                await _classHistoryRepository.UpdateAsync(record);
             }
 
             return RedirectToAction(nameof(OnlineClasses));
@@ -335,6 +439,7 @@ namespace FitnessHub.Controllers
         #region Gym Classes
 
         // GET: GymClasses
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GymClasses() // Index for Gym Classes
         {
             List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
@@ -342,6 +447,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/GymClassDetails/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GymClassDetails(int? id)
         {
             if (id == null)
@@ -360,6 +466,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/CreateGymClass
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateGymClass()
         {
             List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
@@ -402,6 +509,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/CreateGymClass
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateGymClass(GymClassViewModel model)
@@ -504,11 +612,26 @@ namespace FitnessHub.Controllers
                 };
 
                 await _classRepository.CreateAsync(gymClass);
+
+                ClassHistory record = new ClassHistory()
+                {
+                    Id = gymClass.Id,
+                    GymId = gym.Id,
+                    ClassType = "GymClass",
+                    CategoryId = category.Id,
+                    InstructorId = instructor.Id,
+                    DateStart = model.DateStart,
+                    DateEnd = model.DateEnd,
+                    Capacity = model.Capacity,
+                };
+
+                await _classHistoryRepository.CreateAsync(record);
             }
             return RedirectToAction(nameof(GymClasses));
         }
 
         // GET: Classes/UpdateGymClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateGymClass(int? id)
         {
             if (id == null)
@@ -554,6 +677,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/UpdateGymClass/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateGymClass(GymClassViewModel model)
@@ -621,9 +745,17 @@ namespace FitnessHub.Controllers
                 gymClass.DateEnd = model.DateEnd;
                 gymClass.Instructor = instructor;
 
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(gymClass.Id);
+
+                record.InstructorId = model.InstructorId;
+                record.DateStart = model.DateStart;
+                record.DateEnd = model.DateEnd;
+
                 try
                 {
                     await _classRepository.UpdateAsync(gymClass);
+
+                    await _classHistoryRepository.UpdateAsync(record);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -643,6 +775,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/DeleteGymClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteGymClass(int? id)
         {
             if (id == null)
@@ -661,6 +794,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Classes/DeleteGymClass/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("DeleteGymClass")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteGymClassConfirmed(int id)
@@ -670,6 +804,12 @@ namespace FitnessHub.Controllers
             if (gymClass != null)
             {
                 await _classRepository.DeleteAsync(gymClass);
+
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(gymClass.Id);
+
+                record.Canceled = true;
+
+                await _classHistoryRepository.UpdateAsync(record);
             }
 
             return RedirectToAction(nameof(GymClasses));
@@ -680,6 +820,7 @@ namespace FitnessHub.Controllers
         #region Video Classes
 
         // GET: VideoClasses
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> VideoClasses() // Index for Video Classes
         {
             List<VideoClass> videoClasses = await _classRepository.GetAllVideoClassesInclude();
@@ -687,6 +828,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/VideoClassDetails/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> VideoClassDetails(int? id)
         {
             if (id == null)
@@ -706,6 +848,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/CreateVideoClass
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateVideoClass()
         {
             List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
@@ -721,6 +864,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/CreateVideoClass
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVideoClass(VideoClassViewModel model)
@@ -753,6 +897,16 @@ namespace FitnessHub.Controllers
 
                 await _classRepository.CreateAsync(videoClass);
 
+                ClassHistory record = new ClassHistory()
+                {
+                    Id = videoClass.Id,
+                    ClassType = "VideoClass",
+                    CategoryId = category.Id,
+                    VideoClassUrl = model.VideoClassUrl,
+                };
+
+                await _classHistoryRepository.CreateAsync(record);
+
                 return RedirectToAction(nameof(VideoClasses));
             }
 
@@ -763,6 +917,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/UpdateVideoClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateVideoClass(int? id)
         {
             if (id == null)
@@ -782,6 +937,7 @@ namespace FitnessHub.Controllers
         // POST: Classes/UpdateVideoClass/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateVideoClass(VideoClass videoClass)
@@ -793,9 +949,15 @@ namespace FitnessHub.Controllers
 
             if (ModelState.IsValid)
             {
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(videoClass.Id);
+
+                record.VideoClassUrl = videoClass.VideoClassUrl;
+
                 try
                 {
                     await _classRepository.UpdateAsync(videoClass);
+
+                    await _classHistoryRepository.UpdateAsync(record);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -814,6 +976,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Classes/DeleteVideoClass/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteVideoClass(int? id)
         {
             if (id == null)
@@ -832,6 +995,7 @@ namespace FitnessHub.Controllers
         }
 
         // POST: Classes/DeleteVideoClass/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("DeleteVideoClass")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteVideoClassConfirmed(int id)
@@ -841,6 +1005,12 @@ namespace FitnessHub.Controllers
             if (videoClass != null)
             {
                 await _classRepository.DeleteAsync(videoClass);
+
+                ClassHistory record = await _classHistoryRepository.GetByIdAsync(videoClass.Id);
+
+                record.Canceled = true;
+
+                await _classHistoryRepository.UpdateAsync(record);
             }
 
             return RedirectToAction(nameof(VideoClasses));
@@ -987,7 +1157,7 @@ namespace FitnessHub.Controllers
                 return Json(instructors);
             }
 
-           instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
+            instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
 
             // Get all online classes
             List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();

@@ -1,0 +1,45 @@
+﻿@model FitnessHub.Models.RequestInstructorViewModel
+
+@{
+    ViewData["Title"] = "RequestInstructor";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Request Instructor</h2>
+<hr />
+
+<div class="row view-form-style">
+    <div class="col-md-4 offset-md-4">
+        <form asp-action="RequestInstructor">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="GymId" class="control-label">Gym</label>
+                <select asp-for="GymId" asp-items="Model.Gyms" class="form-control">
+                    <option value="0" disabled selected>Select a gym</option>
+                </select>
+                <span asp-validation-for="GymId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Notes" class="control-label"></label>
+                <textarea class="form-control" name="Notes" rows="3"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Send
+                </button>
+                <a asp-action="MyRequests" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

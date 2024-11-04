@@ -75,11 +75,24 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="MyMembership"><span>My Membership</span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts"><span>My Workouts</span></a>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span>Account</span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts">My Workouts</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="RequestInstructor">Request Instructor</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             }
                         }
@@ -156,6 +169,22 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>History</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientsRequestsHistory">Clients Requests</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="AssignInstructorHistory">Instructor Assignments</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="ClassesHistory">Classes</a>
+                                    </li>
+                                </ul>
+                            </li>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && await UserHelper.IsUserInRoleAsync(user, "Instructor"))
@@ -167,6 +196,9 @@
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="Index">Workouts</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientsAssignments">Clients Assignments</a>
                                     </li>
                                 </ul>
                             </li>
@@ -187,6 +219,25 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="MachineDetails" asp-action="Index">Machines</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientsRequests">Clients Requests</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>History</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientsRequestsHistory">Clients Requests</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="AssignInstructorHistory">Instructor Assignments</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="ClassesHistory">Classes</a>
                                     </li>
                                 </ul>
                             </li>

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.VideoClass>
 
 @{
-    ViewData["Title"] = "VideoClasses";
+    ViewData["Title"] = "Video Classes";
 }
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
@@ -17,18 +17,6 @@
         </h2>
     </div>
 </div>
-
-<style>
-
-    .videoButton {
-        color: red;
-    }
-
-    .videoButton:hover {
-        color: #dd0202;
-    }
-
-</style>
 
 @if (!Model.Any())
 {

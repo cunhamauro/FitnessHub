@@ -1,0 +1,40 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.Communication.RequestInstructor>
+
+@{
+    ViewData["Title"] = "ClientsRequests";
+}
+
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Clients Requests</h2>
+    <hr style="margin-bottom: 2.2rem" />
+</div>
+
+@if (Model.Any())
+{
+    <div class="row justify-content-center mt-2">
+        @foreach (var request in Model)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+                <div class="card">
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@request.Client.FullName</div>
+                    <div class="card-body">
+                        <div class="card-text">
+                            <p style="margin-bottom: 0; margin-top: 0">@request.Notes</p>
+                        </div>
+                        <hr />
+                        <a asp-action="AssignInstructor" asp-route-id="@request.Id" class="btn btn-primary me-2"><i class="fa-solid fa-pen me-2"></i>Assign Instructor</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="container mb-4 view-text">
+        <div class="text-light">
+            There aren't any requests at the moment.
+        </div>
+    </div>
+}
+
