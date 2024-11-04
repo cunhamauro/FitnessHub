@@ -19,14 +19,16 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
         private readonly IClassCategoryRepository _classCategoryRepository;
         private readonly IClassHistoryRepository _classHistoryRepository;
+        private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
             _gymRepository = gymRepository;
             _classCategoryRepository = classCategoryRepository;
             _classHistoryRepository = classHistoryRepository;
+            _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
         }
 
         // Index not in use
@@ -42,7 +44,7 @@ namespace FitnessHub.Controllers
             List<ClassHistory> classes = await _classHistoryRepository.GetAll().ToListAsync();
             List<ClassHistoryViewModel> classesHistory = new();
 
-            //List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
+            List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
 
             foreach (var ch in classes)
             {
@@ -70,13 +72,14 @@ namespace FitnessHub.Controllers
 
                 List<string> clientEmailsList = new List<string>();
 
-                //foreach (var registration in registrations)
-                //{
-                //    if (registration.ClassId == ch.Id)
-                //    {
-                //        clientEmailsList.Add(registration.Email);
-                //    }
-                //}
+                foreach (var registration in registrations)
+                {
+                    if (registration.ClassId == ch.Id)
+                    {
+                        var registeredUser = await _userHelper.GetUserByIdAsync(registration.UserId);
+                        clientEmailsList.Add(registeredUser.Email);
+                    }
+                }
 
                 classesHistory.Add(new ClassHistoryViewModel
                 {

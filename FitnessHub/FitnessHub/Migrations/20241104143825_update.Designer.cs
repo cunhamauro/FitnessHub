@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241101181303_AddRequestHistoryStatus")]
-    partial class AddRequestHistoryStatus
+    [Migration("20241104143825_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,6 +197,35 @@ namespace FitnessHub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ClassCategories");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.RegisteredInClassesHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassesRegistrationHistory");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>
@@ -405,6 +434,53 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClientInstructorAppointmentsHistory");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.ClientMembershipHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateRenewal")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MembershipHistoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SignUpDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientMembershipHistory");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.MembershipHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MembershipHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.History.RequestInstructorHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -467,6 +543,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<int?>("MembershipId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("SignUpDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");

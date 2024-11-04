@@ -210,8 +210,8 @@ namespace FitnessHub.Migrations
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
+                    b.Property<string>("EmployeeId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
@@ -431,6 +431,53 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClientInstructorAppointmentsHistory");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.ClientMembershipHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateRenewal")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MembershipHistoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SignUpDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientMembershipHistory");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.MembershipHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Canceled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MembershipHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.History.RequestInstructorHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -493,6 +540,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<int?>("MembershipId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("SignUpDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");

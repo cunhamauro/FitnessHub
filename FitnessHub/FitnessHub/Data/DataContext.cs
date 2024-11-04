@@ -94,6 +94,10 @@ namespace FitnessHub.Data
                        .Property(m => m.Price)
                        .HasColumnType("decimal(18,2)");
 
+            builder.Entity<MembershipHistory>()
+                       .Property(m => m.Price)
+                       .HasColumnType("decimal(18,2)");
+
             // Disable database ID generation
             builder.Entity<ClassHistory>()
                        .Property(e => e.Id)
