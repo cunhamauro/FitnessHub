@@ -145,6 +145,22 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>History</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Gyms" asp-action="GymsHistory">Gyms</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="ClientsHistory">Clients</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="StaffHistory">Staff</a>
+                                    </li>
+                                </ul>
+                            </li>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && await UserHelper.IsUserInRoleAsync(user, "Admin"))
@@ -194,6 +210,12 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="ClassesHistory">Classes</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="ClientsHistory">Clients</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="StaffHistory">Staff</a>
                                     </li>
                                 </ul>
                             </li>

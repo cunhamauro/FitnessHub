@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -20,19 +21,22 @@ namespace FitnessHub.Controllers
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
         private readonly IGymRepository _gymRepository;
+        private readonly IClientHistoryRepository _clientHistoryRepository;
 
         public AccountController(
             IUserHelper userHelper,
             IMailHelper mailHelper,
             IImageHelper imageHelper,
             IConfiguration configuration,
-            IGymRepository gymRepository)
+            IGymRepository gymRepository,
+            IClientHistoryRepository clientHistoryRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _imageHelper = imageHelper;
             _configuration = configuration;
             _gymRepository = gymRepository;
+            _clientHistoryRepository = clientHistoryRepository;
         }
 
         public IActionResult Login()
@@ -123,6 +127,18 @@ namespace FitnessHub.Controllers
                         return View(model);
                     }
 
+                    var clientHistory = new ClientHistory()
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        Email = user.Email,
+                        BirthDate = user.BirthDate,
+                        GymId = gym.Id,
+                    };
+
+                    await _clientHistoryRepository.CreateAsync(clientHistory);
+
                     await _userHelper.AddUserToRoleAsync(user, "Client");
 
                     string myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
@@ -202,6 +218,18 @@ namespace FitnessHub.Controllers
 
                     if (response.Succeeded)
                     {
+                        var clientHistory = await _clientHistoryRepository.GetByIdTrackAsync(user.Id);
+                        if (clientHistory == null)
+                        {
+                            return ClientHistoryNotFound();
+                        }
+
+                        clientHistory.FirstName = user.FirstName;
+                        clientHistory.LastName = user.LastName;
+                        clientHistory.BirthDate = user.BirthDate;
+
+                        await _clientHistoryRepository.UpdateAsync(clientHistory);
+
                         ViewBag.UserMessage = "Successfully updated!";
                     }
                     else
@@ -531,6 +559,18 @@ namespace FitnessHub.Controllers
 
                     if (result.Succeeded)
                     {
+                        var clientHistory = new ClientHistory()
+                        {
+                            Id = user.Id,
+                            FirstName = user.FirstName,
+                            LastName = user.LastName,
+                            Email = user.Email,
+                            BirthDate = user.BirthDate,
+                            GymId = gym.Id,
+                        };
+
+                        await _clientHistoryRepository.CreateAsync(clientHistory);
+
                         await _userHelper.AddUserToRoleAsync(user, "Client");
                         var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                         await _userHelper.ConfirmEmailAsync(user, userToken);
@@ -570,6 +610,11 @@ namespace FitnessHub.Controllers
         public IActionResult GymNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
+        }
+
+        public IActionResult ClientHistoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Client history not found", Message = "No history found for that client." });
         }
 
         public IActionResult NotAuthorized()

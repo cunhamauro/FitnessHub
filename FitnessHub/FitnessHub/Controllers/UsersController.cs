@@ -1,5 +1,6 @@
 ﻿using FitnessHub.Data.Classes;
 using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -17,17 +18,23 @@ namespace FitnessHub.Controllers
         private readonly IMailHelper _mailHelper;
         private readonly ILoadRolesHelper _loadRolesHelper;
         private readonly IGymRepository _gymRepository;
+        private readonly IClientHistoryRepository _clientHistoryRepository;
+        private readonly IStaffHistoryRepository _staffHistoryRepository;
 
         public UsersController(
             IUserHelper userHelper,
             IMailHelper mailHelper,
             ILoadRolesHelper loadRolesHelper,
-            IGymRepository gymRepository)
+            IGymRepository gymRepository,
+            IClientHistoryRepository clientHistoryRepository,
+            IStaffHistoryRepository staffHistoryRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _loadRolesHelper = loadRolesHelper;
             _gymRepository = gymRepository;
+            _clientHistoryRepository = clientHistoryRepository;
+            _staffHistoryRepository = staffHistoryRepository;
         }
 
         // GET: Users
@@ -246,6 +253,36 @@ namespace FitnessHub.Controllers
 
                     if (result.Succeeded)
                     {
+                        if(model.Role == "Client")
+                        {
+                            var clientHistory = new ClientHistory()
+                            {
+                                Id = user.Id,
+                                FirstName = user.FirstName,
+                                LastName = user.LastName,
+                                Email = user.Email,
+                                BirthDate = user.BirthDate,
+                                GymId = gym.Id,
+                            };
+
+                            await _clientHistoryRepository.CreateAsync(clientHistory);
+                        }
+                        else
+                        {
+                            var staffHistory = new StaffHistory()
+                            {
+                                Id = user.Id,
+                                FirstName = user.FirstName,
+                                LastName = user.LastName,
+                                Email = user.Email,
+                                BirthDate = user.BirthDate,
+                                GymId = gym.Id,
+                                Role = model.Role,
+                            };
+
+                            await _staffHistoryRepository.CreateAsync(staffHistory);
+                        }
+
                         await _userHelper.AddUserToRoleAsync(user, model.Role);
 
                         var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
@@ -458,6 +495,31 @@ namespace FitnessHub.Controllers
                     return View(user);
                 }
 
+                if (user is Client)
+                {
+                    var clientHistory = await _clientHistoryRepository.GetByIdTrackAsync(user.Id);
+                    if (clientHistory == null)
+                    {
+                        return ClientHistoryNotFound();
+                    }
+
+                    clientHistory.GymId = gym.Id;
+                    clientHistory.Email = user.Email;
+
+                    await _clientHistoryRepository.UpdateAsync(clientHistory);
+                }
+
+                var staffHistory = await _staffHistoryRepository.GetByIdTrackAsync(user.Id);
+                if (staffHistory == null)
+                {
+                    return StaffHistoryNotFound();
+                }
+
+                staffHistory.GymId = gym.Id;
+                staffHistory.Email = user.Email;
+
+                await _staffHistoryRepository.UpdateAsync(staffHistory);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -519,6 +581,115 @@ namespace FitnessHub.Controllers
             return View(user);
         }
 
+        public async Task<IActionResult> ClientsHistory()
+        {
+            var clientsHistory = new List<ClientHistory>();
+            var clientsHistoryModel = new List<ClientHistoryViewModel>();
+
+            if (this.User.IsInRole("MasterAdmin"))
+            {
+                clientsHistory = _clientHistoryRepository.GetAll().ToList();
+            }
+
+            if (this.User.IsInRole("Admin"))
+            {
+                var admin = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (admin == null)
+                {
+                    return UserNotFound();
+                }
+
+                var adminGym = await _gymRepository.GetGymByUserAsync(admin);
+                if (adminGym == null)
+                {
+                    return GymNotFound();
+                }
+
+                clientsHistory = _clientHistoryRepository.GetByGymId(adminGym.Id).ToList();
+
+                foreach(var client in clientsHistory)
+                {
+                    var user = await _userHelper.GetUserByIdAsync(client.Id);
+                    if (user == null)
+                    {
+                        return UserNotFound();
+                    }
+
+                    var gym = await _gymRepository.GetGymByUserAsync(user);
+                    if (gym == null)
+                    {
+                        return GymNotFound();
+                    }
+
+                    clientsHistoryModel.Add(new ClientHistoryViewModel()
+                    {
+                        FirstName = client.FirstName,
+                        LastName = client.LastName,
+                        BirthDate = client.BirthDate,
+                        Email = client.Email,
+                        Gym = gym.Name
+                    });
+                }
+            }
+
+            return View(clientsHistoryModel);
+        }
+
+        public async Task<IActionResult> StaffHistory()
+        {
+            var staffHistory = new List<StaffHistory>();
+            var staffHistoryModel = new List<StaffHistoryViewModel>();
+
+            if (this.User.IsInRole("MasterAdmin"))
+            {
+                staffHistory = _staffHistoryRepository.GetAll().ToList();
+            }
+
+            if (this.User.IsInRole("Admin"))
+            {
+                var admin = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                if (admin == null)
+                {
+                    return UserNotFound();
+                }
+
+                var adminGym = await _gymRepository.GetGymByUserAsync(admin);
+                if (adminGym == null)
+                {
+                    return GymNotFound();
+                }
+
+                staffHistory = _staffHistoryRepository.GetByGymId(adminGym.Id).ToList();
+
+                foreach (var staff in staffHistory)
+                {
+                    var user = await _userHelper.GetUserByIdAsync(staff.Id);
+                    if (user == null)
+                    {
+                        return UserNotFound();
+                    }
+
+                    var gym = await _gymRepository.GetGymByUserAsync(user);
+                    if (gym == null)
+                    {
+                        return GymNotFound();
+                    }
+
+                    staffHistoryModel.Add(new StaffHistoryViewModel()
+                    {
+                        FirstName = staff.FirstName,
+                        LastName = staff.LastName,
+                        BirthDate = staff.BirthDate,
+                        Email = staff.Email,
+                        Gym = gym.Name,
+                        Role = staff.Role,
+                    });
+                }
+            }
+
+            return View(staffHistoryModel);
+        }
+
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
@@ -527,6 +698,16 @@ namespace FitnessHub.Controllers
         public IActionResult GymNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
+        }
+
+        public IActionResult ClientHistoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Client history not found", Message = "No history found for that client." });
+        }
+
+        public IActionResult StaffHistoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Staff history not found", Message = "No history found for that staff." });
         }
     }
 }
