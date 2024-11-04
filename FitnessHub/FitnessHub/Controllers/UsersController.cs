@@ -606,30 +606,30 @@ namespace FitnessHub.Controllers
                 }
 
                 clientsHistory = _clientHistoryRepository.GetByGymId(adminGym.Id).ToList();
+            }
 
-                foreach(var client in clientsHistory)
+            foreach (var client in clientsHistory)
+            {
+                var user = await _userHelper.GetUserByIdAsync(client.Id);
+                if (user == null)
                 {
-                    var user = await _userHelper.GetUserByIdAsync(client.Id);
-                    if (user == null)
-                    {
-                        return UserNotFound();
-                    }
-
-                    var gym = await _gymRepository.GetGymByUserAsync(user);
-                    if (gym == null)
-                    {
-                        return GymNotFound();
-                    }
-
-                    clientsHistoryModel.Add(new ClientHistoryViewModel()
-                    {
-                        FirstName = client.FirstName,
-                        LastName = client.LastName,
-                        BirthDate = client.BirthDate,
-                        Email = client.Email,
-                        Gym = gym.Name
-                    });
+                    return UserNotFound();
                 }
+
+                var gym = await _gymRepository.GetGymByUserAsync(user);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                clientsHistoryModel.Add(new ClientHistoryViewModel()
+                {
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    BirthDate = client.BirthDate,
+                    Email = client.Email,
+                    Gym = gym.Name
+                });
             }
 
             return View(clientsHistoryModel);
@@ -660,31 +660,31 @@ namespace FitnessHub.Controllers
                 }
 
                 staffHistory = _staffHistoryRepository.GetByGymId(adminGym.Id).ToList();
+            }
 
-                foreach (var staff in staffHistory)
+            foreach (var staff in staffHistory)
+            {
+                var user = await _userHelper.GetUserByIdAsync(staff.Id);
+                if (user == null)
                 {
-                    var user = await _userHelper.GetUserByIdAsync(staff.Id);
-                    if (user == null)
-                    {
-                        return UserNotFound();
-                    }
-
-                    var gym = await _gymRepository.GetGymByUserAsync(user);
-                    if (gym == null)
-                    {
-                        return GymNotFound();
-                    }
-
-                    staffHistoryModel.Add(new StaffHistoryViewModel()
-                    {
-                        FirstName = staff.FirstName,
-                        LastName = staff.LastName,
-                        BirthDate = staff.BirthDate,
-                        Email = staff.Email,
-                        Gym = gym.Name,
-                        Role = staff.Role,
-                    });
+                    return UserNotFound();
                 }
+
+                var gym = await _gymRepository.GetGymByUserAsync(user);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                staffHistoryModel.Add(new StaffHistoryViewModel()
+                {
+                    FirstName = staff.FirstName,
+                    LastName = staff.LastName,
+                    BirthDate = staff.BirthDate,
+                    Email = staff.Email,
+                    Gym = gym.Name,
+                    Role = staff.Role,
+                });
             }
 
             return View(staffHistoryModel);
