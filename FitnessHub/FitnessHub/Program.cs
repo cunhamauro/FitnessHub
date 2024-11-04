@@ -86,6 +86,9 @@ namespace FitnessHub
             builder.Services.AddScoped<IClientInstructorAppointmentRepository, ClientInstructorAppointmentRepository>();
             builder.Services.AddScoped<IRequestInstructorHistoryRepository, RequestInstructorHistoryRepository>();
             builder.Services.AddScoped<IClientInstructorAppointmentHistoryRepository, ClientInstructorAppointmentHistoryRepository>();
+            builder.Services.AddScoped<IClientMembershipHistoryRepository, ClientMembershipHistoryRepository>();
+            builder.Services.AddScoped<IMembershipHistoryRepository, MembershipHistoryRepository>();
+
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
