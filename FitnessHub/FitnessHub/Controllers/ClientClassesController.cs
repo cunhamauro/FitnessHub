@@ -15,7 +15,7 @@ namespace FitnessHub.Controllers
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper)
+                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
