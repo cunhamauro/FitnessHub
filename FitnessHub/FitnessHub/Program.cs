@@ -1,4 +1,5 @@
 using FitnessHub.Data;
+using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -86,6 +87,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IClientInstructorAppointmentRepository, ClientInstructorAppointmentRepository>();
             builder.Services.AddScoped<IRequestInstructorHistoryRepository, RequestInstructorHistoryRepository>();
             builder.Services.AddScoped<IClientInstructorAppointmentHistoryRepository, ClientInstructorAppointmentHistoryRepository>();
+            builder.Services.AddScoped<IRegisteredInClassesHistoryRepository, RegisteredInClassesHistoryRepository>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
