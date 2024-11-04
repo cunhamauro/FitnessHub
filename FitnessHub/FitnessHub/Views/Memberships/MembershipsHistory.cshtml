@@ -28,11 +28,12 @@ else
                             @Html.DisplayNameFor(model => model.Price)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Description)
+                            Date
                         </th>
                         <th>
                             Status
                         </th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,20 +47,31 @@ else
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Price)
+                                @item.Price.ToString("C2")
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.Description)
+                                @item.DateCreated.ToShortDateString()
                             </td>
                             <td>
                                 @if (item.Canceled == true)
                                 {
-                                    <span>Active</span>
+                                    <span>Canceled</span>
                                 }
                                 else
                                 {
-                                    <span>Canceled</span>
+                                    <span>Active</span>
                                 }
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#membershipDescriptionModal"
+                                            data-description="@System.Text.Json.JsonSerializer.Serialize(item.Description)">
+                                        <i class="fa-solid fa-list me-2"></i>Expand
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -67,4 +79,49 @@ else
             </table>
         </div>
     </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="membershipDescriptionModal" tabindex="-1" aria-labelledby="membershipDescriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="membershipDescriptionModalLabel">Description</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="description">
+                        <!-- Membership description will be dynamically added here -->
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const membershipDescriptionModal = document.getElementById('membershipDescriptionModal');
+
+            membershipDescriptionModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const description = JSON.parse(button.getAttribute('data-description')); // Parse the description as JSON
+
+                const descriptionElement = document.getElementById('description');
+                descriptionElement.innerHTML = '';  // Clear existing content
+
+                // Check if description is an array; if not, assume it is plain text
+                if (Array.isArray(description)) {
+                    description.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = item; // Add each item as a list item
+                        descriptionElement.appendChild(li);
+                    });
+                } else {
+                    descriptionElement.textContent = description; // Handle case for a plain string description
+                }
+            });
+        });
+    </script>
 }
