@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities.History;
+using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
@@ -14,12 +15,16 @@ namespace FitnessHub.Controllers
         private readonly IMembershipRepository _membershipRepository;
         private readonly IUserHelper _userHelper;
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
+        private readonly IMembershipHistoryRepository _membershipHistoryRepository;
+        private readonly IClientMembershipHistoryRepository _clientMembershipHistoryRepository;
 
-        public MembershipsController(IMembershipRepository membershipRepository, IUserHelper userHelper, IMembershipDetailsRepository membershipDetailsRepository)
+        public MembershipsController(IMembershipRepository membershipRepository, IUserHelper userHelper, IMembershipDetailsRepository membershipDetailsRepository, IMembershipHistoryRepository membershipHistoryRepository, IClientMembershipHistoryRepository clientMembershipHistoryRepository)
         {
             _membershipRepository = membershipRepository;
             _userHelper = userHelper;
             _membershipDetailsRepository = membershipDetailsRepository;
+            _membershipHistoryRepository = membershipHistoryRepository;
+            _clientMembershipHistoryRepository = clientMembershipHistoryRepository;
         }
 
         [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
@@ -41,6 +46,41 @@ namespace FitnessHub.Controllers
             }
 
             return View(_membershipRepository.GetAll());
+        }
+
+        // GET: User Memberships History
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> MyMembershipHistory()
+        {
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            List<ClientMembershipHistory> memberships = await _clientMembershipHistoryRepository.GetAll().Where(m => m.UserId == client.Id).ToListAsync();
+            List<ClientMembershipHistoryViewModel> models = new();
+
+            foreach (var m in memberships)
+            {
+                var membership = await _membershipHistoryRepository.GetByIdAsync(m.MembershipHistoryId);
+
+                models.Add(
+                    new ClientMembershipHistoryViewModel
+                    {
+                        MembershipHistoryId = m.MembershipHistoryId,
+                        DateRenewal = m.DateRenewal,
+                        Id = m.Id,
+                        Name = membership.Name,
+                        Price = membership.Price,
+                        Status = m.Status,
+                        SignUpDate = m.SignUpDate,
+                    }
+                );
+            }
+
+            return View(models);
         }
 
         // GET: User Membership
@@ -121,8 +161,8 @@ namespace FitnessHub.Controllers
                 }
 
                 membershipDetails.Membership = membership;
-                membershipDetails.Status = true;
-                membershipDetails.DateRenewal = DateTime.Now.AddMonths(12);
+                membershipDetails.DateRenewal = DateTime.UtcNow.AddMonths(12);
+                membershipDetails.SignUpDate = DateTime.UtcNow;
 
                 Client client = await _userHelper.GetUserAsync(this.User) as Client;
 
@@ -137,6 +177,17 @@ namespace FitnessHub.Controllers
 
                 await _membershipDetailsRepository.CreateAsync(membershipDetails);
                 await _userHelper.UpdateUserAsync(client);
+
+                ClientMembershipHistory record = new()
+                {
+                    Id = membershipDetails.Id,
+                    DateRenewal = membershipDetails.DateRenewal,
+                    MembershipHistoryId = membershipDetails.Membership.Id,
+                    UserId = client.Id,
+                    SignUpDate = membershipDetails.SignUpDate,
+                };
+
+                await _clientMembershipHistoryRepository.CreateAsync(record);
 
                 return RedirectToAction(nameof(MyMembership));
             }
@@ -182,11 +233,23 @@ namespace FitnessHub.Controllers
                 return MembershipNotFound();
             }
 
+            ClientMembershipHistory record = await _clientMembershipHistoryRepository.GetByIdAsync(details.Id);
+            record.Status = false;
+
+            await _clientMembershipHistoryRepository.UpdateAsync(record);
+
             await _membershipDetailsRepository.DeleteAsync(details);
             client.MembershipDetails = null;
             await _userHelper.UpdateUserAsync(client);
 
             return RedirectToAction(nameof(MyMembership));
+        }
+
+        // GET: MembershipsHistory
+        [Authorize(Roles = "MasterAdmin")]
+        public IActionResult MembershipsHistory()
+        {
+            return View(_membershipHistoryRepository.GetAll());
         }
 
         // GET: Memberships
@@ -232,9 +295,27 @@ namespace FitnessHub.Controllers
         {
             List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
 
+            foreach (var m in memberships)
+            {
+                if (m.Name == membership.Name)
+                {
+                    ModelState.AddModelError("Name", "There is already a Membership with this Name!");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 await _membershipRepository.CreateAsync(membership);
+
+                MembershipHistory record = new()
+                {
+                    Id = membership.Id,
+                    Description = membership.Description,
+                    Price = membership.Price,
+                    Name = membership.Name,
+                };
+
+                await _membershipHistoryRepository.CreateAsync(record);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -268,9 +349,21 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Membership membership)
         {
-            if (membership == null)
+            Membership original = await _membershipRepository.GetByIdAsync(membership.Id);
+
+            if (original == null)
             {
                 return MembershipNotFound();
+            }
+
+            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+
+            foreach (var m in memberships)
+            {
+                if (m.Name == membership.Name && m.Name != original.Name)
+                {
+                    ModelState.AddModelError("Name", "There is already a Membership with this Name!");
+                }
             }
 
             if (ModelState.IsValid)
@@ -278,6 +371,13 @@ namespace FitnessHub.Controllers
                 try
                 {
                     await _membershipRepository.UpdateAsync(membership);
+
+                    var record = await _membershipHistoryRepository.GetByIdAsync(membership.Id);
+                    record.Description = membership.Description;
+                    record.Price = membership.Price;
+                    record.Name = membership.Name;
+
+                    await _membershipHistoryRepository.UpdateAsync(record);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -326,6 +426,10 @@ namespace FitnessHub.Controllers
             if (membership != null)
             {
                 await _membershipRepository.DeleteAsync(membership);
+
+                var record = await _membershipHistoryRepository.GetByIdAsync(id);
+                record.Canceled = true;
+                await _membershipHistoryRepository.UpdateAsync(record);
             }
 
             return RedirectToAction(nameof(Index));

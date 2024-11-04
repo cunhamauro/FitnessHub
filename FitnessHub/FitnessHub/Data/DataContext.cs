@@ -67,6 +67,8 @@ namespace FitnessHub.Data
 
         public DbSet<ClientInstructorAppointmentHistory> ClientInstructorAppointmentsHistory { get; set; }
 
+        public DbSet<ClientMembershipHistory> ClientMembershipHistory { get; set; }
+
         public DbSet<ClassHistory> ClassHistory { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)
@@ -93,6 +95,10 @@ namespace FitnessHub.Data
                        .HasColumnType("decimal(18,2)");
 
             // Disable database ID generation
+            builder.Entity<ClassHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
             builder.Entity<RequestInstructorHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
@@ -101,6 +107,14 @@ namespace FitnessHub.Data
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
 
+            builder.Entity<MembershipHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
+            builder.Entity<ClientMembershipHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+                       
             builder.Entity<ClassHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
