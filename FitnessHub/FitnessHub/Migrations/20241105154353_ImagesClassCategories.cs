@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class ImagesClassCategories : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,7 +61,8 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -139,6 +140,22 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClientsHistory",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientsHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Gyms",
                 columns: table => new
                 {
@@ -154,6 +171,21 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Gyms", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GymsHistory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    City = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GymsHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,6 +209,7 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Canceled = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -214,6 +247,23 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RequestsIntructorHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StaffHistory",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StaffHistory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -935,10 +985,16 @@ namespace FitnessHub.Migrations
                 name: "ClientOnlineClass");
 
             migrationBuilder.DropTable(
+                name: "ClientsHistory");
+
+            migrationBuilder.DropTable(
                 name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Exercises");
+
+            migrationBuilder.DropTable(
+                name: "GymsHistory");
 
             migrationBuilder.DropTable(
                 name: "MachineDetails");
@@ -951,6 +1007,9 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "RequestsIntructorHistory");
+
+            migrationBuilder.DropTable(
+                name: "StaffHistory");
 
             migrationBuilder.DropTable(
                 name: "VideoClasses");

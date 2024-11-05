@@ -11,5 +11,25 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         [Required]
         public string? Description { get; set; }
+
+
+        [Display(Name = "Image")]
+        public string? ImagePath { get; set; }
+
+        [Display(Name = "Image")]
+        public string ImageDisplay
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImagePath))
+                {
+                    return $"/images/noimage.png";
+                }
+                else
+                {
+                    return $"{ImagePath.Substring(1)}";
+                }
+            }
+        }
     }
 }

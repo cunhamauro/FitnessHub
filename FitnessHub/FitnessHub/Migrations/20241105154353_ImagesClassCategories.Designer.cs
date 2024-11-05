@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241104150219_update2")]
-    partial class update2
+    [Migration("20241105154353_ImagesClassCategories")]
+    partial class ImagesClassCategories
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -188,6 +188,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -409,6 +412,31 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClassHistory");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.ClientHistory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GymId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClientsHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.History.ClientInstructorAppointmentHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -459,6 +487,32 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClientMembershipHistory");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.GymHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GymsHistory");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.History.MembershipHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -507,6 +561,34 @@ namespace FitnessHub.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RequestsIntructorHistory");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.History.StaffHistory", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GymId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("StaffHistory");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.Users.Membership", b =>

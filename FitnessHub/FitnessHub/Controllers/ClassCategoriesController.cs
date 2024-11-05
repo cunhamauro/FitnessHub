@@ -1,6 +1,7 @@
 ﻿using FitnessHub.Data;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Repositories;
+using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace FitnessHub.Controllers
     public class ClassCategoriesController : Controller
     {
         private readonly IClassCategoryRepository _classCategoryRepository;
+        private readonly IImageHelper _imageHelper;
 
-        public ClassCategoriesController(DataContext context, IClassCategoryRepository classCategoryRepository)
+        public ClassCategoriesController(DataContext context, IClassCategoryRepository classCategoryRepository, IImageHelper imageHelper)
         {
             _classCategoryRepository = classCategoryRepository;
+            _imageHelper = imageHelper;
         }
 
         // GET: ClassCategories
@@ -51,15 +54,37 @@ namespace FitnessHub.Controllers
         // POST: ClassCategories/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create(ClassCategory classCategory)
+        //{
+        //    List<ClassCategory> categories = _classCategoryRepository.GetAll().ToList();
+
+        //    foreach (var cat in categories)
+        //    {
+        //        if (cat.Name == classCategory.Name)
+        //        {
+        //            ModelState.AddModelError("Name", "There is already a category with this name");
+        //        }
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        await _classCategoryRepository.CreateAsync(classCategory);
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(classCategory);
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ClassCategory classCategory)
+        public async Task<IActionResult> Create(ClassCategoriesViewModel model)
         {
             List<ClassCategory> categories = _classCategoryRepository.GetAll().ToList();
 
             foreach (var cat in categories)
             {
-                if (cat.Name == classCategory.Name)
+                if (cat.Name == model.Name)
                 {
                     ModelState.AddModelError("Name", "There is already a category with this name");
                 }
@@ -67,11 +92,23 @@ namespace FitnessHub.Controllers
 
             if (ModelState.IsValid)
             {
+                var classCategory = new ClassCategory
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                };
+
+                if (model.ImageFile != null)
+                {
+                    classCategory.ImagePath = await _imageHelper.UploadImageAsync(model.ImageFile, "categories");
+                }
+
                 await _classCategoryRepository.CreateAsync(classCategory);
                 return RedirectToAction("Index");
             }
-            return View(classCategory);
+            return View(model);
         }
+
 
         // GET: ClassCategories/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -87,19 +124,27 @@ namespace FitnessHub.Controllers
             {
                 return CategoryNotFound();
             }
-            return View(classCategory);
+            var model = new ClassCategoriesViewModel
+            {
+                Id = classCategory.Id,
+                Name = classCategory.Name,
+                Description = classCategory.Description,
+                ImagePath = classCategory.ImagePath
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(ClassCategory classCategory)
+        public async Task<IActionResult> Edit(ClassCategoriesViewModel model)
         {
-            ClassCategory oldCategory = await _classCategoryRepository.GetByIdAsync(classCategory.Id);
+            ClassCategory oldCategory = await _classCategoryRepository.GetByIdAsync(model.Id);
             List<ClassCategory> categories = _classCategoryRepository.GetAll().ToList();
 
             foreach (var cat in categories)
             {
-                if (cat.Name == classCategory.Name && cat.Name != oldCategory.Name)
+                if (cat.Name == model.Name && cat.Name != oldCategory.Name)
                 {
                     ModelState.AddModelError("Name", "There is already a category with this name");
                 }
@@ -109,11 +154,18 @@ namespace FitnessHub.Controllers
             {
                 try
                 {
-                    await _classCategoryRepository.UpdateAsync(classCategory);
+                    oldCategory.Name = model.Name;
+                    oldCategory.Description = model.Description;
+
+                    if (model.ImageFile != null)
+                    {
+                        oldCategory.ImagePath = await _imageHelper.UploadImageAsync(model.ImageFile, "categories");
+                    }
+                    await _classCategoryRepository.UpdateAsync(oldCategory);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _classCategoryRepository.ExistsAsync(classCategory.Id))
+                    if (!await _classCategoryRepository.ExistsAsync(model.Id))
                     {
                         return CategoryNotFound();
                     }
@@ -124,7 +176,7 @@ namespace FitnessHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(classCategory);
+            return View(model);
         }
 
         // GET: ClassCategories/Delete/5
