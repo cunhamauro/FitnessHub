@@ -186,5 +186,10 @@ namespace FitnessHub.Helpers
         {
             return _userManager.DeleteAsync(user);
         }
+
+        public bool CheckIfPhoneNumberExists(string phoneNumber)
+        {
+            return _userManager.Users.Where(u => u.PhoneNumber == phoneNumber).Any();
+        }
     }
 }

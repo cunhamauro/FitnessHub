@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitnessHub.Models
 {
@@ -22,5 +23,17 @@ namespace FitnessHub.Models
 
         [Display(Name = "Avatar")]
         public IFormFile? ImageFile { get; set; }
+
+
+        [Required]
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone")]
+        public string? PhoneNumber { get; set; }
+
+
+        public string? CountryCallingcode { get; set; }
+
+
+        public IEnumerable<SelectListItem>? Countries { get; set; }
     }
 }

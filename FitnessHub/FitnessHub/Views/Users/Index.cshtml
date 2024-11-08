@@ -11,9 +11,18 @@
             <i class="fa-solid fa-user me-2"></i>New
         </a>
         <!-- Heading centered -->
-        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
-            Users
-        </h2>
+        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
+        {
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+                Admins
+            </h2>
+        }
+        else
+        {
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+                Users
+            </h2>
+        }
     </div>
 </div>
 
@@ -41,9 +50,12 @@ else
                                 @Html.DisplayNameFor(model => model.Gym)
                             </th>
                         }
-                        <th>
-                            @Html.DisplayNameFor(model => model.Role)
-                        </th>
+                        @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                        {
+                            <th>
+                                @Html.DisplayNameFor(model => model.Role)
+                            </th>
+                        }
                         <th>
                         </th>
                     </tr>
@@ -64,9 +76,12 @@ else
                                     @Html.DisplayFor(modelItem => item.Gym.Data)
                                 </td>
                             }
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Role)
-                            </td>
+                            @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                            {
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Role)
+                                </td>
+                            }
                             <td>
                                 <div style="display: flex">
                                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning me-2"><i class="fa-solid fa-pen me-2"></i>Update</a>

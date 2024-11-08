@@ -40,5 +40,17 @@ namespace FitnessHub.Models
         [Required]
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
+
+
+        [Required]
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone")]
+        public string? PhoneNumber { get; set; }
+
+
+        public string? CountryCallingcode { get; set; }
+
+
+        public IEnumerable<SelectListItem>? Countries { get; set; }
     }
 }

@@ -463,3 +463,13 @@ details .row {
     justify-content: center;
 }
 
+/* Chrome, Safari, Edge, Opera */
+#phoneNumber::-webkit-outer-spin-button, #phoneNumber::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+#phoneNumber[type=number] {
+    -moz-appearance: textfield;
+}

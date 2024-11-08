@@ -20,5 +20,8 @@ namespace FitnessHub.Data.Entities.History
 
         [Display(Name = "Gym")]
         public int GymId { get; set; }
+
+        [Display(Name = "Phone")]
+        public string? PhoneNumber { get; set; }
     }
 }

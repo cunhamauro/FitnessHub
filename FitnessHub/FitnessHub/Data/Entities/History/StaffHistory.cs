@@ -16,6 +16,9 @@ namespace FitnessHub.Data.Entities.History
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
 
+        [Display(Name = "Phone")]
+        public string? PhoneNumber { get; set; }
+
         public string? Email { get; set; }
 
         [Display(Name = "Gym")]

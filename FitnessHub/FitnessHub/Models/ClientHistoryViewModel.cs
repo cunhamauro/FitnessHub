@@ -17,5 +17,7 @@ namespace FitnessHub.Models
         public string? Email { get; set; }
 
         public string? Gym { get; set; }
+
+        public string? PhoneNumber { get; set; }
     }
 }

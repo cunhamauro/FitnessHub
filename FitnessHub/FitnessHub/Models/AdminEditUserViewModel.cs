@@ -21,6 +21,9 @@ namespace FitnessHub.Models
         public int GymId { get; set; }
 
 
+        public IEnumerable<SelectListItem>? Countries { get; set; }
+
+
         [Display(Name = "Name")]
         public string? FullName { get; set; }
     }
