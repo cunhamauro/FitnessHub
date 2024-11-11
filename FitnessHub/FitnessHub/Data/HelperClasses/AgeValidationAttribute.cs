@@ -16,9 +16,9 @@ namespace FitnessHub.Data.HelperClasses
                     age--;
                 }
 
-                if (age < 14)
+                if (age < 18)
                 {
-                    return new ValidationResult("User must be at least 14 years old.");
+                    return new ValidationResult("User must be at least 18 years old.");
                 }
             }
 

@@ -34,6 +34,22 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
 
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label asp-for="CountryCallingcode" class="control-label">Country</label>
+                    <select asp-for="CountryCallingcode" asp-items="Model.Countries" class="form-control" id="countrySelect">
+                        <option value="0" disabled selected>Select a country</option>
+                    </select>
+                    <span asp-validation-for="CountryCallingcode" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-9">
+                    <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" type="number" id="phoneNumber" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="ImageFile" class="control-label"></label>
                 <input asp-for="ImageFile" class="form-control" type="file" />

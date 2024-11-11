@@ -5,7 +5,14 @@
     var maxDate = DateTime.Now;
 }
 
-<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add User</h2>
+@if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
+{
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add Admin</h2>
+}
+else
+{
+    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add User</h2>
+}
 <hr />
 
 <div class="row view-form-style">
@@ -29,6 +36,22 @@
                 <label asp-for="BirthDate" class="control-label"></label>
                 <input asp-for="BirthDate" format="dd/MM/yyyy" max="@maxDate.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" type="date" />
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label asp-for="CountryCallingcode" class="control-label">Country</label>
+                    <select asp-for="CountryCallingcode" asp-items="Model.Countries" class="form-control" id="countrySelect">
+                        <option value="0" disabled selected>Select a country</option>
+                    </select>
+                    <span asp-validation-for="CountryCallingcode" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-9">
+                    <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" type="number" id="phoneNumber" min="1"/>
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
             </div>
 
             @if(this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
@@ -94,6 +117,7 @@
                     defaultRoleOption.disabled = true;  // Disable the default "Select a Role" option
                 }
             }
+            
         });
     </script>
 }

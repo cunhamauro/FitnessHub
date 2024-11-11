@@ -5,6 +5,7 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using FitnessHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -16,25 +17,28 @@ namespace FitnessHub.Controllers
     {
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
-        private readonly ILoadRolesHelper _loadRolesHelper;
+        private readonly ILoadHelper _loadHelper;
         private readonly IGymRepository _gymRepository;
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
+        private readonly CountryService _countryService;
 
         public UsersController(
             IUserHelper userHelper,
             IMailHelper mailHelper,
-            ILoadRolesHelper loadRolesHelper,
+            ILoadHelper loadHelper,
             IGymRepository gymRepository,
             IClientHistoryRepository clientHistoryRepository,
-            IStaffHistoryRepository staffHistoryRepository)
+            IStaffHistoryRepository staffHistoryRepository,
+            CountryService countryService)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
-            _loadRolesHelper = loadRolesHelper;
+            _loadHelper = loadHelper;
             _gymRepository = gymRepository;
             _clientHistoryRepository = clientHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
+            _countryService = countryService;
         }
 
         // GET: Users
@@ -117,6 +121,7 @@ namespace FitnessHub.Controllers
                 Gym = userGym,
                 Role = role,
                 BirthDate = user.BirthDate,
+                PhoneNumber = user.PhoneNumber,
                 Avatar = user.Avatar,
             };
 
@@ -128,6 +133,9 @@ namespace FitnessHub.Controllers
         {
             var model = new AdminRegisterNewUserViewModel();
 
+            var countries = await _loadHelper.LoadCountriesAsync();
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
+
             if (this.User.IsInRole("MasterAdmin"))
             {
                 model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
@@ -136,7 +144,7 @@ namespace FitnessHub.Controllers
                     Text = $"{gym.Data}",
                 });
 
-                _loadRolesHelper.LoadMasterAdminRoles(model);
+                _loadHelper.LoadMasterAdminRoles(model);
             }
 
             if (this.User.IsInRole("Admin"))
@@ -154,15 +162,15 @@ namespace FitnessHub.Controllers
                 }
 
                 model.Gyms = new List<SelectListItem>
+                {
+                    new SelectListItem
                     {
-                        new SelectListItem
-                        {
-                            Value = gym.Id.ToString(),
-                            Text = $"{gym.Data}"
-                        }
-                    };
+                        Value = gym.Id.ToString(),
+                        Text = $"{gym.Data}"
+                    }
+                };
 
-                _loadRolesHelper.LoadAdminRoles(model);
+                _loadHelper.LoadAdminRoles(model);
             }
 
             return View(model);
@@ -181,6 +189,11 @@ namespace FitnessHub.Controllers
             if (model.Role == "0")
             {
                 ModelState.AddModelError("Role", "Please select a role.");
+            }
+
+            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            {
+                ModelState.AddModelError("PhoneNumber", "Please select a country.");
             }
 
             if (this.User.IsInRole("Admin"))
@@ -247,13 +260,30 @@ namespace FitnessHub.Controllers
                     user.Email = model.Email;
                     user.UserName = model.Email;
                     user.BirthDate = model.BirthDate;
+                    user.PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}";
+
+                    if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
+                    {
+                        ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
+
+                        model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                        {
+                            Value = gym.Id.ToString(),
+                            Text = $"{gym.Data}",
+                        });
+
+                        var countries = await _loadHelper.LoadCountriesAsync();
+                        model.Countries = new SelectList(countries, "Callingcode", "Data");
+
+                        return View(model);
+                    }
 
                     string? password = "FitHub_2024";
                     var result = await _userHelper.AddUserAsync(user, password);
 
                     if (result.Succeeded)
                     {
-                        if(model.Role == "Client")
+                        if (model.Role == "Client")
                         {
                             var clientHistory = new ClientHistory()
                             {
@@ -263,6 +293,7 @@ namespace FitnessHub.Controllers
                                 Email = user.Email,
                                 BirthDate = user.BirthDate,
                                 GymId = gym.Id,
+                                PhoneNumber = user.PhoneNumber,
                             };
 
                             await _clientHistoryRepository.CreateAsync(clientHistory);
@@ -278,6 +309,7 @@ namespace FitnessHub.Controllers
                                 BirthDate = user.BirthDate,
                                 GymId = gym.Id,
                                 Role = model.Role,
+                                PhoneNumber = user.PhoneNumber
                             };
 
                             await _staffHistoryRepository.CreateAsync(staffHistory);
@@ -316,6 +348,9 @@ namespace FitnessHub.Controllers
                         Text = $"{gym.Data}",
                     });
 
+                    var countries = await _loadHelper.LoadCountriesAsync();
+                    model.Countries = new SelectList(countries, "Callingcode", "Data");
+
                     return View(model);
                 }
             }
@@ -328,7 +363,7 @@ namespace FitnessHub.Controllers
                     Text = $"{gym.Data}",
                 });
 
-                _loadRolesHelper.LoadMasterAdminRoles(model);
+                _loadHelper.LoadMasterAdminRoles(model);
             }
 
             if (this.User.IsInRole("Admin"))
@@ -354,16 +389,10 @@ namespace FitnessHub.Controllers
                     }
                 };
 
-                _loadRolesHelper.LoadAdminRoles(model);
+                _loadHelper.LoadAdminRoles(model);
             }
 
             ModelState.AddModelError("", "Failed to create user.");
-
-            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-            {
-                Value = gym.Id.ToString(),
-                Text = $"{gym.Data}",
-            });
 
             return View(model);
         }
@@ -558,6 +587,7 @@ namespace FitnessHub.Controllers
                 Role = role,
                 BirthDate = user.BirthDate,
                 Avatar = user.Avatar,
+                PhoneNumber = user.PhoneNumber,
             };
 
             return View(model);
@@ -628,7 +658,8 @@ namespace FitnessHub.Controllers
                     LastName = client.LastName,
                     BirthDate = client.BirthDate,
                     Email = client.Email,
-                    Gym = gym.Name
+                    Gym = gym.Name,
+                    PhoneNumber = client.PhoneNumber,
                 });
             }
 
@@ -684,6 +715,7 @@ namespace FitnessHub.Controllers
                     Email = staff.Email,
                     Gym = gym.Name,
                     Role = staff.Role,
+                    PhoneNumber = staff.PhoneNumber,
                 });
             }
 

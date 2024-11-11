@@ -23,6 +23,18 @@ namespace FitnessHub.Models
         public DateTime BirthDate { get; set; }
 
 
+        [Required]
+        [DataType(DataType.PhoneNumber)]
+        [Display(Name = "Phone")]
+        public string? PhoneNumber { get; set; }
+
+
+        public string? CountryCallingcode { get; set; }
+
+
+        public IEnumerable<SelectListItem>? Countries { get; set; }
+
+
         public IEnumerable<SelectListItem>? Gyms { get; set; }
 
 

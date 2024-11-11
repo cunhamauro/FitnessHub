@@ -19,6 +19,7 @@ namespace FitnessHub.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IMailHelper _mailHelper;
         private readonly IImageHelper _imageHelper;
+        private readonly ILoadHelper _loadHelper;
         private readonly IConfiguration _configuration;
         private readonly IGymRepository _gymRepository;
         private readonly IClientHistoryRepository _clientHistoryRepository;
@@ -27,6 +28,7 @@ namespace FitnessHub.Controllers
             IUserHelper userHelper,
             IMailHelper mailHelper,
             IImageHelper imageHelper,
+            ILoadHelper loadHelper,
             IConfiguration configuration,
             IGymRepository gymRepository,
             IClientHistoryRepository clientHistoryRepository)
@@ -34,6 +36,7 @@ namespace FitnessHub.Controllers
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _imageHelper = imageHelper;
+            _loadHelper = loadHelper;
             _configuration = configuration;
             _gymRepository = gymRepository;
             _clientHistoryRepository = clientHistoryRepository;
@@ -73,15 +76,18 @@ namespace FitnessHub.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
+            var countries = await _loadHelper.LoadCountriesAsync();
+
             var model = new RegisterNewUserViewModel()
             {
                 Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
                 {
                     Value = gym.Id.ToString(),
                     Text = $"{gym.Data}",
-                })
+                }),
+                Countries = new SelectList(countries, "Callingcode", "Data")
             };
 
             return View(model);
@@ -94,6 +100,13 @@ namespace FitnessHub.Controllers
             {
                 ModelState.AddModelError("Gym", "Please select a gym.");
             }
+
+            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            {
+                ModelState.AddModelError("PhoneNumber", "Please select a country.");
+            }
+
+            var countries = await _loadHelper.LoadCountriesAsync();
 
             if (ModelState.IsValid)
             {
@@ -113,8 +126,24 @@ namespace FitnessHub.Controllers
                         Email = model.Email,
                         UserName = model.Email,
                         BirthDate = model.BirthDate,
-                        Gym = gym
+                        Gym = gym,
+                        PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}"
                     };
+
+                    if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
+                    {
+                        ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
+
+                        model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                        {
+                            Value = gym.Id.ToString(),
+                            Text = $"{gym.Data}",
+                        });
+
+                        model.Countries = new SelectList(countries, "Callingcode", "Data");
+
+                        return View(model);
+                    }
 
                     var result = await _userHelper.AddUserAsync(user, model.Password);
 
@@ -135,6 +164,7 @@ namespace FitnessHub.Controllers
                         Email = user.Email,
                         BirthDate = user.BirthDate,
                         GymId = gym.Id,
+                        PhoneNumber = user.PhoneNumber,
                     };
 
                     await _clientHistoryRepository.CreateAsync(clientHistory);
@@ -175,6 +205,8 @@ namespace FitnessHub.Controllers
                 Text = $"{gym.Data}",
             });
 
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
+
             return View(model);
         }
 
@@ -187,11 +219,16 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            var model = new ChangeUserViewModel();
+            var countries = await _loadHelper.LoadCountriesAsync();
 
-            model.FirstName = user.FirstName;
-            model.LastName = user.LastName;
-            model.BirthDate = user.BirthDate;
+            var model = new ChangeUserViewModel()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BirthDate = user.BirthDate,
+                PhoneNumber = user.PhoneNumber,
+                Countries = new SelectList(countries, "Callingcode", "Data"),
+            };
 
             return View(model);
         }
@@ -199,6 +236,13 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
         {
+            var countries = await _loadHelper.LoadCountriesAsync();
+
+            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            {
+                ModelState.AddModelError("PhoneNumber", "Please select a country.");
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -207,11 +251,21 @@ namespace FitnessHub.Controllers
                     user.FirstName = model.FirstName;
                     user.LastName = model.LastName;
                     user.BirthDate = model.BirthDate;
+                    user.PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}";
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
                         var path = await _imageHelper.UploadImageAsync(model.ImageFile, "users");
                         user.ImagePath = path;
+                    }
+
+                    if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
+                    {
+                        ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
+
+                        model.Countries = new SelectList(countries, "Callingcode", "Data");
+
+                        return View(model);
                     }
 
                     var response = await _userHelper.UpdateUserAsync(user);
@@ -227,6 +281,7 @@ namespace FitnessHub.Controllers
                         clientHistory.FirstName = user.FirstName;
                         clientHistory.LastName = user.LastName;
                         clientHistory.BirthDate = user.BirthDate;
+                        clientHistory.PhoneNumber = user.PhoneNumber;
 
                         await _clientHistoryRepository.UpdateAsync(clientHistory);
 
@@ -242,6 +297,8 @@ namespace FitnessHub.Controllers
                     return UserNotFound();
                 }
             }
+
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             return View(model);
         }
@@ -517,9 +574,14 @@ namespace FitnessHub.Controllers
 
         // GET: Account/RegisterNewClient
         [Authorize(Roles = "Employee")]
-        public IActionResult RegisterNewClient()
+        public async Task<IActionResult> RegisterNewClient()
         {
-            return View();
+            var model = new EmployeeRegisterNewClientViewModel();
+
+            var countries = await _loadHelper.LoadCountriesAsync();
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
+
+            return View(model);
         }
 
         // POST: Account/RegisterNewClient
@@ -527,6 +589,13 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterNewClient(EmployeeRegisterNewClientViewModel model)
         {
+            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            {
+                ModelState.AddModelError("PhoneNumber", "Please select a country.");
+            }
+
+            var countries = await _loadHelper.LoadCountriesAsync();
+
             if (ModelState.IsValid)
             {
                 var employee = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -551,8 +620,18 @@ namespace FitnessHub.Controllers
                         Email = model.Email,
                         UserName = model.Email,
                         BirthDate = model.BirthDate,
-                        Gym = gym
+                        Gym = gym,
+                        PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}"
                     };
+
+                    if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
+                    {
+                        ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
+
+                        model.Countries = new SelectList(countries, "Callingcode", "Data");
+
+                        return View(model);
+                    }
 
                     string? password = "FitHub_2024";
                     var result = await _userHelper.AddUserAsync(user, password);
@@ -567,6 +646,7 @@ namespace FitnessHub.Controllers
                             Email = user.Email,
                             BirthDate = user.BirthDate,
                             GymId = gym.Id,
+                            PhoneNumber = user.PhoneNumber,
                         };
 
                         await _clientHistoryRepository.CreateAsync(clientHistory);
@@ -598,6 +678,8 @@ namespace FitnessHub.Controllers
             }
 
             ModelState.AddModelError("", "Failed to create user.");
+
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             return View(model);
         }

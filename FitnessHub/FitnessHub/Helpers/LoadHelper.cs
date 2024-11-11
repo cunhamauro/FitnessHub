@@ -1,15 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using FitnessHub.Models;
+using FitnessHub.Services;
+using FitnessHub.Data.HelperClasses;
 
 namespace FitnessHub.Helpers
 {
-    public class LoadRolesHelper : ILoadRolesHelper
+    public class LoadHelper : ILoadHelper
     {
         private readonly IUserHelper _userHelper;
+        private readonly CountryService _countryService;
 
-        public LoadRolesHelper(IUserHelper userHelper)
+        public LoadHelper(IUserHelper userHelper, CountryService countryService)
         {
             _userHelper = userHelper;
+            _countryService = countryService;
         }
 
         public void LoadMasterAdminRoles(AdminRegisterNewUserViewModel model)
@@ -28,6 +32,14 @@ namespace FitnessHub.Helpers
                 Value = role.Name,
                 Text = role.Name,
             }).ToList();
+        }
+
+        public async Task<IEnumerable<CountryApi>> LoadCountriesAsync()
+        {
+            var countriesResult = await _countryService.GetCountriesAsync();
+            var countries = (IEnumerable<CountryApi>)countriesResult.Results;
+
+            return countries;
         }
     }
 }

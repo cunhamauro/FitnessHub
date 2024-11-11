@@ -35,6 +35,22 @@
                 <span asp-validation-for="BirthDate" class="text-danger"></span>
             </div>
 
+            <div class="form-group row">
+                <div class="col-md-3">
+                    <label asp-for="CountryCallingcode" class="control-label">Country</label>
+                    <select asp-for="CountryCallingcode" asp-items="Model.Countries" class="form-control" id="countrySelect">
+                        <option value="0" disabled selected>Select a country</option>
+                    </select>
+                    <span asp-validation-for="CountryCallingcode" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-9">
+                    <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control" type="number" id="phoneNumber" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Gym" class="control-label">Gym</label>
                 <select asp-for="Gym" asp-items="Model.Gyms" class="form-control" id="gymSelect">
@@ -74,4 +90,28 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Disable default 'Select a gym' option
+            const gymSelect = document.getElementById('gymSelect');
+            if (gymSelect) {
+                const defaultGymOption = gymSelect.querySelector('option[value="0"]');
+                if (defaultGymOption) {
+                    defaultGymOption.disabled = true;  // Disable the default "Select a gym" option
+                }
+            }
+        });
+    </script>
+
+    <script>
+        function showValueOnly(selectElement) {
+            // Get the selected option
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+            // Set the displayed text to the value of the selected option
+            selectElement.setAttribute("data-original-text", selectedOption.text);
+            selectedOption.text = selectedOption.value;
+        }
+    </script>
 }

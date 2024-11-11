@@ -486,7 +486,3 @@ namespace FitnessHub.Controllers
         }
     }
 }
-
-
-
-

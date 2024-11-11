@@ -58,5 +58,7 @@ namespace FitnessHub.Helpers
         IQueryable<IdentityRole> GetRolesExceptAdmin();
 
         Task<IdentityResult> DeleteUser(User user);
+
+        bool CheckIfPhoneNumberExists(string phoneNumber);
     }
 }
