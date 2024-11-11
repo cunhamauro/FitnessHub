@@ -1,17 +1,25 @@
-﻿@model FitnessHub.Data.Entities.GymClasses.ClassCategory
+﻿@model ClassTypeViewModel
 
 @{
-    ViewData["Title"] = "Update Class Category";
+    ViewData["Title"] = "Add Class Type";
 }
 
-<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Update @Model.Name</h2>
-
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Add Class Type</h2>
 <hr />
+
 <div class="row view-form-style">
     <div class="col-md-4 offset-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Category</label>
+                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.SelectListCategories">
+                    <option value="0">Select a Class Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -21,6 +29,11 @@
                 <label asp-for="Description" class="control-label"></label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label">Image</label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
 
             <div class="form-group">

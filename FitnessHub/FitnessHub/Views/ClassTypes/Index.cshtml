@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassCategory>
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
 @{
     ViewData["Title"] = "Class Categories";
@@ -30,6 +30,7 @@ else
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Image</th>
                         <th>
                             @Html.DisplayNameFor(model => model.Name)
                         </th>
@@ -43,6 +44,9 @@ else
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+                                <img style="height:10vh; width:auto" class="img-fluid" src="@item.ImageDisplay" />
+                            </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
