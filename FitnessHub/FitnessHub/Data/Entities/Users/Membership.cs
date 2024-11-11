@@ -15,5 +15,7 @@ namespace FitnessHub.Data.Entities.Users
 
         [Required]
         public string? Description {  get; set; }
+
+        public bool? OnOffer { get; set; } = true;
     }
 }

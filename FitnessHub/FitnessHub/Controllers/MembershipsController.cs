@@ -95,7 +95,21 @@ namespace FitnessHub.Controllers
                 ViewBag.ShowSignUp = true;
             }
 
-            return View(_membershipRepository.GetAll());
+            return View(_membershipRepository.GetAll().Where(m => m.OnOffer == true));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(int id)
+        {
+            var membership = await _membershipRepository.GetByIdTrackAsync(id);
+
+            if(membership == null)
+            {
+                return MembershipNotFound();
+            }
+            membership.OnOffer = !membership.OnOffer;
+            await _membershipRepository.UpdateAsync(membership);
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: User Memberships History
@@ -158,7 +172,7 @@ namespace FitnessHub.Controllers
         [Authorize(Roles = "Employee")]
         public async Task<IActionResult> SignUpClient()
         {
-            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+            List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
 
             List<SelectListItem> selectMembership = new();
 
@@ -289,7 +303,7 @@ namespace FitnessHub.Controllers
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> SignUp()
         {
-            List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
+            List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
 
             List<SelectListItem> selectMembership = new();
 
@@ -488,6 +502,8 @@ namespace FitnessHub.Controllers
                     ModelState.AddModelError("Name", "There is already a Membership with this Name!");
                 }
             }
+
+            membership.OnOffer = true;
 
             if (ModelState.IsValid)
             {
