@@ -13,6 +13,25 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Category</label>
+                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
+                    <option value="0">Select a Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            @* TYPE SELECT *@
+
+            <div class="form-group">
+                <label asp-for="ClassTypeId" class="control-label">Class Type</label>
+                <select asp-for="ClassTypeId" id="typeSelect" class="form-control" asp-items="@Model.ClassTypeList">
+                    <option value="0">Select a Class Type</option>
+                </select>
+                <span asp-validation-for="ClassTypeId" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
                 <label asp-for="DateStart" class="control-label"></label>
                 <input id="dateStart" asp-for="DateStart" type="datetime-local" class="form-control"
                        value="@Model.DateStart.ToString("yyyy-MM-ddTHH:mm")"
@@ -26,14 +45,6 @@
                        value="@Model.DateEnd.ToString("yyyy-MM-ddTHH:mm")"
                        min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateEnd" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label">Category</label>
-                <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
-                    <option value="0">Select a Category</option>
-                </select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -101,6 +112,63 @@
 
                 // Bind the change events for start and end dates to dynamically update instructors
                 $("#dateStart, #dateEnd").change(UpdateAvailableInstructors);
+            });
+        </script>
+
+        // Scripts for getting types from category
+        <script type="text/javascript">
+            $(document).ready(function () {
+                function GetTypesFromCategory() {
+                    var categoryId = $("#categorySelect").val();
+
+                    $.ajax({
+                        url: '@Url.Action("GetClassTypesFromCategory", "Classes")',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            categoryId: categoryId,
+                        },
+                        success: function (types) {
+                            console.log('Received types:', types); // Debug: log the response
+
+                            // Verificar se "types" é um array antes de prosseguir
+                            if (!Array.isArray(types)) {
+                                console.error('Unexpected response format:', types);
+                                alert('Error: Unexpected response format.');
+                                return;
+                            }
+
+                            // Limpar as opções anteriores
+                            $("#typeSelect").empty();
+                            $("#typeSelect").append('<option value="0">Select a Class Type</option>');
+
+                            // Adicionar novas opções com base nos dados retornados
+                            $.each(types, function (index, type) {
+                                console.log('Type:', type); // Debug: log each type object
+
+                                // Verifique se a propriedade 'Name' existe
+                                const typeName = type.Name || type.name || 'Unknown';
+                                const typeId = type.id || type.ID;
+
+                                if (typeId && typeName) {
+                                    $("#typeSelect").append(
+                                        '<option value="' + typeId + '">' + typeName + '</option>'
+                                    );
+                                }
+                            });
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching class types:', status, error);
+                            alert('Failed to retrieve available class types: ' + error);
+                        }
+                    });
+                }
+
+                // Call GetTypesFromCategory on page load
+                GetTypesFromCategory();
+
+                // Bind the change events for category select
+                $("#categorySelect").change(GetTypesFromCategory);
             });
         </script>
     }

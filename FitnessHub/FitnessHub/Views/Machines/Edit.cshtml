@@ -39,6 +39,14 @@
                 <span asp-validation-for="TutorialVideoUrl" class="text-danger"></span>
             </div>
 
+            <div class="col-md-3 mb-4">
+                <dl class="row">
+                    <dd class="col-sm-12">
+                        <img src="@Model.ImageDisplay" alt="Class image" style="max-width: 100%; height: auto; max-height: 20vw" />
+                    </dd>
+                </dl>
+            </div>
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary me-4 mt-2">
                     <i class="fa-solid fa-check me-2"></i>Save Machine

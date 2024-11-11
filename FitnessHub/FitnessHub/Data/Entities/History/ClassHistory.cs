@@ -6,6 +6,8 @@
 
         public int CategoryId { get; set; }
 
+        public int ClassTypeId { get; set; }
+
         /// <summary>
         /// Only for GymClass
         /// </summary>
@@ -43,6 +45,6 @@
 
         public bool Canceled { get; set; } = false;
 
-        public string? ClassType { get; set; }
+        public string? SubClass { get; set; }
     }
 }

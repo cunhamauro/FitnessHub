@@ -9,7 +9,7 @@
   <ItemGroup>
     <Folder Include="Controllers\API\" />
     <Folder Include="wwwroot\images\machines\" />
-    <Folder Include="wwwroot\images\categories\" />
+    <Folder Include="wwwroot\images\types\" />
   </ItemGroup>
 
   <ItemGroup>

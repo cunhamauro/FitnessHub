@@ -53,7 +53,8 @@ namespace FitnessHub.Controllers
                         Location = gymClass.Gym.Name,
                         IsOnline = false,
                         Id = gymClass.Id,
-                        Category = gymClass.Category.Name
+                        Category = gymClass.Category.Name,
+                        ClassType = gymClass.ClassType.Name,
                     });
                 }
             }
@@ -70,7 +71,8 @@ namespace FitnessHub.Controllers
                         Location = "Online",
                         IsOnline = true,
                         Id = onlineClass.Id,
-                        Category = onlineClass.Category.Name
+                        Category = onlineClass.Category.Name,
+                        ClassType = onlineClass.ClassType.Name,
                     });
                 }
             }
@@ -116,12 +118,12 @@ namespace FitnessHub.Controllers
             {
                 var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
 
-                if (gymClass.Clients.Count == gymClass.Capacity)
+                if (gymClass == null)
                 {
                     return ClassNotFound();
                 }
 
-                if (gymClass == null)
+                if (gymClass.Clients.Count == gymClass.Capacity)
                 {
                     return ClassNotFound();
                 }
@@ -165,7 +167,8 @@ namespace FitnessHub.Controllers
                         Location = gymClass.Gym.Name,
                         IsOnline = false,
                         Id = gymClass.Id,
-                        Category = gymClass.Category.Name
+                        Category = gymClass.Category.Name,
+                        ClassType = gymClass.ClassType.Name,
                     });
                 }
             }
@@ -182,7 +185,8 @@ namespace FitnessHub.Controllers
                         Location = "Online",
                         IsOnline = true,
                         Id = onlineClass.Id,
-                        Category = onlineClass.Category.Name
+                        Category = onlineClass.Category.Name,
+                        ClassType = onlineClass.ClassType.Name,
                     });
                 }
             }
@@ -228,6 +232,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> ClassDetails(int id)
         {
             var gymClass = await _classRepository.GetGymClassByIdInclude(id);
+
             if (gymClass != null)
             {
                 var viewModel = new ClassesDetailsViewModel
@@ -239,13 +244,15 @@ namespace FitnessHub.Controllers
                     Category = gymClass.Category.Name,
                     GymName = gymClass.Gym?.Name,
                     Rating = gymClass.Rating,
-                    NumReviews = gymClass.NumReviews
+                    NumReviews = gymClass.NumReviews,
+                    ClassType = gymClass.ClassType.Name,
 
                 };
                 return View(viewModel);
             }
 
             var onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
+
             if (onlineClass != null)
             {
                 var viewModel = new ClassesDetailsViewModel
@@ -255,14 +262,15 @@ namespace FitnessHub.Controllers
                     DateEnd = onlineClass.DateEnd,
                     Location = "Online",
                     Category = onlineClass.Category.Name,
-                    Platform = onlineClass.Platform
+                    Platform = onlineClass.Platform,
+                    ClassType = onlineClass.ClassType.Name,
+                    Rating = onlineClass.Rating,
+                    NumReviews= onlineClass.NumReviews,
                 };
                 return View(viewModel);
             }
             return ClassNotFound();
         }
-
-
 
         //Employee side actions
         public async Task<IActionResult> RegisterClientInClass()
@@ -276,6 +284,7 @@ namespace FitnessHub.Controllers
                 {
                     Id = c.Id,
                     Category = c.Category.Name,
+                    ClassType = c.ClassType.Name,
                     InstructorName = c.Instructor.FullName,
                     DateStart = c.DateStart,
                     DateEnd = c.DateEnd,
@@ -313,8 +322,8 @@ namespace FitnessHub.Controllers
             }
             return View(model);
         }
-        [HttpPost]
 
+        [HttpPost]
         public async Task<IActionResult> RegisterClientInClassConfirm(RegisterClientInClassViewModel model)
         {
 

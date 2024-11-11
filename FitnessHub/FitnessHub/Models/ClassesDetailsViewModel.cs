@@ -9,6 +9,8 @@ namespace FitnessHub.Models
         public DateTime DateEnd { get; set; }
         public string? Location { get; set; }
         public string? Category { get; set; }
+        public string? ClassType { get; set; }
+
         public string? GymName { get; set; }
         public string? Platform { get; set; }
         [Range(1, 5)]

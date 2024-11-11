@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassCategory>
+﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
 @{
     ViewData["Title"] = "Our Classes";
@@ -12,18 +12,21 @@
 @if (Model.Any())
 {
     <div class="row justify-content-center mt-2">
-        @foreach (var category in Model)
+        @foreach (var classItem in Model)
         {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
                 <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@category.Name</div>
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@classItem.Name</div>
                     <div class="card-body">
                         <div class="text-center mb-3">
-                            <img src="@category.ImageDisplay" alt="@category.Name" class="img-fluid" style="max-height: 200px; width: auto;" />
+                            <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid" style="max-height: 200px; width: auto;" />
                         </div>
                         <div class="card-text">
-                            <p style="margin-bottom: 0; margin-top: 0">@category.Description</p>
+                            <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
                         </div>
+                    </div>
+                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
+                        <small>@classItem.ClassCategory.Name</small>
                     </div>
                 </div>
             </div>

@@ -14,32 +14,32 @@ namespace FitnessHub.Data.Repositories
 
         public async Task<List<OnlineClass>> GetAllOnlineClassesInclude()
         {
-            return await _context.Class.OfType<OnlineClass>().Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).ToListAsync();
+            return await _context.Class.OfType<OnlineClass>().Include(c => c.Category).Include(c => c.ClassType).Include(c => c.Instructor).Include(c => c.Clients).ToListAsync();
         }
 
         public async Task<OnlineClass> GetOnlineClassByIdInclude(int id)
         {
-            return await _context.Class.OfType<OnlineClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).FirstOrDefaultAsync();
+            return await _context.Class.OfType<OnlineClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.ClassType).Include(c => c.Instructor).Include(c => c.Clients).FirstOrDefaultAsync();
         }
 
         public async Task<List<VideoClass>> GetAllVideoClassesInclude()
         {
-            return await _context.Class.OfType<VideoClass>().Include(c => c.Category).ToListAsync();
+            return await _context.Class.OfType<VideoClass>().Include(c => c.Category).Include(c => c.ClassType).ToListAsync();
         }
 
         public async Task<VideoClass> GetVideoClassByIdInclude(int id)
         {
-            return await _context.Class.OfType<VideoClass>().Where(c => c.Id == id).Include(c => c.Category).FirstOrDefaultAsync();
+            return await _context.Class.OfType<VideoClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.ClassType).FirstOrDefaultAsync();
         }
 
         public async Task<List<GymClass>> GetAllGymClassesInclude()
         {
-            return await _context.Class.OfType<GymClass>().Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Gym).Include(c => c.Clients).ToListAsync();
+            return await _context.Class.OfType<GymClass>().Include(c => c.Category).Include(c => c.ClassType).Include(c => c.Instructor).Include(c => c.Gym).Include(c => c.Clients).ToListAsync();
         }
 
         public async Task<GymClass> GetGymClassByIdInclude(int id)
         {
-            return await _context.Class.OfType<GymClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.Instructor).Include(c => c.Clients).Include(c => c.Gym).AsNoTracking().FirstOrDefaultAsync();
+            return await _context.Class.OfType<GymClass>().Where(c => c.Id == id).Include(c => c.Category).Include(c => c.ClassType).Include(c => c.Instructor).Include(c => c.Clients).Include(c => c.Gym).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<GymClass?> GetGymClassByIdIncludeTracked(int id)

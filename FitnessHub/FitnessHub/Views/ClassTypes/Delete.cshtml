@@ -1,7 +1,7 @@
-﻿@model FitnessHub.Data.Entities.GymClasses.ClassCategory
+﻿@model FitnessHub.Data.Entities.GymClasses.ClassType
 
 @{
-    ViewData["Title"] = "Delete Class Category";
+    ViewData["Title"] = "Delete Class Type";
 }
 
 <div class="container detailsdelete-text">
@@ -37,6 +37,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- Right: Image -->
+        <div class="col-md-3 mb-4">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="max-width: 100%; height: auto; max-height: 20vw" />
+                </dd>
+            </dl>
+        </div>
+
+    </div>
+</div>
+
+
     </div>
 </div>
 

@@ -8,6 +8,8 @@
         public string? Location { get; set; }
         public int Id { get; set; }
         public string? Category { get; set; }
+
+        public string? ClassType { get; set; }
         public bool IsClientRegistered { get; set; }
     }
 }
