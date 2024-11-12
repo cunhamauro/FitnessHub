@@ -36,8 +36,8 @@ input.e-input, .e-input-group input, .e-input-group.e-control-wrapper input, .e-
 }
 
 .fa-star {
-    color: gold !important;
-    text-shadow: 0px 0px 6px black;
+    color: #ff6201 !important;
+/*    text-shadow: 0px 0px 2px black;*/
 }
 
 .view-text {
