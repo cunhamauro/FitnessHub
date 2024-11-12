@@ -21,6 +21,7 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
+        private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly CountryService _countryService;
 
         public UsersController(
@@ -30,6 +31,7 @@ namespace FitnessHub.Controllers
             IGymRepository gymRepository,
             IClientHistoryRepository clientHistoryRepository,
             IStaffHistoryRepository staffHistoryRepository,
+            IGymHistoryRepository gymHistoryRepository,
             CountryService countryService)
         {
             _userHelper = userHelper;
@@ -38,6 +40,7 @@ namespace FitnessHub.Controllers
             _gymRepository = gymRepository;
             _clientHistoryRepository = clientHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
+            _gymHistoryRepository = gymHistoryRepository;
             _countryService = countryService;
         }
 
@@ -640,13 +643,7 @@ namespace FitnessHub.Controllers
 
             foreach (var client in clientsHistory)
             {
-                var user = await _userHelper.GetUserByIdAsync(client.Id);
-                if (user == null)
-                {
-                    return UserNotFound();
-                }
-
-                var gym = await _gymRepository.GetGymByUserAsync(user);
+                var gym = await _gymHistoryRepository.GetByIdAsync(client.GymId);
                 if (gym == null)
                 {
                     return GymNotFound();
@@ -695,13 +692,7 @@ namespace FitnessHub.Controllers
 
             foreach (var staff in staffHistory)
             {
-                var user = await _userHelper.GetUserByIdAsync(staff.Id);
-                if (user == null)
-                {
-                    return UserNotFound();
-                }
-
-                var gym = await _gymRepository.GetGymByUserAsync(user);
+                var gym = await _gymHistoryRepository.GetByIdAsync(staff.GymId);
                 if (gym == null)
                 {
                     return GymNotFound();

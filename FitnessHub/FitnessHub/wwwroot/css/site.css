@@ -447,6 +447,12 @@ hr {
     color: white;
 }
 
+#categoryFilter {
+    background-color: #0000008c;
+    width: 10vw;
+    color: white;
+}
+
 .card-header {
     background-color: #000000cc;
     color: #ff6201;

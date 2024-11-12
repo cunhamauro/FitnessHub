@@ -133,22 +133,18 @@
                         success: function (types) {
                             console.log('Received types:', types); // Debug: log the response
 
-                            // Verificar se "types" é um array antes de prosseguir
                             if (!Array.isArray(types)) {
                                 console.error('Unexpected response format:', types);
                                 alert('Error: Unexpected response format.');
                                 return;
                             }
 
-                            // Limpar as opções anteriores
                             $("#typeSelect").empty();
                             $("#typeSelect").append('<option value="0">Select a Class Type</option>');
 
-                            // Adicionar novas opções com base nos dados retornados
                             $.each(types, function (index, type) {
                                 console.log('Type:', type); // Debug: log each type object
 
-                                // Verifique se a propriedade 'Name' existe
                                 const typeName = type.Name || type.name || 'Unknown';
                                 const typeId = type.id || type.ID;
 

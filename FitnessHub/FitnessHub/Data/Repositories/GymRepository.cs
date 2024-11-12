@@ -47,5 +47,9 @@ namespace FitnessHub.Data.Repositories
             return null;
         }
 
+        public async Task<int> GetCountriesCountAsync()
+        {
+            return await _context.Gyms.Select(g => g.Country).Distinct().CountAsync();
+        }
     }
 }
