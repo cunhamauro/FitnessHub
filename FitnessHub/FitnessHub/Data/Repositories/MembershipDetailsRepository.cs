@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Entities.Users;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
@@ -15,6 +16,22 @@ namespace FitnessHub.Data.Repositories
         public async Task<MembershipDetails> GetMembershipDetailsByIdIncludeMembership(int id)
         {
             return await _context.MembershipDetails.Where(m => m.Id == id).Include(m => m.Membership).FirstOrDefaultAsync();
+        }
+
+        public async Task<decimal> GetAnualMembershipsRevenueAsync()
+        {
+            var membershipDetails = await _context.MembershipDetails.Include(m => m.Membership).ToListAsync();
+
+            decimal anualRevenue = 0;
+
+            foreach(var membership in membershipDetails)
+            {
+                var membershipAnualIncome = membership.Membership.Price * 12;
+
+                anualRevenue += membershipAnualIncome;
+            } 
+
+            return anualRevenue;
         }
     }
 }

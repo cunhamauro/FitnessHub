@@ -1275,6 +1275,35 @@ namespace FitnessHub.Controllers
 
         #endregion
 
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Available()
+        {
+            var categories = await _classCategoryRepository.GetCategoriesSelectListAsync();
+
+            var types = await _classTypeRepository.GetAll().Include(t => t.ClassCategory).ToListAsync();
+
+            ViewBag.Categories = new SelectList(categories, "Value", "Text");
+
+            return View(types);
+        }
+
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetClassesByCategory(int? categoryId)
+        {
+            var types = await _classTypeRepository.GetAll()
+                .Include(t => t.ClassCategory)
+                .ToListAsync();
+
+            if (categoryId.HasValue && categoryId != 0)
+            {
+                types = types.Where(t => t.ClassCategory != null && t.ClassCategory.Id == categoryId.Value).ToList();
+            }
+
+            return PartialView("_ClassTypesPartial", types);
+        }
+
         public IActionResult ClassNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
@@ -1288,14 +1317,6 @@ namespace FitnessHub.Controllers
         public IActionResult GymNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
-        }
-
-        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Available()
-        {
-            var types = await _classTypeRepository.GetAll().Include(t => t.ClassCategory).ToListAsync();
-            return View(types);
         }
     }
 }

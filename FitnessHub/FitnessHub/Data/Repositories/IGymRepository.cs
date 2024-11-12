@@ -9,5 +9,6 @@ namespace FitnessHub.Data.Repositories
 
         Task<Gym?> GetGymByUserAsync(User user);
 
+        Task<int> GetCountriesCountAsync();
     }
 }

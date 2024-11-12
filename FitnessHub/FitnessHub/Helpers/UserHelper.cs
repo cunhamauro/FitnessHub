@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Models;
+using FitnessHub.Data;
 
 namespace FitnessHub.Helpers
 {
@@ -11,15 +12,17 @@ namespace FitnessHub.Helpers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly DataContext _context;
 
         public UserHelper(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager, DataContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _context = context;
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -190,6 +193,47 @@ namespace FitnessHub.Helpers
         public bool CheckIfPhoneNumberExists(string phoneNumber)
         {
             return _userManager.Users.Where(u => u.PhoneNumber == phoneNumber).Any();
+        }
+
+        public async Task<int> ClientsWithMembershipCountAsync()
+        {
+            var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();
+
+            return clients.OfType<Client>().Where(u => u.MembershipDetailsId != null).Count();
+        }
+
+        public async Task<string> GymWithMostMembershipsAsync()
+        {
+            var clientsWithMembership = await _context.Users
+                                       .OfType<Client>()
+                                       .Include(c => c.Gym) // Ensure Gym is loaded
+                                       .Where(c => c.MembershipDetailsId != null)
+                                       .ToListAsync();
+
+            var gymMemberships = clientsWithMembership
+                         .GroupBy(c => c.Gym)
+                         .Select(group => new
+                         {
+                             Gym = group.Key,
+                             MembershipCount = group.Count()
+                         })
+                         .ToList();
+
+            var maxMembershipCount = gymMemberships.Max(g => g.MembershipCount);
+
+            var gymsWithMaxMemberships = gymMemberships
+                                 .Where(g => g.MembershipCount == maxMembershipCount)
+                                 .Select(g => g.Gym.Name)
+                                 .ToList();
+
+            if (gymsWithMaxMemberships.Any())
+            {
+                return $"{string.Join(", ", gymsWithMaxMemberships)}";
+            }
+            else
+            {
+                return "N/A";
+            }
         }
     }
 }

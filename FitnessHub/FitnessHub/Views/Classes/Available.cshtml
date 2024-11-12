@@ -1,36 +1,54 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
 @{
-    ViewData["Title"] = "Our Classes";
+    ViewData["Title"] = "Classes";
 }
 
-<div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Our Classes</h2>
-    <hr style="margin-bottom: 2.2rem" />
+<div class="row">
+    <div class="col-3" style="margin-top: -4px">
+        <div class="mb-2">
+            <form id="categoryForm" class="form-group">
+                <select id="categoryFilter" class="form-control">
+                    <option value="0" selected disabled>Select Category</option>
+                    <option value="">All Categories</option>
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <option value="@category.Value">@category.Text</option>
+                    }
+                </select>
+            </form>
+        </div>
+    </div>
+    <div class="col-6 view-text">
+        <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 2vh">@ViewData["Title"]</h2>
+    </div>
+    <hr style="margin-bottom:1.8rem" />
 </div>
 
 @if (Model.Any())
 {
-    <div class="row justify-content-center mt-2">
-        @foreach (var classItem in Model)
-        {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
-                <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@classItem.Name</div>
-                    <div class="card-body">
-                        <div class="text-center mb-3">
-                            <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid" style="max-height: 200px; width: auto;" />
+    <div id="classTypesContainer">
+        <div class="row justify-content-center mt-2">
+            @foreach (var classItem in Model)
+            {
+                <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
+                    <div class="card">
+                        <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@classItem.Name</div>
+                        <div class="card-body">
+                            <div class="text-center mb-3">
+                                <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid" style="max-height: 200px; width: auto;" />
+                            </div>
+                            <div class="card-text">
+                                <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
+                            </div>
                         </div>
-                        <div class="card-text">
-                            <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
+                        <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
+                            <small>@classItem.ClassCategory.Name</small>
                         </div>
-                    </div>
-                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
-                        <small>@classItem.ClassCategory.Name</small>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 }
 else
@@ -44,3 +62,20 @@ else
     </div>
 }
 
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#categoryFilter").change(function () {
+                var categoryId = $(this).val();
+                $.ajax({
+                    url: '@Url.Action("GetClassesByCategory", "Classes")',
+                    type: 'GET',
+                    data: { categoryId: categoryId },
+                    success: function (data) {
+                        $('#classTypesContainer').html(data);
+                    }
+                });
+            });
+        });
+    </script>
+}

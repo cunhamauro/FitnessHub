@@ -170,6 +170,7 @@ namespace FitnessHub.Data
 
             var client2 = new Client
             {
+                Gym = gym2,
                 FirstName = "Client2",
                 LastName = "Test2",
                 Email = "clienttest2@fhub.com",
