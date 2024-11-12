@@ -32,27 +32,6 @@
                             @Html.DisplayFor(model => model.DateEnd)
                         </dd>
                         <dt class="col-sm-4">
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @if (Model.NumReviews > 0)
-                            {
-                                @Model.Rating
-
-                                @Html.Raw("/5")
-                            }
-                            else
-                            {
-                                @Html.Raw("N/A")
-                            }
-                        </dd>
-                        <dt class="col-sm-4">
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </dt>
-                        <dd class="col-sm-8">
-                            @Html.DisplayFor(model => model.NumReviews)
-                        </dd>
-                        <dt class="col-sm-4">
                             @Html.DisplayNameFor(model => model.Capacity)
                         </dt>
                         <dd class="col-sm-8">
