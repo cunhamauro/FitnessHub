@@ -1,0 +1,102 @@
+﻿@model IEnumerable<FitnessHub.Models.RegisteredInClassesHistoryViewModel>
+
+@{
+    ViewData["Title"] = "My Class History";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">My Class History</h2>
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">You have no Class History!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Class
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Type
+                        </th>
+                        <th>
+                            Gym
+                        </th>
+                        <th>
+                            Instructor
+                        </th>
+                        <th>
+                            Registration
+                        </th>
+                        <th>
+                            By
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TypeName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.SubClass)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GymName)
+                            </td>
+                            <td>
+                                @if (item.InstructorEmail != null && item.InstructorEmail.Length > 2)
+                                {
+                                    @item.InstructorFullName <br />
+                                    <span>(@item.InstructorEmail)</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @item.RegistrationDate.ToShortDateString()
+                            </td>
+                            <td>
+                                @if (item.EmployeeEmail != null && item.EmployeeEmail.Length > 2)
+                                {
+                                    @item.EmployeeFullName <br />
+                                    <span>(@item.EmployeeEmail)</span>
+                                }
+                                else
+                                {
+                                    <span>You</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("td").forEach(td => {
+                if (td.textContent.trim() === "N/A") {
+                    td.classList.add("na-cell");
+                }
+            });
+        });
+    </script>
+
+}

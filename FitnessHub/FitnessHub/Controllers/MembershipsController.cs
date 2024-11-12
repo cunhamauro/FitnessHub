@@ -382,7 +382,7 @@ namespace FitnessHub.Controllers
                 {
                     Id = membershipDetails.Id,
                     DateRenewal = membershipDetails.DateRenewal,
-                    MembershipHistoryId = membershipDetails.Membership.Id,
+                    MembershipHistoryId = membership.Id,
                     UserId = client.Id,
                     SignUpDate = membershipDetails.SignUpDate,
                 };

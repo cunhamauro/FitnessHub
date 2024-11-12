@@ -1,6 +1,7 @@
 ﻿using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Helpers;
 
@@ -92,6 +93,46 @@ namespace FitnessHub.Data
             await _context.ClassCategories.AddAsync(categoryC1);
             await _context.ClassCategories.AddAsync(categoryC2);
 
+            var classType1 = new ClassType
+            {
+                Name = "Kamasutra",
+                ClassCategory = categoryC1,
+                Description = "Aprender a foder",
+            };
+
+
+            var classType2 = new ClassType
+            {
+                Name = "Ayuwervedra",
+                ClassCategory = categoryC1,
+                Description = "aprender magia",
+            };
+
+            await _context.ClassTypes.AddAsync(classType1);
+            await _context.ClassTypes.AddAsync(classType2);
+
+            var membership = new Membership
+            {
+                Name = "steroidShip",
+                Price = 20,
+                Description = "Pa ficares bixo e morreres cedo",
+            };
+
+            await _context.Memberships.AddAsync(membership);
+
+            await _context.SaveChangesAsync();
+
+            var membershipHist = new MembershipHistory
+            {
+                Id = membership.Id,
+                Name = "steroidShip",
+                Price = 20,
+                Description = "Pa ficares bixo e morreres cedo",
+                DateCreated = DateTime.Now,
+            };
+
+            await _context.MembershipHistory.AddAsync(membershipHist);
+
             var machine1 = new Machine
             {
                 Name = "BenchPress",
@@ -138,6 +179,16 @@ namespace FitnessHub.Data
             var token2 = await _userHelper.GenerateEmailConfirmationTokenAsync(employee);
             await _userHelper.ConfirmEmailAsync(employee, token2);
 
+            var employeeHist = new StaffHistory
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+            };
+
+            await _context.StaffHistory.AddAsync(employeeHist);
+
             var instructor = new Instructor
             {
                 Gym = gym,
@@ -152,6 +203,16 @@ namespace FitnessHub.Data
             await _userHelper.AddUserToRoleAsync(instructor, "Instructor");
             var token3 = await _userHelper.GenerateEmailConfirmationTokenAsync(instructor);
             await _userHelper.ConfirmEmailAsync(instructor, token3);
+
+            var instrucHist = new StaffHistory
+            {
+                Id = instructor.Id,
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                Email = instructor.Email,
+            };
+
+            await _context.StaffHistory.AddAsync(instrucHist);
 
             var client = new Client
             {
@@ -168,6 +229,19 @@ namespace FitnessHub.Data
             var token4 = await _userHelper.GenerateEmailConfirmationTokenAsync(client);
             await _userHelper.ConfirmEmailAsync(client, token4);
 
+            var clientHist = new ClientHistory
+            {
+                Id = client.Id,
+                Email = client.Email,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                BirthDate = client.BirthDate,
+                GymId = client.GymId.Value,
+                PhoneNumber = client.PhoneNumber,
+            };
+
+            await _context.ClientsHistory.AddAsync(clientHist);
+
             var client2 = new Client
             {
                 Gym = gym2,
@@ -182,6 +256,19 @@ namespace FitnessHub.Data
             await _userHelper.AddUserToRoleAsync(client2, "Client");
             var token5 = await _userHelper.GenerateEmailConfirmationTokenAsync(client2);
             await _userHelper.ConfirmEmailAsync(client2, token5);
+
+            var clientHist2 = new ClientHistory
+            {
+                Id = client2.Id,
+                Email = client2.Email,
+                FirstName = client2.FirstName,
+                LastName = client2.LastName,
+                BirthDate = client2.BirthDate,
+                GymId = client2.GymId.Value,
+                PhoneNumber = client2.PhoneNumber,
+            };
+
+            await _context.ClientsHistory.AddAsync(clientHist2);
 
             #endregion
 

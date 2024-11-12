@@ -16,7 +16,8 @@
                 <thead>
                     <tr>
                         <th>Class</th>
-                        <th>Instructor Name</th>
+                        <th>Category</th>
+                        <th>Instructor</th>
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Location</th>
@@ -27,8 +28,8 @@
                     @foreach (var classEntity in Model.Classes)
                     {
                         <tr>
-                            <td>@classEntity.Category</td>
                             <td>@classEntity.ClassType</td>
+                            <td>@classEntity.Category</td>
                             <td>@classEntity.InstructorName</td>
                             <td>@classEntity.DateStart.ToString("g")</td>
                             <td>@classEntity.DateEnd.ToString("g")</td>

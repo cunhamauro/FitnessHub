@@ -1,9 +1,12 @@
-﻿using FitnessHub.Data.Entities.GymClasses;
+﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Controllers
 {
@@ -13,13 +16,67 @@ namespace FitnessHub.Controllers
         private readonly IClassRepository _classRepository;
         private readonly IUserHelper _userHelper;
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
+        private readonly IClassHistoryRepository _classHistoryRepository;
+        private readonly IGymHistoryRepository _gymHistoryRepository;
+        private readonly IStaffHistoryRepository _staffHistoryRepository;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
+                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
             _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
+            _classHistoryRepository = classHistoryRepository;
+            _gymHistoryRepository = gymHistoryRepository;
+            _staffHistoryRepository = staffHistoryRepository;
+        }
+
+        public async Task<IActionResult> MyClassHistory()
+        {
+            var client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
+
+            List<RegisteredInClassesHistoryViewModel> model = new();
+
+            foreach (var r in records)
+            {
+
+                ClassHistory gClass = await _classHistoryRepository.GetByIdAsync(r.ClassId);
+
+                // Fetch employee and instructor if available
+                StaffHistory? employee = null;
+                StaffHistory? instructor = null;
+
+                if (!string.IsNullOrEmpty(r.EmployeeId))
+                {
+                    employee = await _staffHistoryRepository.GetByIdTrackAsync(r.EmployeeId);
+                }
+
+                if (!string.IsNullOrEmpty(gClass.InstructorId))
+                {
+                    instructor = await _staffHistoryRepository.GetByIdTrackAsync(gClass.InstructorId);
+                }
+
+                model.Add(new RegisteredInClassesHistoryViewModel
+                {
+                    GymName = gClass.GymName,
+                    CategoryName = gClass.Category,
+                    TypeName = gClass.ClassType,
+                    EmployeeEmail = employee?.Email ?? string.Empty,
+                    EmployeeFullName = employee != null ? $"{employee.FirstName} {employee.LastName}" : string.Empty,
+                    SubClass = gClass.SubClass,
+                    RegistrationDate = r.RegistrationDate,
+                    InstructorEmail = instructor?.Email ?? string.Empty,
+                    InstructorFullName = instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : string.Empty,
+                });
+            }
+             return View(model);
         }
 
         // User side actions
@@ -243,8 +300,6 @@ namespace FitnessHub.Controllers
                     Location = gymClass.Gym?.Name ?? "N/A",
                     Category = gymClass.Category.Name,
                     GymName = gymClass.Gym?.Name,
-                    Rating = gymClass.Rating,
-                    NumReviews = gymClass.NumReviews,
                     ClassType = gymClass.ClassType.Name,
 
                 };
@@ -264,8 +319,6 @@ namespace FitnessHub.Controllers
                     Category = onlineClass.Category.Name,
                     Platform = onlineClass.Platform,
                     ClassType = onlineClass.ClassType.Name,
-                    Rating = onlineClass.Rating,
-                    NumReviews= onlineClass.NumReviews,
                 };
                 return View(viewModel);
             }

@@ -21,8 +21,10 @@ namespace FitnessHub.Controllers
         private readonly IClassHistoryRepository _classHistoryRepository;
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
         private readonly IClassTypeRepository _classTypeRepository;
+        private readonly IClientHistoryRepository _clientHistoryRepository;
+        private readonly IStaffHistoryRepository _staffHistoryRepository;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository, IClientHistoryRepository clientHistoryRepository, IStaffHistoryRepository staffHistoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -31,6 +33,8 @@ namespace FitnessHub.Controllers
             _classHistoryRepository = classHistoryRepository;
             _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
             _classTypeRepository = classTypeRepository;
+            _clientHistoryRepository = clientHistoryRepository;
+            _staffHistoryRepository = staffHistoryRepository;
         }
 
         // Index not in use
@@ -50,57 +54,35 @@ namespace FitnessHub.Controllers
 
             foreach (var ch in classes)
             {
-                Gym? gym = null;
-
-                if (ch.GymId != null)
-                {
-                    gym = await _gymRepository.GetByIdAsync(ch.GymId.Value);
-                }
-
-                Instructor? instructor = null;
-
-                if (ch.InstructorId != null)
-                {
-                    instructor = await _userHelper.GetUserByIdAsync(ch.InstructorId) as Instructor;
-                }
-
-                ClassCategory? classCategory = null;
-
-                if (ch.CategoryId != null)
-                {
-                    classCategory = await _classCategoryRepository.GetByIdAsync(ch.CategoryId);
-
-                }
-
                 List<string> clientEmailsList = new List<string>();
 
                 foreach (var registration in registrations)
                 {
                     if (registration.ClassId == ch.Id)
                     {
-                        var registeredUser = await _userHelper.GetUserByIdAsync(registration.UserId);
+                        var registeredUser = await _clientHistoryRepository.GetByIdTrackAsync(registration.UserId);
                         clientEmailsList.Add(registeredUser.Email);
                     }
                 }
 
+                StaffHistory instructor = await _staffHistoryRepository.GetByIdTrackAsync(ch.InstructorId);
+
                 classesHistory.Add(new ClassHistoryViewModel
                 {
+                    ClientList = clientEmailsList,
+                    InstructorFullName = $"{instructor.FirstName} {instructor.LastName}",
+                    InstructorEmail = instructor.Email,
+                    Category = ch.Category,
                     Id = ch.Id,
                     SubClass = ch.SubClass,
                     Capacity = ch.Capacity,
-                    CategoryId = ch.CategoryId,
-                    CategoryName = classCategory?.Name,
                     VideoClassUrl = ch.VideoClassUrl,
                     DateStart = ch.DateStart,
                     DateEnd = ch.DateEnd,
-                    GymId = ch.GymId,
-                    GymName = gym?.Name,
+                    GymName = ch.GymName,
                     Platform = ch.Platform,
                     InstructorId = ch.InstructorId,
-                    InstructorEmail = instructor?.Email,
-                    InstructorFullName = instructor?.FullName,
                     Canceled = ch.Canceled,
-                    ClientList = clientEmailsList,
                 });
             }
 
@@ -247,13 +229,13 @@ namespace FitnessHub.Controllers
                 ClassHistory record = new ClassHistory()
                 {
                     Id = onlineClass.Id,
-                    ClassTypeId = model.ClassTypeId,
+                    ClassType = onlineClass.ClassType.Name,
+                    Category = onlineClass.Category.Name,
                     SubClass = "OnlineClass",
-                    CategoryId = category.Id,
-                    InstructorId = instructor.Id,
                     DateStart = model.DateStart,
                     DateEnd = model.DateEnd,
                     Platform = model.Platform,
+                    InstructorId = instructor.Id,
                 };
 
                 await _classHistoryRepository.CreateAsync(record);
@@ -386,11 +368,14 @@ namespace FitnessHub.Controllers
                 onlineClass.DateStart = model.DateStart;
                 onlineClass.DateEnd = model.DateEnd;
                 onlineClass.Platform = model.Platform;
-                onlineClass.Instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+                var instructor = await _userHelper.GetUserByIdAsync(model.InstructorId) as Instructor;
+
+                onlineClass.Instructor = instructor;
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
 
-                record.InstructorId = model.InstructorId;
+                record.InstructorId = instructor.Id;
                 record.DateStart = model.DateStart;
                 record.DateEnd = model.DateEnd;
                 record.Platform = model.Platform;
@@ -494,6 +479,8 @@ namespace FitnessHub.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateGymClass()
         {
+            Admin thisAdmin = await _userHelper.GetUserAsync(this.User) as Admin;
+
             List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
             List<SelectListItem> selectGymList = new List<SelectListItem>();
             List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
@@ -528,6 +515,7 @@ namespace FitnessHub.Controllers
                 ClassTypeList = selectClassTypeList,
                 DateStart = DateTime.UtcNow,
                 DateEnd = DateTime.UtcNow.AddMinutes(60),
+                GymId = thisAdmin.GymId.Value,
             };
 
             return View(model);
@@ -658,10 +646,10 @@ namespace FitnessHub.Controllers
                 ClassHistory record = new ClassHistory()
                 {
                     Id = gymClass.Id,
-                    GymId = gym.Id,
-                    ClassTypeId = model.ClassTypeId,
+                    GymName = gym.Name,
+                    ClassType = type.Name,
                     SubClass = "GymClass",
-                    CategoryId = category.Id,
+                    Category = category.Name,
                     InstructorId = instructor.Id,
                     DateStart = model.DateStart,
                     DateEnd = model.DateEnd,
@@ -792,7 +780,7 @@ namespace FitnessHub.Controllers
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(gymClass.Id);
 
-                record.InstructorId = model.InstructorId;
+                record.InstructorId = instructor.Id;
                 record.DateStart = model.DateStart;
                 record.DateEnd = model.DateEnd;
 
@@ -961,9 +949,9 @@ namespace FitnessHub.Controllers
                 {
                     Id = videoClass.Id,
                     SubClass = "VideoClass",
-                    CategoryId = category.Id,
+                    Category = category.Name,
                     VideoClassUrl = model.VideoClassUrl,
-                    ClassTypeId = type.Id,
+                    ClassType = type.Name,
                 };
 
                 await _classHistoryRepository.CreateAsync(record);
@@ -1112,8 +1100,11 @@ namespace FitnessHub.Controllers
 
             instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
 
+            List<Instructor> busyInstructors = new();
+
+
             // Get all online classes
-            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             // Iterate through each online class to check for overlaps
             foreach (OnlineClass onlineClass in onlineClasses)
@@ -1122,11 +1113,11 @@ namespace FitnessHub.Controllers
                 if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
                 {
                     // The class overlaps remove its instructor from the available list
-                    instructors.Remove(onlineClass.Instructor);
+                    busyInstructors.Add(onlineClass.Instructor);
                 }
             }
 
-            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
 
             // Iterate through each gym class to check for overlaps
             foreach (GymClass gymClass in gymClasses)
@@ -1135,9 +1126,11 @@ namespace FitnessHub.Controllers
                 if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
                 {
                     // If the class overlaps remove its instructor from the available list
-                    instructors.Remove(gymClass.Instructor);
+                    busyInstructors.Add(gymClass.Instructor);
                 }
             }
+
+            instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
             // Return the filtered list of available instructors
             return Json(instructors);
@@ -1154,8 +1147,10 @@ namespace FitnessHub.Controllers
 
             instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
 
+            List<Instructor> busyInstructors = new();
+
             // Get all online classes
-            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             // Iterate through each online class to check for overlaps
             foreach (OnlineClass onlineClass in onlineClasses)
@@ -1164,11 +1159,11 @@ namespace FitnessHub.Controllers
                 if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
                 {
                     // The class overlaps remove its instructor from the available list
-                    instructors.Remove(onlineClass.Instructor);
+                    busyInstructors.Add(onlineClass.Instructor);
                 }
             }
 
-            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
 
             // Iterate through each gym class to check for overlaps
             foreach (GymClass gymClass in gymClasses)
@@ -1177,9 +1172,12 @@ namespace FitnessHub.Controllers
                 if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
                 {
                     // If the class overlaps remove its instructor from the available list
-                    instructors.Remove(gymClass.Instructor);
+                    busyInstructors.Add(gymClass.Instructor);
                 }
             }
+
+
+            instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
             instructors = instructors.Where(i => i.GymId == gymSelect).ToList();
 
@@ -1198,8 +1196,10 @@ namespace FitnessHub.Controllers
 
             instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
 
+            List<Instructor> busyInstructors = new();
+
             // Get all online classes
-            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             // Iterate through each online class to check for overlaps
             foreach (OnlineClass onlineClass in onlineClasses)
@@ -1208,11 +1208,11 @@ namespace FitnessHub.Controllers
                 if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd) && onlineClass.Id != classId)
                 {
                     // The class overlaps remove its instructor from the available list
-                    instructors.Remove(onlineClass.Instructor);
+                    busyInstructors.Add(onlineClass.Instructor);
                 }
             }
 
-            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
 
             // Iterate through each gym class to check for overlaps
             foreach (GymClass gymClass in gymClasses)
@@ -1221,9 +1221,11 @@ namespace FitnessHub.Controllers
                 if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
                 {
                     // If the class overlaps remove its instructor from the available list
-                    instructors.Remove(gymClass.Instructor);
+                    busyInstructors.Add(gymClass.Instructor);
                 }
             }
+
+            instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
             // Return the filtered list of available instructors
             return Json(instructors);
@@ -1240,8 +1242,10 @@ namespace FitnessHub.Controllers
 
             instructors = await _userHelper.GetUsersByTypeAsync<Instructor>();
 
+            List<Instructor> busyInstructors = new();
+
             // Get all online classes
-            List<OnlineClass> onlineClasses = await _classRepository.GetAll().OfType<OnlineClass>().ToListAsync();
+            List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             // Iterate through each online class to check for overlaps
             foreach (OnlineClass onlineClass in onlineClasses)
@@ -1250,11 +1254,11 @@ namespace FitnessHub.Controllers
                 if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
                 {
                     // The class overlaps remove its instructor from the available list
-                    instructors.Remove(onlineClass.Instructor);
+                    busyInstructors.Add(onlineClass.Instructor);
                 }
             }
 
-            List<GymClass> gymClasses = await _classRepository.GetAll().OfType<GymClass>().ToListAsync();
+            List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
 
             // Iterate through each gym class to check for overlaps
             foreach (GymClass gymClass in gymClasses)
@@ -1263,9 +1267,11 @@ namespace FitnessHub.Controllers
                 if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd) && gymClass.Id != classId)
                 {
                     // If the class overlaps remove its instructor from the available list
-                    instructors.Remove(gymClass.Instructor);
+                    busyInstructors.Add(gymClass.Instructor);
                 }
             }
+
+            instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
             instructors = instructors.Where(i => i.GymId == gymId).ToList();
 

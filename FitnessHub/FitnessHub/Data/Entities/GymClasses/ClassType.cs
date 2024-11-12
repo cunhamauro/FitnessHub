@@ -14,6 +14,12 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public ClassCategory? ClassCategory { get; set; }
 
+        [Range(1, 5)]
+        public int? Rating { get; set; }
+
+        [Display(Name = "Reviews")]
+        public int? NumReviews { get; set; } = 0;
+
         [Display(Name = "Image")]
         public string? ImagePath { get; set; }
 
