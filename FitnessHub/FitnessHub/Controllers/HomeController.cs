@@ -15,19 +15,22 @@ namespace FitnessHub.Controllers
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
         private readonly IGymRepository _gymRepository;
         private readonly IClassRepository _classRepository;
+        private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
         public HomeController(
             ILogger<HomeController> logger, 
             IUserHelper userHelper, 
             IMembershipDetailsRepository membershipDetailsRepository,
             IGymRepository gymRepository,
-            IClassRepository classRepository)
+            IClassRepository classRepository,
+            IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
         {
             _logger = logger;
             _userHelper = userHelper;
             _membershipDetailsRepository = membershipDetailsRepository;
             _gymRepository = gymRepository;
             _classRepository = classRepository;
+            _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
         }
 
         [Authorize(Roles = "MasterAdmin")]
@@ -46,8 +49,9 @@ namespace FitnessHub.Controllers
                 ScheduledGymClassesCount = (await _classRepository.GetAllGymClassesInclude()).Count,
                 ScheduledOnlineClassesCount = (await _classRepository.GetAllOnlineClassesInclude()).Count,
                 VideoClassesCount = (await _classRepository.GetAllVideoClassesInclude()).Count,
-                //MostPopularClass = ,
+                MostPopularClass = await _registeredInClassesHistoryRepository.GetMostPopularClass(),
             };
+
             return View(model);
         }
 
