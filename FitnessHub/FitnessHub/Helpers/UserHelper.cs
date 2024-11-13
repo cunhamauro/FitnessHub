@@ -12,17 +12,15 @@ namespace FitnessHub.Helpers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly DataContext _context;
 
         public UserHelper(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
-            RoleManager<IdentityRole> roleManager, DataContext context)
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
-            _context = context;
         }
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
@@ -204,11 +202,16 @@ namespace FitnessHub.Helpers
 
         public async Task<string> GymWithMostMembershipsAsync()
         {
-            var clientsWithMembership = await _context.Users
+            var clientsWithMembership = await _userManager.Users
                                        .OfType<Client>()
                                        .Include(c => c.Gym) // Ensure Gym is loaded
                                        .Where(c => c.MembershipDetailsId != null)
                                        .ToListAsync();
+
+            if (!clientsWithMembership.Any())
+            {
+                return "N/A";
+            }
 
             var gymMemberships = clientsWithMembership
                          .GroupBy(c => c.Gym)

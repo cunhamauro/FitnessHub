@@ -18,5 +18,43 @@ namespace FitnessHub.Data.Repositories
                 .FirstOrDefaultAsync(h => h.ClassId == classId && h.UserId == userId && !h.Canceled);
         }
 
+        public async Task<string> GetMostPopularClass()
+        {
+            var classRegistrations = await _context.ClassesRegistrationHistory.ToListAsync();
+
+            if (!classRegistrations.Any())
+            {
+                return "N/A";
+            }
+
+            var classType = classRegistrations.GroupBy(c => c.ClassId)
+                .Select(group => new
+                {
+                    ClassId = group.Key,
+                    ClassCount = group.Count()
+                })
+                .ToList();
+
+            var maxClassTypeCount = classType.Max(g => g.ClassCount);
+
+            var mostPopularClassIds = classType
+                                 .Where(g => g.ClassCount == maxClassTypeCount)
+                                 .Select(g => g.ClassId)
+                                 .ToList();
+
+            var mostPopularClassesType = await _context.ClassHistory
+                .Where(c => mostPopularClassIds.Contains(c.Id))
+                .Select(c => c.ClassType)
+                .ToListAsync();
+
+            if (mostPopularClassesType.Any())
+            {
+                return $"{string.Join(", ", mostPopularClassesType)}";
+            }
+            else
+            {
+                return "N/A";
+            }
+        }
     }
 }

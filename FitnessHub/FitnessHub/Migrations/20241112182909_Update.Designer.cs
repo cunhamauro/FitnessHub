@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241111154736_Update")]
+    [Migration("20241112182909_Update")]
     partial class Update
     {
         /// <inheritdoc />
@@ -166,12 +166,6 @@ namespace FitnessHub.Migrations
                     b.Property<int?>("ClassTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("NumReviews")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
@@ -225,6 +219,12 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("NumReviews")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Rating")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -414,11 +414,11 @@ namespace FitnessHub.Migrations
                     b.Property<int?>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ClassTypeId")
-                        .HasColumnType("int");
+                    b.Property<string>("ClassType")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DateEnd")
                         .HasColumnType("datetime2");
@@ -426,8 +426,8 @@ namespace FitnessHub.Migrations
                     b.Property<DateTime?>("DateStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("GymId")
-                        .HasColumnType("int");
+                    b.Property<string>("GymName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(max)");

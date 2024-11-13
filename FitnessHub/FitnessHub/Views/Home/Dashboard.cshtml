@@ -4,15 +4,22 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<h2 class="title-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">@ViewData["Title"]</h2>
-<hr />
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            @ViewData["Title"]
+        </h2>
+    </div>
+</div>
 
 <div class="container mt-5" id="dashboardData">
     <div class="row">
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-map-location-dot mb-3"></i>
+                    <i class="fa-solid fa-user mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.ClientsCount)</h5>
                     <p class="card-text">@Html.DisplayFor(model => model.ClientsCount)</p>
                 </div>
@@ -22,7 +29,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-location-dot mb-3"></i>
+                    <i class="fa-solid fa-user-plus mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.ClientsWithMembershipCount)</h5>
                     <p class="card-text">@Model.ClientsWithMembershipCount</p>
                 </div>
@@ -32,7 +39,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-plane mb-3"></i>
+                    <i class="fa-solid fa-sack-dollar mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.AnualMembershipsRevenue)</h5>
                     <p class="card-text">@Model.AnualMembershipsRevenue.ToString("C2")</p>
                 </div>
@@ -42,7 +49,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-ticket mb-3"></i>
+                    <i class="fa-solid fa-location-dot mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.CountriesCount)</h5>
                     <p class="card-text">@Model.CountriesCount</p>
                 </div>
@@ -52,7 +59,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-user mb-3"></i>
+                    <i class="fa-solid fa-map-location-dot mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.GymsCount)</h5>
                     <p class="card-text">@Model.GymsCount</p>
                 </div>
@@ -62,7 +69,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-sack-dollar mb-3"></i>
+                    <i class="fa-solid fa-hand-holding-dollar mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.GymWithMostMemberShips)</h5>
                     <p class="card-text">@Model.GymWithMostMemberShips</p>
                 </div>
@@ -72,7 +79,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-user-ninja mb-3"></i>
+                    <i class="fa-solid fa-user-tie mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.EmployeesCount)</h5>
                     <p class="card-text">@Model.EmployeesCount</p>
                 </div>
@@ -82,7 +89,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-user-tie mb-3"></i>
+                    <i class="fa-solid fa-user-ninja mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.InstructorsCount)</h5>
                     <p class="card-text">@Model.InstructorsCount</p>
                 </div>
@@ -92,7 +99,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-box-archive mb-3"></i>
+                    <i class="fa-solid fa-fire mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.MostPopularClass)</h5>
                     <p class="card-text">@Model.MostPopularClass</p>
                 </div>
@@ -102,7 +109,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-plane-circle-check mb-3"></i>
+                    <i class="fa-solid fa-calendar-check mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.ScheduledGymClassesCount)</h5>
                     <p class="card-text">@Model.ScheduledGymClassesCount</p>
                 </div>
@@ -112,7 +119,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-plane-circle-exclamation mb-3"></i>
+                    <i class="fa-solid fa-globe mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.ScheduledOnlineClassesCount)</h5>
                     <p class="card-text">@Model.ScheduledOnlineClassesCount</p>
                 </div>
@@ -122,7 +129,7 @@
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="fa-solid fa-plane-circle-xmark mb-3"></i>
+                    <i class="fa-solid fa-video mb-3"></i>
                     <h5 class="card-title">@Html.DisplayNameFor(model => model.VideoClassesCount)</h5>
                     <p class="card-text">@Model.VideoClassesCount</p>
                 </div>
