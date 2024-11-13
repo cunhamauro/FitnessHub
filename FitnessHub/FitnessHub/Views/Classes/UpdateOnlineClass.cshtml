@@ -12,6 +12,8 @@
         <form asp-action="UpdateOnlineClass" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <input type="hidden" id="gymSelect" value="@ViewBag.GymId" />
+
             <div class="form-group">
                 <label class="control-label">Online Class ID</label>
                 <input id="classId" readonly value="@Model.Id" class="form-control" />
@@ -79,6 +81,7 @@
                     var dateStart = $("#dateStart").val();
                     var dateEnd = $("#dateEnd").val();
                     var classId = $("#classId").val();
+                    var gymSelect = $("#gymSelect").val();
 
                     $.ajax({
                         url: '@Url.Action("GetAvailableInstructorsOnlineEdit", "Classes")',
@@ -87,6 +90,7 @@
                         data: {
                             dateStart: dateStart,
                             dateEnd: dateEnd,
+                            gymSelect: gymSelect,
                             classId: classId,
                         },
                         success: function (instructors) {

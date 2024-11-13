@@ -145,6 +145,10 @@ namespace FitnessHub.Controllers
                 DateEnd = DateTime.UtcNow.AddMinutes(60),
             };
 
+            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
+
+            ViewBag.GymId = admin.GymId;
+
             return View(model);
         }
 
@@ -303,6 +307,10 @@ namespace FitnessHub.Controllers
                 Category = onlineClass.Category,
                 ClassType = onlineClass.ClassType,
             };
+
+            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
+
+            ViewBag.GymId = admin.GymId;
 
             return View(model);
         }
@@ -518,6 +526,10 @@ namespace FitnessHub.Controllers
                 GymId = thisAdmin.GymId.Value,
             };
 
+            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
+
+            ViewBag.GymId = admin.GymId;
+
             return View(model);
         }
 
@@ -702,6 +714,10 @@ namespace FitnessHub.Controllers
                 Capacity = gymClass.Capacity,
                 ClassType = gymClass.ClassType,
             };
+
+            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
+
+            ViewBag.GymId = admin.GymId;
 
             return View(model);
         }
@@ -1089,7 +1105,7 @@ namespace FitnessHub.Controllers
             return Json(typesCategory);
         }
 
-        public async Task<JsonResult> GetAvailableInstructorsOnline(DateTime dateStart, DateTime dateEnd)
+        public async Task<JsonResult> GetAvailableInstructorsOnline(DateTime dateStart, DateTime dateEnd, int gymSelect)
         {
             List<Instructor> instructors = new();
 
@@ -1102,7 +1118,6 @@ namespace FitnessHub.Controllers
 
             List<Instructor> busyInstructors = new();
 
-
             // Get all online classes
             List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
@@ -1110,7 +1125,7 @@ namespace FitnessHub.Controllers
             foreach (OnlineClass onlineClass in onlineClasses)
             {
                 // Check if the class overlaps with the requested time range
-                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
+                if (onlineClass.DateStart < dateEnd && onlineClass.DateEnd > dateStart)
                 {
                     // The class overlaps remove its instructor from the available list
                     busyInstructors.Add(onlineClass.Instructor);
@@ -1123,14 +1138,18 @@ namespace FitnessHub.Controllers
             foreach (GymClass gymClass in gymClasses)
             {
                 // Check if the class overlaps with the requested time range
-                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
+                if (gymClass.DateStart < dateEnd && gymClass.DateEnd > dateStart)
                 {
                     // If the class overlaps remove its instructor from the available list
                     busyInstructors.Add(gymClass.Instructor);
                 }
             }
 
+            busyInstructors = busyInstructors.Distinct().ToList();
+
             instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
+
+            instructors = instructors.Where(i => i.GymId == gymSelect).ToList();
 
             // Return the filtered list of available instructors
             return Json(instructors);
@@ -1156,7 +1175,7 @@ namespace FitnessHub.Controllers
             foreach (OnlineClass onlineClass in onlineClasses)
             {
                 // Check if the class overlaps with the requested time range
-                if (!(onlineClass.DateEnd < dateStart || onlineClass.DateStart > dateEnd))
+                if (onlineClass.DateStart < dateEnd && onlineClass.DateEnd > dateStart)
                 {
                     // The class overlaps remove its instructor from the available list
                     busyInstructors.Add(onlineClass.Instructor);
@@ -1169,13 +1188,14 @@ namespace FitnessHub.Controllers
             foreach (GymClass gymClass in gymClasses)
             {
                 // Check if the class overlaps with the requested time range
-                if (!(gymClass.DateEnd < dateStart || gymClass.DateStart > dateEnd))
+                if (gymClass.DateStart < dateEnd && gymClass.DateEnd > dateStart)
                 {
                     // If the class overlaps remove its instructor from the available list
                     busyInstructors.Add(gymClass.Instructor);
                 }
             }
 
+            busyInstructors = busyInstructors.Distinct().ToList();
 
             instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
@@ -1185,7 +1205,7 @@ namespace FitnessHub.Controllers
             return Json(instructors);
         }
 
-        public async Task<JsonResult> GetAvailableInstructorsOnlineEdit(DateTime dateStart, DateTime dateEnd, int classId)
+        public async Task<JsonResult> GetAvailableInstructorsOnlineEdit(DateTime dateStart, DateTime dateEnd, int gymSelect, int classId)
         {
             List<Instructor> instructors = new();
 
@@ -1225,13 +1245,15 @@ namespace FitnessHub.Controllers
                 }
             }
 
+            instructors = instructors.Where(i => i.GymId == gymSelect).ToList();
+
             instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
             // Return the filtered list of available instructors
             return Json(instructors);
         }
 
-        public async Task<JsonResult> GetAvailableInstructorsGymEdit(DateTime dateStart, DateTime dateEnd, int gymId, int classId)
+        public async Task<JsonResult> GetAvailableInstructorsGymEdit(DateTime dateStart, DateTime dateEnd, int classId, int gymSelect)
         {
             List<Instructor> instructors = new();
 
@@ -1273,7 +1295,7 @@ namespace FitnessHub.Controllers
 
             instructors.RemoveAll(i => busyInstructors.Any(b => b.Id == i.Id));
 
-            instructors = instructors.Where(i => i.GymId == gymId).ToList();
+            instructors = instructors.Where(i => i.GymId == gymSelect).ToList();
 
             // Return the filtered list of available instructors
             return Json(instructors);
