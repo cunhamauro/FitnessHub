@@ -8,5 +8,7 @@ namespace FitnessHub.Data.Repositories
         Task<List<SelectListItem>> GetTypesSelectListAsync();
 
         Task<List<ClassType>> GetTypeFromCategory(int categoryId);
+
+        Task<ClassType?> GetByIdIncludeCategory(int id);
     }
 }

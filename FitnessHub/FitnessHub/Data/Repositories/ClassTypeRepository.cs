@@ -28,5 +28,10 @@ namespace FitnessHub.Data.Repositories
         {
             return await _context.ClassTypes.Include(t => t.ClassCategory).Where(t => t.ClassCategory.Id == categoryId).ToListAsync();
         }
+
+        public async Task<ClassType?> GetByIdIncludeCategory(int id)
+        {
+            return await _context.ClassTypes.Include(c => c.ClassCategory).Where(c => c.Id == id).FirstOrDefaultAsync();
+        }
     }
 }
