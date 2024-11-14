@@ -6,7 +6,7 @@ namespace FitnessHub.Models
     {
         [EmailAddress]
         public string? ClientEmail { get; set; }
-        public int SelectedClassId { get; set; }
+        //public int SelectedClassId { get; set; }
         public List<int> SelectedClassIds { get; set; } = new List<int>();
         public bool IsEmailValid { get; set; }
         public bool IsRegistering { get; set; }
