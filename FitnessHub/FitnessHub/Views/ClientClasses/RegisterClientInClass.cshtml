@@ -1,77 +1,59 @@
 ﻿@model RegisterClientInClassViewModel
 
 <div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Register Client for a Class</h2>
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Register Client in Class</h2>
     <hr style="margin-bottom: 2.2rem" />
 </div>
 
-<div class="row justify-content-center mt-2">
-    <div class="col-md-6">
-        <form id="registerForm" asp-action="RegisterClientInClass" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label>Client Email</label>
-                <input type="email" asp-for="ClientEmail" class="form-control" required />
-                <span asp-validation-for="ClientEmail" class="text-danger"></span>
-            </div>
-
-            <div class="form-group text-center mt-4">
-                <button type="submit" class="btn btn-primary">Find Client</button>
-            </div>
-
-            @if (Model.IsEmailValid)
-            {
-                <div class="container mb-4 view-text">
-                    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available Classes</h2>
-                    <hr style="margin-bottom: 2.2rem" />
-                </div>
-
-                @if (Model.Classes.Any())
+@if (Model.IsEmailValid)
+{
+    @if (Model.Classes.Any())
+    {
+        <form method="post" asp-action="RegisterClientInClassConfirm">
+            <input type="hidden" name="ClientEmail" value="@Model.ClientEmail" />
+            <div class="row justify-content-center mt-2">
+                @foreach (var classItem in Model.Classes)
                 {
-                    <div class="row justify-content-center mt-2">
-                        @foreach (var classItem in Model.Classes)
-                        {
-                            <div class="col-lg-5 col-md-3 col-sm-9 mx-2" style="margin-bottom: 2.3rem">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@classItem.Category</h5>
-                                        <hr />
-                                        <div class="card-text">
-                                            <p><strong>Instructor:</strong> @classItem.InstructorName</p>
-                                            <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
-                                            <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
-                                            <p><strong>Location:</strong> @classItem.Location</p>
-                                        </div>
-                                        @{var classId = classItem.Id;}
-                                        <input type="checkbox"  id="checkbox_@classItem.Id" name="SelectedClassIds" value="@classItem.Id" @(classItem.IsClientRegistered ? "checked" : "") onclick="RegistrationText('@classId')"/> 
-                                        @if(classItem.IsClientRegistered)
-                                        {
-                                            <span id="text_@classItem.Id">Registered</span>
-                                        }
-                                        else
-                                        {
-                                            <span id="text_@classItem.Id">Unregistered</span>
-                                        }
-                                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@classItem.Category</h5>
+                                <hr />
+                                <div class="card-text">
+                                    <p><strong>Instructor:</strong> @classItem.InstructorName</p>
+                                    <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
+                                    <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
+                                    <p><strong>Location:</strong> @classItem.Location</p>
                                 </div>
+                                @{
+                                    var classId = classItem.Id;
+                                }
+                                <input type="checkbox" id="checkbox_@classItem.Id" name="SelectedClassIds" value="@classItem.Id" @(classItem.IsClientRegistered ? "checked" : "") onclick="RegistrationText('@classId')" />
+                                @if (classItem.IsClientRegistered)
+                                {
+                                    <span id="text_@classItem.Id">Registered</span>
+                                }
+                                else
+                                {
+                                    <span id="text_@classItem.Id">Unregistered</span>
+                                }
                             </div>
-                        }
+                        </div>
                     </div>
+                }
+            </div>
 
-                    <div class="form-group text-center mt-2 mb-4">
-                        <button type="submit" asp-action="RegisterClientInClassConfirm" class="btn btn-primary me-2">Confirm Changes</button>
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
-                    </div>
-                }
-                else
-                {
-                    <p>No available classes.</p>
-                }
-            }
+            <div class="form-group text-center mt-2 mb-4">
+                <button type="submit" asp-action="RegisterClientInClassConfirm" class="btn btn-primary me-2">Confirm Changes</button>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+            </div>
         </form>
-    </div>
-</div>
+    }
+    else
+    {
+        <p>No available classes.</p>
+    }
+}
 
 @section Scripts {
     @{
@@ -85,8 +67,7 @@
                 textStatus.innerText = "Registered";
                 console.log('Change to registered')
             }
-            else 
-            {
+            else {
                 textStatus.innerText = "Unregistered";
                 console.log('Change to Unregistered')
             }
