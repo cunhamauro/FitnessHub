@@ -39,15 +39,6 @@ else
                         <th>
                             @Html.DisplayNameFor(model => model.City)
                         </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Address)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Rating)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </th>
                         <th></th>
                     </tr>
                 </thead>
@@ -63,22 +54,6 @@ else
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.City)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Address)
-                            </td>
-                            <td>
-                                @if (item.NumReviews > 0)
-                                {
-                                    <span>item.Rating</span>
-                                }
-                                else
-                                {
-                                    <span>N/A</span>
-                                }
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.NumReviews)
                             </td>
                             <td>
                                 <div style="display: flex">

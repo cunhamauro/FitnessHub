@@ -30,6 +30,19 @@
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.Price)
                         </dd>
+                        <dt class="col-sm-12">
+                            Status
+                        </dt>
+                        <dd class="col-sm-12">
+                            @if (Model.OnOffer == true)
+                            {
+                                <span>Available</span>
+                            }
+                            else
+                            {
+                                <span>Unavailable</span>
+                            }
+                        </dd>
                     </dl>
                     <div class="form-group">
                         <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a>

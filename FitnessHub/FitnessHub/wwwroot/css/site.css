@@ -479,3 +479,11 @@ details .row {
 #phoneNumber[type=number] {
     -moz-appearance: textfield;
 }
+
+#dashboardData .card {
+    background-color: #000000a1;
+}
+
+#dashboardData i, p {
+    color: whitesmoke;
+}
