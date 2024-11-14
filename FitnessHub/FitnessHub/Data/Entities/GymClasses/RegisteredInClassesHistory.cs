@@ -13,5 +13,9 @@
         public bool Canceled { get; set; } = false;
 
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+
+        public bool Reviewed { get; set; } = false;
+
+        public decimal Rating { get; set; }
     }
 }

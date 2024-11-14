@@ -489,6 +489,6 @@ details .row {
     background-color: #000000a1;
 }
 
-#dashboardData i, p {
+#dashboardData i, #dashboardData p {
     color: whitesmoke;
 }

@@ -16,8 +16,18 @@
     <div class="col-6 view-text">
         <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 2vh">@ViewData["Title"]</h2>
     </div>
-    <hr style="margin-bottom:1.8rem"/>
+    <hr style="margin-bottom:1.8rem" />
 </div>
+
+<style>
+    .btn-bottom-right {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        cursor: pointer;
+        z-index: 10; /* Ensure button is above the image */
+    }
+</style>
 
 
 @if (Model == null || Model.Any())
@@ -27,25 +37,18 @@
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
                 <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@gym.Name</div>
-                      <div class="card-body">
-                        <div class="card-text">
-                            <p><strong>Country:</strong> @gym.Country</p>
-                            <p><strong>City:</strong> @gym.City</p>
-                            <p style="margin-bottom: 0"><strong>Address:</strong> @gym.Address</p>
-                        </div>
+                    <div class="card-header" style="text-align: center; font-size: 2em; font-weight: bold;">
+                        @gym.Name
                     </div>
-                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
-                        <small><span style="float:left">Rating: @{
-                                    if (gym.NumReviews > 0)
-                                    {
-                                        @gym.Rating@Html.Raw("/5")
-                                    }
-                                    else
-                                    {
-                                        @Html.Raw("N/A")
-                                    }}
-                        </span><span style="float: right">Reviews: @gym.NumReviews</span></small>
+                    <div class="card-body position-relative p-0">
+                        <!-- Gym Image -->
+                        <img src="@gym.ImageDisplay" alt="@gym.Name" class="img-fluid w-100">
+
+                        <!-- Button positioned in the lower right corner -->
+                        <button class="btn btn-primary btn-bottom-right"><i class="fa-solid fa-circle-info me-2"></i>More</button>
+                    </div>
+                    <div class="card-footer" style="color: whitesmoke;">
+                        <i class="fa-solid fa-location-dot me-2"></i><small>@gym.City, @gym.Country</small>
                     </div>
                 </div>
             </div>

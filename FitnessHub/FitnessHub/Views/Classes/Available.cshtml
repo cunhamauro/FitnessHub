@@ -48,13 +48,11 @@
                                     Rating: @{
                                         if (classItem.NumReviews > 0)
                                         {
-                                            @classItem.Rating
-
-                                            @Html.Raw("/5")
+                                            <span>@(classItem.Rating % 1 == 0 ? $"{classItem.Rating:0}" : $"{classItem.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
                                         }
                                         else
                                         {
-                                            @Html.Raw("N/A")
+                                            @Html.Raw("N/A")<i class="fa-solid fa-star ms-1"></i>
                                         }
                                     }
                                 </span><span style="float: right">Reviews: @classItem.NumReviews</span>

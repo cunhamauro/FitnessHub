@@ -22,8 +22,27 @@ namespace FitnessHub.Data.Entities
         public int Rating {  get; set; }
 
         [Display(Name = "Reviews")]
-        public int NumReviews { get; set; }
+        public int NumReviews { get; set; } = 0;
 
         public string Data => $"{Name} - {Address}, {City}, {Country}";
+
+        [Display(Name = "Image")]
+        public string? ImagePath { get; set; }
+
+        [Display(Name = "Image")]
+        public string ImageDisplay
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ImagePath))
+                {
+                    return $"/images/noimage.png";
+                }
+                else
+                {
+                    return $"{ImagePath.Substring(1)}";
+                }
+            }
+        }
     }
 }

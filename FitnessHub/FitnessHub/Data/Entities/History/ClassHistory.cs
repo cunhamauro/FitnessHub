@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public string? Category { get; set; } = "N/A";
+        public string? Category { get; set; }
 
-        public string? ClassType { get; set; } = "N/A";
+        public string? ClassType { get; set; }
 
         /// <summary>
         /// Only for GymClass

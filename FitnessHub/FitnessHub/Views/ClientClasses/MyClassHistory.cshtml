@@ -34,10 +34,16 @@ else
                             Instructor
                         </th>
                         <th>
-                            Registration
+                            Sign Up
+                        </th>
+                        <th>
+                            Date
                         </th>
                         <th>
                             By
+                        </th>
+                        <th>
+                            Review
                         </th>
                     </tr>
                 </thead>
@@ -52,7 +58,18 @@ else
                                 @Html.DisplayFor(modelItem => item.CategoryName)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.SubClass)
+                                @if (item.SubClass == "OnlineClass")
+                                {
+                                    <span>Online</span>
+                                }
+                                else if (item.SubClass == "GymClass")
+                                {
+                                    <span>Gym</span>
+                                }
+                                else
+                                {
+                                    <span>Video</span>
+                                }
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.GymName)
@@ -72,6 +89,10 @@ else
                                 @item.RegistrationDate.ToShortDateString()
                             </td>
                             <td>
+                                @item.StartDate <br />
+                                @item.EndDate
+                            </td>
+                            <td>
                                 @if (item.EmployeeEmail != null && item.EmployeeEmail.Length > 2)
                                 {
                                     @item.EmployeeFullName <br />
@@ -82,6 +103,28 @@ else
                                     <span>You</span>
                                 }
                             </td>
+                            <td>
+                                @if (item.Reviewed == false && ViewBag.TypeAvailable == false)
+                                {
+                                    <span>Class no longer available</span>
+                                }
+                                else if (item.Reviewed == true)
+                                {
+                                    <span>@(item.Rating % 1 == 0 ? $"{item.Rating:0}" : $"{item.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
+                                }
+                                else
+                                {
+                                    <form asp-controller="ClientClasses" asp-action="ReviewClassAndInstructor">
+                                        <input type="hidden" value="@item.Id" name="histId" />
+                                        <input style="width: 35%" type="number" name="rating" min="0" max="5" required />/5<i class="fa-solid fa-star ms-1"></i>
+                                             <br />
+                                        <button type="submit" class="btn btn-primary mt-1">
+                                            <i class="fa-solid fa-star me-2" style="color: black !important"></i>Submit
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+
                         </tr>
                     }
                 </tbody>
