@@ -95,6 +95,15 @@
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
                                         </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses">Available Classes</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClasses">My Classes</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
+                                        </li>
                                     </ul>
                                 </li>
                             }
@@ -119,6 +128,9 @@
                                     <span>Manage</span>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="Dashboard">Dashboard</a>
+                                    </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Gyms" asp-action="Index">Gyms</a>
                                     </li>
@@ -328,7 +340,7 @@
                 <div class="col-md-4">
                     <span>
                         &copy; @DateTime.Now.Year &nbsp;
-                        <a asp-controller="Home" action="Index">
+                        <a asp-controller="Home" asp-action="Index">
                             <span id="foot-hover"><span class="foot-fitness">Fitness</span><span class="foot-hub">Hub</span></span>
                         </a>
                     </span>

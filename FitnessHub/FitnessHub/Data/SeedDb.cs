@@ -1,6 +1,7 @@
 ﻿using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.GymMachines;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Helpers;
 
@@ -37,7 +38,11 @@ namespace FitnessHub.Data
                 Name = "No Machine",
                 Category = null,
             };
-            await _context.Machines.AddAsync(noMachine);
+
+            if (!_context.Machines.Any())
+            {
+                await _context.Machines.AddAsync(noMachine);
+            }
 
             var user = await _userHelper.GetUserByEmailAsync(_configuration["MasterAdmin:Email"]);
 
@@ -59,9 +64,12 @@ namespace FitnessHub.Data
                 Address = "Rua do Putin"
             };
 
-            await _context.Gyms.AddAsync(gym);
-            await _context.Gyms.AddAsync(gym2);
-
+            if (!_context.Gyms.Any())
+            {
+                await _context.Gyms.AddAsync(gym);
+                await _context.Gyms.AddAsync(gym2);
+            }
+            
             var category = new MachineCategory
             {
                 Name = "Chest",
@@ -74,8 +82,11 @@ namespace FitnessHub.Data
                 Description = "Coxinhas",
             };
 
-            await _context.MachineCategories.AddAsync(category);
-            await _context.MachineCategories.AddAsync(category2);
+            if (!_context.MachineCategories.Any())
+            {
+                await _context.MachineCategories.AddAsync(category);
+                await _context.MachineCategories.AddAsync(category2);
+            }
 
             var categoryC1 = new ClassCategory
             {
@@ -89,8 +100,60 @@ namespace FitnessHub.Data
                 Description = "Learn to take some steroids",
             };
 
-            await _context.ClassCategories.AddAsync(categoryC1);
-            await _context.ClassCategories.AddAsync(categoryC2);
+            if (!_context.ClassCategories.Any())
+            {
+                await _context.ClassCategories.AddAsync(categoryC1);
+                await _context.ClassCategories.AddAsync(categoryC2);
+            }
+
+            var classType1 = new ClassType
+            {
+                Name = "Kamasutra",
+                ClassCategory = categoryC1,
+                Description = "Aprender a foder",
+            };
+
+
+            var classType2 = new ClassType
+            {
+                Name = "Ayuwervedra",
+                ClassCategory = categoryC1,
+                Description = "aprender magia",
+            };
+
+            if (!_context.ClassTypes.Any())
+            {
+                await _context.ClassTypes.AddAsync(classType1);
+                await _context.ClassTypes.AddAsync(classType2);
+            }
+
+            var membership = new Membership
+            {
+                Name = "steroidShip",
+                Price = 20,
+                Description = "Pa ficares bixo e morreres cedo",
+            };
+
+            if (!_context.Memberships.Any())
+            {
+                await _context.Memberships.AddAsync(membership);
+            }
+
+            await _context.SaveChangesAsync();
+
+            var membershipHist = new MembershipHistory
+            {
+                Id = membership.Id,
+                Name = "steroidShip",
+                Price = 20,
+                Description = "Pa ficares bixo e morreres cedo",
+                DateCreated = DateTime.Now,
+            };
+
+            if (!_context.MembershipHistory.Any())
+            {
+                await _context.MembershipHistory.AddAsync(membershipHist);
+            }
 
             var machine1 = new Machine
             {
@@ -98,15 +161,18 @@ namespace FitnessHub.Data
                 Category = category,
             };
 
-            await _context.Machines.AddAsync(machine1);
-
             var machine2 = new Machine
             {
                 Name = "Squats",
                 Category = category2,
             };
 
-            await _context.Machines.AddAsync(machine2);
+            if (!_context.MembershipHistory.Any())
+            {
+                await _context.Machines.AddAsync(machine1);
+                await _context.Machines.AddAsync(machine2);
+
+            }
 
             var admin = new Admin
             {
@@ -138,6 +204,15 @@ namespace FitnessHub.Data
             var token2 = await _userHelper.GenerateEmailConfirmationTokenAsync(employee);
             await _userHelper.ConfirmEmailAsync(employee, token2);
 
+            var employeeHist = new StaffHistory
+            {
+                Id = employee.Id,
+                FirstName = employee.FirstName,
+                LastName = employee.LastName,
+                Email = employee.Email,
+            };
+
+
             var instructor = new Instructor
             {
                 Gym = gym,
@@ -152,6 +227,20 @@ namespace FitnessHub.Data
             await _userHelper.AddUserToRoleAsync(instructor, "Instructor");
             var token3 = await _userHelper.GenerateEmailConfirmationTokenAsync(instructor);
             await _userHelper.ConfirmEmailAsync(instructor, token3);
+
+            var instrucHist = new StaffHistory
+            {
+                Id = instructor.Id,
+                FirstName = instructor.FirstName,
+                LastName = instructor.LastName,
+                Email = instructor.Email,
+            };
+
+            if (!_context.StaffHistory.Any())
+            {
+                await _context.StaffHistory.AddAsync(employeeHist);
+                await _context.StaffHistory.AddAsync(instrucHist);
+            }
 
             var client = new Client
             {
@@ -168,8 +257,20 @@ namespace FitnessHub.Data
             var token4 = await _userHelper.GenerateEmailConfirmationTokenAsync(client);
             await _userHelper.ConfirmEmailAsync(client, token4);
 
+            var clientHist = new ClientHistory
+            {
+                Id = client.Id,
+                Email = client.Email,
+                FirstName = client.FirstName,
+                LastName = client.LastName,
+                BirthDate = client.BirthDate,
+                GymId = 1,
+                PhoneNumber = client.PhoneNumber,
+            };
+
             var client2 = new Client
             {
+                Gym = gym2,
                 FirstName = "Client2",
                 LastName = "Test2",
                 Email = "clienttest2@fhub.com",
@@ -181,6 +282,23 @@ namespace FitnessHub.Data
             await _userHelper.AddUserToRoleAsync(client2, "Client");
             var token5 = await _userHelper.GenerateEmailConfirmationTokenAsync(client2);
             await _userHelper.ConfirmEmailAsync(client2, token5);
+
+            var clientHist2 = new ClientHistory
+            {
+                Id = client2.Id,
+                Email = client2.Email,
+                FirstName = client2.FirstName,
+                LastName = client2.LastName,
+                BirthDate = client2.BirthDate,
+                GymId = 2,
+                PhoneNumber = client2.PhoneNumber,
+            };
+
+            if (!_context.StaffHistory.Any())
+            {
+                await _context.ClientsHistory.AddAsync(clientHist);
+                await _context.ClientsHistory.AddAsync(clientHist2);
+            }
 
             #endregion
 

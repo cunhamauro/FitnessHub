@@ -1,4 +1,8 @@
+using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.Repositories;
+using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -7,10 +11,48 @@ namespace FitnessHub.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserHelper _userHelper;
+        private readonly IMembershipDetailsRepository _membershipDetailsRepository;
+        private readonly IGymRepository _gymRepository;
+        private readonly IClassRepository _classRepository;
+        private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ILogger<HomeController> logger, 
+            IUserHelper userHelper, 
+            IMembershipDetailsRepository membershipDetailsRepository,
+            IGymRepository gymRepository,
+            IClassRepository classRepository,
+            IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
         {
             _logger = logger;
+            _userHelper = userHelper;
+            _membershipDetailsRepository = membershipDetailsRepository;
+            _gymRepository = gymRepository;
+            _classRepository = classRepository;
+            _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
+        }
+
+        [Authorize(Roles = "MasterAdmin")]
+        public async Task<IActionResult> Dashboard()
+        {
+            var model = new DashboardViewModel()
+            {
+                ClientsCount = (await _userHelper.GetUsersByTypeAsync<Client>()).Count,
+                ClientsWithMembershipCount = await _userHelper.ClientsWithMembershipCountAsync(),
+                AnualMembershipsRevenue = await _membershipDetailsRepository.GetAnualMembershipsRevenueAsync(),
+                GymWithMostMemberShips = await _userHelper.GymWithMostMembershipsAsync(),
+                GymsCount = _gymRepository.GetAll().Count(), 
+                EmployeesCount = (await _userHelper.GetUsersByTypeAsync<Employee>()).Count,
+                InstructorsCount = (await _userHelper.GetUsersByTypeAsync<Instructor>()).Count,
+                CountriesCount = await _gymRepository.GetCountriesCountAsync(),
+                ScheduledGymClassesCount = (await _classRepository.GetAllGymClassesInclude()).Count,
+                ScheduledOnlineClassesCount = (await _classRepository.GetAllOnlineClassesInclude()).Count,
+                VideoClassesCount = (await _classRepository.GetAllVideoClassesInclude()).Count,
+                MostPopularClass = await _registeredInClassesHistoryRepository.GetMostPopularClass(),
+            };
+
+            return View(model);
         }
 
         public IActionResult Index()

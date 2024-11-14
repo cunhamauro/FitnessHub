@@ -11,7 +11,8 @@
     <div class="col-md-4 offset-md-4">
         <form asp-action="UpdateGymClass">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" id="gymId" asp-for="@Model.Gym.Id" />
+
+            <input type="hidden" id="gymSelect" asp-for="GymId" value="@Model.GymId" />
 
             <div class="form-group">
                 <label class="control-label">Gym</label>
@@ -77,7 +78,7 @@
                     var dateStart = $("#dateStart").val();
                     var dateEnd = $("#dateEnd").val();
                     var classId = $("#classId").val();
-                    var gymId = $("#gymId").val();
+                    var gymSelect = $("#gymSelect").val();
 
                     $.ajax({
                         url: '@Url.Action("GetAvailableInstructorsGymEdit", "Classes")',
@@ -87,7 +88,7 @@
                             dateStart: dateStart,
                             dateEnd: dateEnd,
                             classId: classId,
-                            gymId: gymId,
+                            gymSelect: gymSelect,
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response
@@ -105,6 +106,9 @@
                         }
                     });
                 }
+
+                // Call UpdateAvailableInstructors on page load
+                UpdateAvailableInstructors();
 
                 // Bind the change event to date inputs
                 $("#dateStart, #dateEnd").change(UpdateAvailableInstructors);

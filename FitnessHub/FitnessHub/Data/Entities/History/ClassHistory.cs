@@ -4,14 +4,14 @@
     {
         public int Id { get; set; }
 
-        public int CategoryId { get; set; }
+        public string? Category { get; set; } = "N/A";
 
-        public int ClassTypeId { get; set; }
+        public string? ClassType { get; set; } = "N/A";
 
         /// <summary>
         /// Only for GymClass
         /// </summary>
-        public int? GymId { get; set; }  
+        public string? GymName { get; set; } = "N/A";
 
         /// <summary>
         /// Only for GymClass & OnlineClass
@@ -36,7 +36,7 @@
         /// <summary>
         /// Only for OnlineClass
         /// </summary>
-        public string? Platform { get; set; }
+        public string? Platform { get; set; } = "N/A";
 
         /// <summary>
         /// Only for VideoClass

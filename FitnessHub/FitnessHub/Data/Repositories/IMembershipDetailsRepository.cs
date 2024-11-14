@@ -7,5 +7,8 @@ namespace FitnessHub.Data.Repositories
         Task<MembershipDetails> GetMembershipDetailsByIdIncludeMembership(int id);
 
         Task<bool> IsMemberShipInDetails(int id);
+        
+        Task<decimal> GetAnualMembershipsRevenueAsync();
+
     }
 }

@@ -62,5 +62,9 @@ namespace FitnessHub.Helpers
         bool CheckIfPhoneNumberExists(string phoneNumber);
 
         Task<Client?> GetClientIncludeAsync(string id);
+      
+        Task<int> ClientsWithMembershipCountAsync();
+
+        Task<string> GymWithMostMembershipsAsync();
     }
 }

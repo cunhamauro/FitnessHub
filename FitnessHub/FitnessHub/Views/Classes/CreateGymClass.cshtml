@@ -10,6 +10,8 @@
         <form asp-action="CreateGymClass">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <input type="hidden" asp-for="GymId" id="gymSelect" value="@Model.GymId" />
+
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
@@ -42,14 +44,6 @@
                        value="@Model.DateEnd.ToString("yyyy-MM-ddTHH:mm")"
                        min="@DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm")" />
                 <span asp-validation-for="DateEnd" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="GymId" class="control-label">Gym</label>
-                <select asp-for="GymId" id="gymSelect" class="form-control" asp-items="@Model.GymsList">
-                    <option value="0">Select a Gym</option>
-                </select>
-                <span asp-validation-for="GymId" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -139,22 +133,18 @@
                         success: function (types) {
                             console.log('Received types:', types); // Debug: log the response
 
-                            // Verificar se "types" é um array antes de prosseguir
                             if (!Array.isArray(types)) {
                                 console.error('Unexpected response format:', types);
                                 alert('Error: Unexpected response format.');
                                 return;
                             }
 
-                            // Limpar as opções anteriores
                             $("#typeSelect").empty();
                             $("#typeSelect").append('<option value="0">Select a Class Type</option>');
 
-                            // Adicionar novas opções com base nos dados retornados
                             $.each(types, function (index, type) {
                                 console.log('Type:', type); // Debug: log each type object
 
-                                // Verifique se a propriedade 'Name' existe
                                 const typeName = type.Name || type.name || 'Unknown';
                                 const typeId = type.id || type.ID;
 

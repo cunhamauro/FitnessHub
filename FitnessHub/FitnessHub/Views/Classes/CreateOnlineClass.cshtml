@@ -12,6 +12,8 @@
         <form asp-action="CreateOnlineClass">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
+            <input type="hidden" id="gymSelect" value="@ViewBag.GymId" />
+
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label">Category</label>
                 <select asp-for="CategoryId" id="categorySelect" class="form-control" asp-items="@Model.CategoriesList">
@@ -81,6 +83,7 @@
                 function UpdateAvailableInstructors() {
                     var dateStart = $("#dateStart").val();
                     var dateEnd = $("#dateEnd").val();
+                    var gymSelect = $("#gymSelect").val();
 
                     $.ajax({
                         url: '@Url.Action("GetAvailableInstructorsOnline", "Classes")',
@@ -89,6 +92,7 @@
                         data: {
                             dateStart: dateStart,
                             dateEnd: dateEnd,
+                            gymSelect: gymSelect,
                         },
                         success: function (instructors) {
                             console.log('Received instructors:', instructors); // Debug: log the response

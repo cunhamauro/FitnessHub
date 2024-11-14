@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Models;
+using FitnessHub.Data;
 
 namespace FitnessHub.Helpers
 {
@@ -199,6 +200,51 @@ namespace FitnessHub.Helpers
                 Include(u => u.OnlineClass).
                 Include(u => u.GymClass).
                 Where(u => u.Id == id).FirstOrDefaultAsync();
+                
+        public async Task<int> ClientsWithMembershipCountAsync()
+        {
+            var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();
+
+            return clients.OfType<Client>().Where(u => u.MembershipDetailsId != null).Count();
+        }
+
+        public async Task<string> GymWithMostMembershipsAsync()
+        {
+            var clientsWithMembership = await _userManager.Users
+                                       .OfType<Client>()
+                                       .Include(c => c.Gym) // Ensure Gym is loaded
+                                       .Where(c => c.MembershipDetailsId != null)
+                                       .ToListAsync();
+
+            if (!clientsWithMembership.Any())
+            {
+                return "N/A";
+            }
+
+            var gymMemberships = clientsWithMembership
+                         .GroupBy(c => c.Gym)
+                         .Select(group => new
+                         {
+                             Gym = group.Key,
+                             MembershipCount = group.Count()
+                         })
+                         .ToList();
+
+            var maxMembershipCount = gymMemberships.Max(g => g.MembershipCount);
+
+            var gymsWithMaxMemberships = gymMemberships
+                                 .Where(g => g.MembershipCount == maxMembershipCount)
+                                 .Select(g => g.Gym.Name)
+                                 .ToList();
+
+            if (gymsWithMaxMemberships.Any())
+            {
+                return $"{string.Join(", ", gymsWithMaxMemberships)}";
+            }
+            else
+            {
+                return "N/A";
+            }
         }
     }
 }

@@ -13,8 +13,11 @@
             <div class="card">
                 <div class="card-body">
                     <dl class="row">
-                        <dd class="col-sm-12 mb-2">
-                            @if (Model.NumReviews < 1)
+                        <dd class="col-sm-12" style="font-size: 2rem; font-weight:700; margin-bottom: -5px !important">
+                            @Model.ClassType.Name
+                        </dd>
+                        <dd class="col-sm-12">
+                            @if (Model.ClassType.NumReviews < 1)
                             {
                                 <span>N/A</span>
 
@@ -22,11 +25,11 @@
                             }
                             else
                             {
-                                <span>@Model.Rating/5</span>
+                                <span>@Model.ClassType.Rating/5</span>
 
                                 <i class="fa-solid fa-star"></i>
                             }
-                            (@Model.NumReviews)
+                            (@Model.ClassType.NumReviews)
                         </dd>
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Category):
