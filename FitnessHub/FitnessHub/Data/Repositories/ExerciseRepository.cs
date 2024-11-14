@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Entities.GymMachines;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
 {
@@ -9,6 +10,11 @@ namespace FitnessHub.Data.Repositories
         public ExerciseRepository(DataContext context) : base(context)
         {
             _context = context;
+        }
+
+        public async Task<bool> IsMachineIsInExercice(int id)
+        {
+            return await _context.Exercises.AnyAsync(ex => ex.Machine.Id == id);
         }
     }
 }

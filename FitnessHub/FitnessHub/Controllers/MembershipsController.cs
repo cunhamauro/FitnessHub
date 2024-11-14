@@ -626,14 +626,25 @@ namespace FitnessHub.Controllers
         {
             var membership = await _membershipRepository.GetByIdAsync(id);
 
-            if (membership != null)
+            if(membership == null)
             {
+                return MembershipNotFound();            
+            }
+
+            var memberShipDetails = await _membershipDetailsRepository.IsMemberShipInDetails(id);
+
+            if (memberShipDetails)
+            {
+                ModelState.AddModelError(string.Empty, "This membership cannot be deleted because it has associated clients.");
+                return View("Details", membership);
+            }
+
                 await _membershipRepository.DeleteAsync(membership);
 
                 var record = await _membershipHistoryRepository.GetByIdAsync(id);
                 record.Canceled = true;
                 await _membershipHistoryRepository.UpdateAsync(record);
-            }
+            
 
             return RedirectToAction(nameof(Index));
         }

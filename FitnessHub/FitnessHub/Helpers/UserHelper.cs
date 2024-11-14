@@ -193,6 +193,14 @@ namespace FitnessHub.Helpers
             return _userManager.Users.Where(u => u.PhoneNumber == phoneNumber).Any();
         }
 
+        public Task<Client?> GetClientIncludeAsync(string id)
+        {
+            return _userManager.Users.OfType<Client>().
+                Include(u => u.MembershipDetails).
+                Include(u => u.OnlineClass).
+                Include(u => u.GymClass).
+                Where(u => u.Id == id).FirstOrDefaultAsync();
+                
         public async Task<int> ClientsWithMembershipCountAsync()
         {
             var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();

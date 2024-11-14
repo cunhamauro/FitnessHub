@@ -6,5 +6,7 @@ namespace FitnessHub.Data.Repositories
     public interface IMachineCategoryRepository : IGenericRepository<MachineCategory>
     {
         Task<IEnumerable<SelectListItem>> GetCategoriesSelectListAsync();
+
+        
     }
 }

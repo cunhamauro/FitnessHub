@@ -14,16 +14,22 @@ namespace FitnessHub.Controllers
         private readonly IMachineCategoryRepository _categoryRepository;
         private readonly IConverterHelper _converterHelper;
         private readonly IImageHelper _imageHelper;
+        private readonly IMachineDetailsRepository _machineDetailsRepository;
+        private readonly IExerciseRepository _exerciseRepository;
 
         public MachinesController(IMachineRepository machineRepository,
             IMachineCategoryRepository categoryRepository,
             IConverterHelper converterHelper,
-            IImageHelper imageHelper)
+            IImageHelper imageHelper, 
+            IMachineDetailsRepository machineDetailsRepository,
+            IExerciseRepository exerciseRepository)
         {
             _machineRepository = machineRepository;
             _categoryRepository = categoryRepository;
             _converterHelper = converterHelper;
             _imageHelper = imageHelper;
+            _machineDetailsRepository = machineDetailsRepository;
+            _exerciseRepository = exerciseRepository;
         }
 
         // GET: Machines
@@ -197,10 +203,29 @@ namespace FitnessHub.Controllers
         {
             var machine = await _machineRepository.GetByIdAsync(id);
 
-            if (machine != null)
+            if (machine == null)
             {
-                await _machineRepository.DeleteAsync(machine);
+                return MachineNotFound();
             }
+
+            var machineDetails = await _machineDetailsRepository.IsMachineInDetails(id);
+
+            if (machineDetails)
+            {
+                ModelState.AddModelError(string.Empty, "This machine cannot be deleted because it is being used in a gym.");
+                return View("Details", machine);
+            }
+
+            var machinesInExercices = await _exerciseRepository.IsMachineIsInExercice(id);
+
+            if(machinesInExercices)
+            {
+                ModelState.AddModelError(string.Empty, "This machine cannot be deleted because it is being used in exercises.");
+                return View("Details", machine);
+            }
+
+            await _machineRepository.DeleteAsync(machine);
+
             return RedirectToAction(nameof(Index));
         }
 
