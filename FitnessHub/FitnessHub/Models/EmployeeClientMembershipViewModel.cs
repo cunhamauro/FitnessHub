@@ -2,6 +2,6 @@
 {
     public class EmployeeClientMembershipViewModel : MembershipViewModel
     {
-        public string ClientEmail { get; set; }
+        public string? ClientEmail { get; set; }
     }
 }

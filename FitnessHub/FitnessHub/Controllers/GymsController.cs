@@ -17,12 +17,14 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
         private readonly CountryService _countryService;
         private readonly IGymHistoryRepository _gymHistoryRepository;
+        private readonly IConfiguration _configuration;
 
-        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository)
+        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository, IConfiguration configuration)
         {
             _gymRepository = gymRepository;
             _countryService = countryService;
             _gymHistoryRepository = gymHistoryRepository;
+            _configuration = configuration;
         }
 
         // GET: Gyms
@@ -32,6 +34,8 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Gyms/Details/5
+        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -44,6 +48,8 @@ namespace FitnessHub.Controllers
             {
                 return GymNotFound();
             }
+
+            ViewBag.GoogleMapsKey = _configuration["GoogleMapsApi:Key"];
 
             return View(gym);
         }

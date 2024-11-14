@@ -1,9 +1,8 @@
-﻿using System.Security.Claims;
+﻿using FitnessHub.Data.Entities.Users;
+using FitnessHub.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using FitnessHub.Data.Entities.Users;
-using FitnessHub.Models;
-using FitnessHub.Data;
+using System.Security.Claims;
 
 namespace FitnessHub.Helpers
 {
@@ -118,7 +117,7 @@ namespace FitnessHub.Helpers
 
         public async Task<User?> GetUserAsync(ClaimsPrincipal claims)
         {
-            return await _userManager.GetUserAsync(claims); 
+            return await _userManager.GetUserAsync(claims);
         }
 
         public async Task<IList<User>> GetAdminsAsync()
