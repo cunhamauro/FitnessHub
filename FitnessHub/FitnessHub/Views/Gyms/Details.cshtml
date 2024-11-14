@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Details";
+    string googleMapsKey = ViewBag.GoogleMapsKey;
 }
 
 <div class="container detailsdelete-text">
@@ -50,6 +51,8 @@
                         </dd>
                     </dl>
 
+                    @if(this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
+                    {
                     <div class="form-group">
                        @*  <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning me-2 mt-2"><i class="fa-solid fa-pen me-2"></i>Update</a> *@
                         <a asp-action="Index" class="btn btn-secondary "><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
@@ -60,8 +63,19 @@
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mt-4"></div>
                     </div>
+                    }
+
                 </div>
             </div>
+        </div>
+
+        <div class="col-md-3 mb-4" style="margin-left: 10%; align-content: center">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <iframe src="https://www.google.com/maps/embed/v1/place?key=@googleMapsKey&q=@Model?.Address,@Model?.City+@Model?.Country"
+                            alt="Gym map location" style="max-width: 100%; height: auto; max-height: 20vw"/>
+                </dd>
+            </dl>
         </div>
     </div>
 </div>

@@ -4,8 +4,8 @@ namespace FitnessHub.Models
 {
     public class ClientMembershipViewModel : MembershipDetails
     {
-        public string ClientEmail { get; set; }
+        public string? ClientEmail { get; set; }
 
-        public string ClientFullName { get; set; }
+        public string? ClientFullName { get; set; }
     }
 }

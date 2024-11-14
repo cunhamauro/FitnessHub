@@ -8,6 +8,7 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace FitnessHub.Controllers
 {
@@ -195,6 +196,11 @@ namespace FitnessHub.Controllers
             {
                 var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
 
+                if(gymClass.Gym.Id != client.GymId)
+                {
+                    return ClassNotFound();
+                }
+
                 if (gymClass == null)
                 {
                     return ClassNotFound();
@@ -349,15 +355,53 @@ namespace FitnessHub.Controllers
             return ClassNotFound();
         }
 
-        //Employee side actions
+       //Employee side actions
+
         [Authorize(Roles = "Employee")]
-        public async Task<IActionResult> RegisterClientInClass()
+        public IActionResult FindClientByEmail()
         {
+            return View();
+        }
+
+        [Authorize(Roles = "Employee")]
+        [HttpPost]
+        public async Task<IActionResult> FindClientByEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                ModelState.AddModelError(string.Empty, "Email is required.");
+                var model = new RegisterClientInClassViewModel();
+                return View("FindClientByEmail", model);
+            }
+
+            var client = await _userHelper.GetUserByEmailAsync(email) as Client;
+            if (client == null)
+            {
+                ModelState.AddModelError(string.Empty, "Client not found.");
+                var model = new RegisterClientInClassViewModel { ClientEmail = email };
+                return View("FindClientByEmail", model);
+            }
+            return RedirectToAction(nameof(RegisterClientInClass), new { email });
+        }
+
+        public async Task<IActionResult> RegisterClientInClass(string email)
+        {
+            var client = await _userHelper.GetUserByEmailAsync(email) as Client;
+            if (client == null)
+            {
+                return RedirectToAction("FindClientByEmail"); 
+            }
+
+            var employee = await _userHelper.GetUserAsync(this.User) as Employee;
+
             var classes = await _classRepository.GetAllGymClassesInclude();
+
+            classes = classes.Where(c => c.Gym.Id == employee.GymId && c.Clients.Count < c.Capacity).ToList();
 
             var model = new RegisterClientInClassViewModel
             {
-                ClientEmail = "",
+                ClientEmail = email,
+                IsEmailValid = true,
                 Classes = classes.Select(c => new ClassDetailsViewModel
                 {
                     Id = c.Id,
@@ -367,45 +411,18 @@ namespace FitnessHub.Controllers
                     DateStart = c.DateStart,
                     DateEnd = c.DateEnd,
                     Location = c.Gym.Name,
-                    IsClientRegistered = false
+                    IsClientRegistered = c.Clients.Any(cl => cl.Id == client.Id)
                 }).ToList()
             };
-            return View(model);
-        }
 
-        [Authorize(Roles = "Employee")]
-        [HttpPost]
-        public async Task<IActionResult> RegisterClientInClass(RegisterClientInClassViewModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                model.Classes = await LoadClassDetails();
-                return View(model);
-            }
-
-            var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
-            if (client == null)
-            {
-                ModelState.AddModelError(string.Empty, "Client not found.");
-                model.Classes = await LoadClassDetails();
-                return View(model);
-            }
-
-            model.IsEmailValid = true;
-            model.Classes = await LoadClassDetails();
-
-            foreach (var classItem in model.Classes)
-            {
-                var gymClass = await _classRepository.GetGymClassByIdInclude(classItem.Id);
-                classItem.IsClientRegistered = gymClass.Clients.Any(c => c.Id == client.Id);
-            }
-            return View(model);
+            return View("RegisterClientInClass", model);
         }
 
         [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> RegisterClientInClassConfirm(RegisterClientInClassViewModel model)
         {
+            var clientEmail = model.ClientEmail;
 
             var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
             if (client == null)
@@ -455,7 +472,7 @@ namespace FitnessHub.Controllers
                 }
                 await _classRepository.UpdateAsync(gymClass);
             }
-            return RedirectToAction(nameof(RegisterClientInClass));
+            return RedirectToAction("Clients", "Account");
         }
 
         [Authorize(Roles = "Client")]
