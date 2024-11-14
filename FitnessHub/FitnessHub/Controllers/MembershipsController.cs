@@ -27,7 +27,7 @@ namespace FitnessHub.Controllers
             _clientMembershipHistoryRepository = clientMembershipHistoryRepository;
         }
 
-        [Authorize(Roles = "Admin, MasterAdmin, Employee")]
+        [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> ActiveClientMemberships()
         {
             var user = await _userHelper.GetUserAsync(this.User);

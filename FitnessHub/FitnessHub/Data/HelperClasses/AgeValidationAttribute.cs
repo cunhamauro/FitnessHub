@@ -4,7 +4,7 @@ namespace FitnessHub.Data.HelperClasses
 {
     public class AgeValidationAttribute : ValidationAttribute
     {
-        protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             if (value is DateTime birthDate)
             {

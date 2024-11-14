@@ -32,7 +32,10 @@
                         <div class="card-text">
                             <p><strong>Country:</strong> @gym.Country</p>
                             <p><strong>City:</strong> @gym.City</p>
-                            <p style="margin-bottom: 0"><strong>Address:</strong> @gym.Address</p>
+                            <p><strong>Address:</strong> @gym.Address</p>
+                            <p style="margin-bottom: 0">
+                                <a asp-action="Details" asp-route-id="@gym.Id" class="btn btn-primary me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
+                            </p>
                         </div>
                     </div>
                     <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
