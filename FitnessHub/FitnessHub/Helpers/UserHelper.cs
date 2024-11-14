@@ -118,7 +118,7 @@ namespace FitnessHub.Helpers
 
         public async Task<User?> GetUserAsync(ClaimsPrincipal claims)
         {
-            return await _userManager.GetUserAsync(claims); 
+            return await _userManager.GetUserAsync(claims);
         }
 
         public async Task<IList<User>> GetAdminsAsync()
@@ -183,9 +183,9 @@ namespace FitnessHub.Helpers
                 .Where(r => r.Name != "MasterAdmin" && r.Name != "Admin");
         }
 
-        public Task<IdentityResult> DeleteUser(User user)
+        public async Task<IdentityResult> DeleteUser(User user)
         {
-            return _userManager.DeleteAsync(user);
+            return await _userManager.DeleteAsync(user);
         }
 
         public bool CheckIfPhoneNumberExists(string phoneNumber)
@@ -193,14 +193,15 @@ namespace FitnessHub.Helpers
             return _userManager.Users.Where(u => u.PhoneNumber == phoneNumber).Any();
         }
 
-        public Task<Client?> GetClientIncludeAsync(string id)
+        public async Task<Client?> GetClientIncludeAsync(string id)
         {
-            return _userManager.Users.OfType<Client>().
+            return await _userManager.Users.OfType<Client>().
                 Include(u => u.MembershipDetails).
                 Include(u => u.OnlineClass).
                 Include(u => u.GymClass).
                 Where(u => u.Id == id).FirstOrDefaultAsync();
-                
+        }
+
         public async Task<int> ClientsWithMembershipCountAsync()
         {
             var clients = await _userManager.GetUsersInRoleAsync("Client") ?? new List<User>();

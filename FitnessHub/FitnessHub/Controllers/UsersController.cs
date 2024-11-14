@@ -32,8 +32,7 @@ namespace FitnessHub.Controllers
             IGymRepository gymRepository,
             IClientHistoryRepository clientHistoryRepository,
             IStaffHistoryRepository staffHistoryRepository,
-            CountryService countryService,
-            IMembershipRepository membershipRepository)
+            IMembershipRepository membershipRepository,
             IGymHistoryRepository gymHistoryRepository,
             CountryService countryService)
         {
