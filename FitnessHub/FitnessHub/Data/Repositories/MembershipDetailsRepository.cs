@@ -1,5 +1,4 @@
 ﻿using FitnessHub.Data.Entities.Users;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
@@ -29,12 +28,12 @@ namespace FitnessHub.Data.Repositories
 
             decimal anualRevenue = 0;
 
-            foreach(var membership in membershipDetails)
+            foreach (var membership in membershipDetails)
             {
                 var membershipAnualIncome = membership.Membership.Price * 12;
 
                 anualRevenue += membershipAnualIncome;
-            } 
+            }
 
             return anualRevenue;
         }

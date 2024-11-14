@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FitnessHub.Data.Entities.GymClasses
+﻿namespace FitnessHub.Data.Entities.GymClasses
 {
     public class Class : IEntity
     {

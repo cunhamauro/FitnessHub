@@ -21,6 +21,5 @@ namespace FitnessHub.Data.Entities.GymClasses
         public List<Client>? Clients { get; set; }
 
         //public List<ClassDetails> ClassDetails { get; set; } = new();
-
     }
 }
