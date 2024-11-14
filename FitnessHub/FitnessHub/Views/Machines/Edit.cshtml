@@ -7,58 +7,64 @@
 <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Update @Model.Name</h2>
 
 <hr />
-<div class="row view-form-style">
-    <div class="col-md-4 offset-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+<div class="container">
+    <div class="row view-form-style justify-content-center align-items-center">
+        <div class="col-md-4">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="CategoryId" class="control-label">Category</label>
-                <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
-                    <option value="">Select a Category</option>
-                </select>
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="CategoryId" class="control-label">Category</label>
+                    <select asp-for="CategoryId" class="form-control" asp-items="Model.Categories">
+                        <option value="">Select a Category</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="ImageFile" class="control-label"></label>
-                <input asp-for="ImageFile" class="form-control" />
-                <span asp-validation-for="ImageFile" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="ImageFile" class="control-label"></label>
+                    <input asp-for="ImageFile" class="form-control" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="TutorialVideoUrl" class="control-label">Youtube video URL</label>
-                <input asp-for="TutorialVideoUrl" class="form-control" />
-                <span asp-validation-for="TutorialVideoUrl" class="text-danger"></span>
-            </div>
+                <div class="form-group">
+                    <label asp-for="TutorialVideoUrl" class="control-label">Youtube video URL</label>
+                    <input asp-for="TutorialVideoUrl" class="form-control" />
+                    <span asp-validation-for="TutorialVideoUrl" class="text-danger"></span>
+                </div>
 
-            <div class="col-md-3 mb-4">
-                <dl class="row">
-                    <dd class="col-sm-12">
-                        <img src="@Model.ImageDisplay" alt="Class image" style="max-width: 100%; height: auto; max-height: 20vw" />
-                    </dd>
-                </dl>
-            </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary me-4 mt-2">
+                        <i class="fa-solid fa-check me-2"></i>Save
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                </div>
 
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary me-4 mt-2">
-                    <i class="fa-solid fa-check me-2"></i>Save Machine
-                </button>
-                <a asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
-            </div>
+            </form>
+        </div>
 
-        </form>
+        <!-- Right: Image -->
+        <div class="col-md-2 mb-4">
+            <dl class="row">
+                <dd class="col-sm-12">
+                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="width: auto; max-height: 20vw" />
+                </dd>
+            </dl>
+        </div>
+
     </div>
 </div>
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

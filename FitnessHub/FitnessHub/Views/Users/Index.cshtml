@@ -39,10 +39,7 @@ else
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.FullName)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => model.Email)
+                            User
                         </th>
                         @if(this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
                         {
@@ -65,10 +62,8 @@ else
                     {
                         <tr>
                             <td>
-                                @Html.DisplayFor(modelItem => item.FullName)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Email)
+                                @item.FullName <br />
+                                (<span>@item.Email</span>)
                             </td>
                             @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
                             {

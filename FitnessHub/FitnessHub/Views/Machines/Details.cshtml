@@ -47,24 +47,28 @@
         <div class="col-md-3 mb-4">
             <dl class="row">
                 <dd class="col-sm-12">
-                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="max-width: 100%; height: auto; max-height: 20vw"/>
+                    <img src="@Model.ImageDisplay" alt="Gym machine image" style="width: auto; max-height: 20vw" />
                 </dd>
             </dl>
         </div>
 
-        <!-- Right: Video -->
-        <div class="col-md-6">
-            <dl class="row">
-                <dd class="col-sm-12">
-                    <iframe style="height: 20vw; width:inherit" src="@embedVideoUrl"
-                            title="YouTube Video Player"
-                            frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowfullscreen>
-                    </iframe>
-                </dd>
-            </dl>
-        </div>
+        @if (!string.IsNullOrEmpty(Model.TutorialVideoUrl))
+        {
+
+            <!-- Right: Video -->
+            <div class="col-md-6">
+                <dl class="row">
+                    <dd class="col-sm-12">
+                        <iframe style="height: 20vw; width:inherit" src="@embedVideoUrl"
+                                title="YouTube Video Player"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </dd>
+                </dl>
+            </div>
+        }
     </div>
 </div>
 
