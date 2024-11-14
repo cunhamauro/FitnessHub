@@ -1,4 +1,4 @@
-﻿@model FitnessHub.Data.Entities.Gym
+﻿@model FitnessHub.Models.GymViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -9,7 +9,7 @@
 <hr />
 <div class="row view-form-style">
     <div class="col-md-4 offset-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Country" />
@@ -22,10 +22,17 @@
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
 
             <div class="form-group">
