@@ -8,6 +8,8 @@ using FitnessHub.Services;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using FitnessHub.Data.Entities.History;
+using FitnessHub.Helpers;
+using FitnessHub.Data.Entities.Users;
 
 namespace FitnessHub.Controllers
 {
@@ -17,12 +19,14 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
         private readonly CountryService _countryService;
         private readonly IGymHistoryRepository _gymHistoryRepository;
+        private readonly IUserHelper _userHelper;
 
-        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository)
+        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository, IUserHelper userHelper)
         {
             _gymRepository = gymRepository;
             _countryService = countryService;
             _gymHistoryRepository = gymHistoryRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Gyms
@@ -201,6 +205,25 @@ namespace FitnessHub.Controllers
             var gym = await _gymRepository.GetByIdAsync(id);
             if (gym != null)
             {
+
+                var users = await _userHelper.GetEmployeesAndInstructorsAndClientsByGymAsync(id);
+
+                if (users.Any())
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot delete this gym because there are users associated with it.");
+                    return View("Details", gym);
+                }
+
+                var admins = await _userHelper.GetAdminsAsync();
+
+                var adminsByGym = admins.OfType<Admin>().Where(a => a.GymId == id);
+
+                if (adminsByGym.Any())
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot delete this gym because there is an admin associated with it.");
+                    return View("Details", gym);
+                }
+
                 try
                 {
                     await _gymRepository.DeleteAsync(gym);

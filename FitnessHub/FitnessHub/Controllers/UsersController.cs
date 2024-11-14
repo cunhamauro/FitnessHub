@@ -22,6 +22,7 @@ namespace FitnessHub.Controllers
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly CountryService _countryService;
+        private readonly IMembershipRepository _membershipRepository;
 
         public UsersController(
             IUserHelper userHelper,
@@ -30,7 +31,8 @@ namespace FitnessHub.Controllers
             IGymRepository gymRepository,
             IClientHistoryRepository clientHistoryRepository,
             IStaffHistoryRepository staffHistoryRepository,
-            CountryService countryService)
+            CountryService countryService,
+            IMembershipRepository membershipRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
@@ -39,6 +41,7 @@ namespace FitnessHub.Controllers
             _clientHistoryRepository = clientHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
             _countryService = countryService;
+            _membershipRepository = membershipRepository;
         }
 
         // GET: Users
@@ -124,6 +127,25 @@ namespace FitnessHub.Controllers
                 PhoneNumber = user.PhoneNumber,
                 Avatar = user.Avatar,
             };
+
+            //var client = await _userHelper.GetClientIncludeAsync(id);
+
+            //bool disabled = false;
+
+            //if (client.MembershipDetails != null)
+            //{
+            //    disabled = true;
+            //}
+
+            //if ((client.OnlineClass != null && client.OnlineClass.Any()) ||
+            //    (client.GymClass != null && client.GymClass.Any()))
+            //{
+            //    disabled = true;
+            //}
+            //if (disabled)
+            //{
+            //    ViewBag.Status = "disabled";
+            //}
 
             return View(model);
         }
@@ -590,6 +612,7 @@ namespace FitnessHub.Controllers
                 PhoneNumber = user.PhoneNumber,
             };
 
+           
             return View(model);
         }
 
@@ -598,17 +621,49 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _userHelper.GetUserByIdAsync(id);
+            var user = await _userHelper.GetClientIncludeAsync(id);
+
+            var roles = await _userHelper.GetUserRolesAsync(user);
+
+            var userGym = await _gymRepository.GetGymByUserAsync(user);
+
+            var role = roles.FirstOrDefault();
+
+            var model = new UserDetailsViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Gym = userGym,
+                Role = role,
+                BirthDate = user.BirthDate,
+                PhoneNumber = user.PhoneNumber,
+                Avatar = user.Avatar,
+            };
 
             if (user != null)
             {
+                if (user.MembershipDetails != null)
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot delete this user because he has an active membership.");
+                    return View("Details", model);
+                }
+
+                if ((user.OnlineClass != null && user.OnlineClass.Any()) ||
+                    (user.GymClass != null && user.GymClass.Any()))
+                {
+                    ModelState.AddModelError(string.Empty, "Cannot delete this user because he is enrolled in classes.");
+                    return View("Details", model);
+                }
+
                 var result = await _userHelper.DeleteUser(user);
                 if (result.Succeeded)
                 {
                     return RedirectToAction(nameof(Index));
                 }
             }
-            return View(user);
+            return View(model);
         }
 
         public async Task<IActionResult> ClientsHistory()
@@ -662,7 +717,6 @@ namespace FitnessHub.Controllers
                     PhoneNumber = client.PhoneNumber,
                 });
             }
-
             return View(clientsHistoryModel);
         }
 

@@ -60,5 +60,7 @@ namespace FitnessHub.Helpers
         Task<IdentityResult> DeleteUser(User user);
 
         bool CheckIfPhoneNumberExists(string phoneNumber);
+
+        Task<Client?> GetClientIncludeAsync(string id);
     }
 }

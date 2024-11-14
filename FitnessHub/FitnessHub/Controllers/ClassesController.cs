@@ -447,6 +447,17 @@ namespace FitnessHub.Controllers
 
             if (onlineClass != null)
             {
+                if (onlineClass.Clients == null)
+                {
+                    return ClassNotFound();
+                }
+
+                if (onlineClass.Clients.Count > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
+
+                    return View("GymClassDetails", onlineClass);
+                }
                 await _classRepository.DeleteAsync(onlineClass);
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
@@ -848,6 +859,18 @@ namespace FitnessHub.Controllers
 
             if (gymClass != null)
             {
+                if (gymClass.Clients == null)
+                {
+                    return ClassNotFound();
+                }
+
+                if(gymClass.Clients.Count > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
+
+                    return View("GymClassDetails", gymClass);
+                }
+
                 await _classRepository.DeleteAsync(gymClass);
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(gymClass.Id);

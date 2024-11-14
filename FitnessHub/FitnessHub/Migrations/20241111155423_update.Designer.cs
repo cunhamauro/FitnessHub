@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241108144001_AddStaffHistoryPhoneNumber")]
-    partial class AddStaffHistoryPhoneNumber
+    [Migration("20241111155423_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -163,6 +163,9 @@ namespace FitnessHub.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ClassTypeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("NumReviews")
                         .HasColumnType("int");
 
@@ -172,6 +175,8 @@ namespace FitnessHub.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
+
+                    b.HasIndex("ClassTypeId");
 
                     b.ToTable("Classes", (string)null);
 
@@ -190,6 +195,30 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassCategories");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.ClassType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ClassCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
@@ -199,7 +228,9 @@ namespace FitnessHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ClassCategories");
+                    b.HasIndex("ClassCategoryId");
+
+                    b.ToTable("ClassTypes");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.RegisteredInClassesHistory", b =>
@@ -386,8 +417,8 @@ namespace FitnessHub.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ClassType")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ClassTypeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DateEnd")
                         .HasColumnType("datetime2");
@@ -402,6 +433,9 @@ namespace FitnessHub.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Platform")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubClass")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoClassUrl")
@@ -612,6 +646,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("OnOffer")
+                        .HasColumnType("bit");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
@@ -1054,7 +1091,22 @@ namespace FitnessHub.Migrations
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
+                    b.HasOne("FitnessHub.Data.Entities.GymClasses.ClassType", "ClassType")
+                        .WithMany()
+                        .HasForeignKey("ClassTypeId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("ClassType");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.ClassType", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.GymClasses.ClassCategory", "ClassCategory")
+                        .WithMany()
+                        .HasForeignKey("ClassCategoryId");
+
+                    b.Navigation("ClassCategory");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Exercise", b =>

@@ -7,5 +7,7 @@ namespace FitnessHub.Data.Repositories
         IQueryable<MachineDetails> GetAllByGymWithMachinesAndGyms(int gymId);
 
         Task<MachineDetails?> GetByIdWithMachines(int id);
+
+        Task<bool> IsMachineInDetails(int id);
     }
 }

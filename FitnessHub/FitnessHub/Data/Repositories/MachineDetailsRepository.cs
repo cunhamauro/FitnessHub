@@ -21,13 +21,18 @@ namespace FitnessHub.Data.Repositories
                 .ThenInclude(mc => mc.Category);
         }
 
-        public Task<MachineDetails?> GetByIdWithMachines(int id)
+        public async Task<MachineDetails?> GetByIdWithMachines(int id)
         {
-            return _context.MachineDetails
+            return await _context.MachineDetails
                 .Where(mc => mc.Id == id)
                 .Include(mc => mc.Machine)
                 .ThenInclude(mc => mc.Category)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> IsMachineInDetails(int id)
+        {
+            return await _context.MachineDetails.AnyAsync(md => md.Machine.Id == id);
         }
     }
 }

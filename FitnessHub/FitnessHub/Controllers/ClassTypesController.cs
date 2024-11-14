@@ -15,12 +15,14 @@ namespace FitnessHub.Controllers
         private readonly IClassTypeRepository _classTypeRepository;
         private readonly IImageHelper _imageHelper;
         private readonly IClassCategoryRepository _classCategoryRepository;
+        private readonly IClassRepository _classRepository;
 
-        public ClassTypesController(IClassTypeRepository classTypeRepository, IImageHelper imageHelper, IClassCategoryRepository classCategoryRepository)
+        public ClassTypesController(IClassTypeRepository classTypeRepository, IImageHelper imageHelper, IClassCategoryRepository classCategoryRepository, IClassRepository classRepository)
         {
             _classTypeRepository = classTypeRepository;
             _imageHelper = imageHelper;
             _classCategoryRepository = classCategoryRepository;
+            _classRepository = classRepository;
         }
 
         // GET: ClassTypes
@@ -133,47 +135,6 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
-        // GET: ClassTypes/Create
-        //public IActionResult Create()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Create(ClassTypeViewModel model)
-        //{
-        //    List<ClassType> types = _classTypeRepository.GetAll().ToList();
-
-        //    foreach (var tp in types)
-        //    {
-        //        if (tp.Name == model.Name)
-        //        {
-        //            ModelState.AddModelError("Name", "There is already a class type with this name");
-        //        }
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        var classType = new ClassType
-        //        {
-        //            Name = model.Name,
-        //            Description = model.Description,
-        //        };
-
-        //        if (model.ImageFile != null)
-        //        {
-        //            classType.ImagePath = await _imageHelper.UploadImageAsync(model.ImageFile, "types");
-        //        }
-
-        //        await _classTypeRepository.CreateAsync(classType);
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(model);
-        //}
-
-
-        // GET: ClassTypes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -272,13 +233,23 @@ namespace FitnessHub.Controllers
                 return TypeNotFound();
             }
 
+            var classesWithThisType = await _classRepository.GetAll()
+            .Where(c => c.ClassType.Id == classType.Id)
+            .ToListAsync();
+
+            if (classesWithThisType.Any())
+            {
+                ModelState.AddModelError(string.Empty, "You cannot delete this class type because it is associated with one or more classes.");
+                return View("Details", classType);
+                
+            }
             await _classTypeRepository.DeleteAsync(classType);
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult TypeNotFound()
         {
-            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class type not found", Message = "Not enough options for you?"});
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class type not found", Message = "Not enough options for you?" });
         }
 
         public IActionResult DisplayMessage(string title, string message)
