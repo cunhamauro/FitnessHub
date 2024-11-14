@@ -17,6 +17,11 @@ namespace FitnessHub.Data.Repositories
             return await _context.MembershipDetails.Where(m => m.Id == id).Include(m => m.Membership).FirstOrDefaultAsync();
         }
 
+        public async Task<bool> IsMemberShipInDetails(int id)
+        {
+            return await _context.MembershipDetails.AnyAsync(md => md.Membership.Id == id);
+        }
+
         public async Task<decimal> GetAnualMembershipsRevenueAsync()
         {
             var membershipDetails = await _context.MembershipDetails.Include(m => m.Membership).ToListAsync();

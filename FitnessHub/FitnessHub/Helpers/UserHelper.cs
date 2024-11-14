@@ -182,14 +182,23 @@ namespace FitnessHub.Helpers
                 .Where(r => r.Name != "MasterAdmin" && r.Name != "Admin");
         }
 
-        public Task<IdentityResult> DeleteUser(User user)
+        public async Task<IdentityResult> DeleteUser(User user)
         {
-            return _userManager.DeleteAsync(user);
+            return await _userManager.DeleteAsync(user);
         }
 
         public bool CheckIfPhoneNumberExists(string phoneNumber)
         {
             return _userManager.Users.Where(u => u.PhoneNumber == phoneNumber).Any();
+        }
+
+        public async Task<Client?> GetClientIncludeAsync(string id)
+        {
+            return await _userManager.Users.OfType<Client>().
+                Include(u => u.MembershipDetails).
+                Include(u => u.OnlineClass).
+                Include(u => u.GymClass).
+                Where(u => u.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<int> ClientsWithMembershipCountAsync()

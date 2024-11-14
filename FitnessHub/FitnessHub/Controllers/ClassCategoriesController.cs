@@ -16,11 +16,13 @@ namespace FitnessHub.Controllers
     {
         private readonly IClassCategoryRepository _classCategoryRepository;
         private readonly IImageHelper _imageHelper;
+        private readonly IClassTypeRepository _classTypeRepository;
 
-        public ClassCategoriesController(IClassCategoryRepository classCategoryRepository, IImageHelper imageHelper)
+        public ClassCategoriesController(IClassCategoryRepository classCategoryRepository, IImageHelper imageHelper, IClassTypeRepository classTypeRepository)
         {
             _classCategoryRepository = classCategoryRepository;
             _imageHelper = imageHelper;
+            _classTypeRepository = classTypeRepository;
         }
 
         // GET: ClassCategories
@@ -165,6 +167,14 @@ namespace FitnessHub.Controllers
             if (classCategory == null)
             {
                 return CategoryNotFound();
+            }
+
+            var classTypesWithThisCategory = await _classTypeRepository.GetAll().Where(ct => ct.ClassCategory.Id == classCategory.Id).ToListAsync();
+
+            if(classTypesWithThisCategory.Any())
+            {
+                ModelState.AddModelError(string.Empty, "You cannot delete this category because it is associated with one or more class types");
+                return View("Details", classCategory);
             }
 
             await _classCategoryRepository.DeleteAsync(classCategory);

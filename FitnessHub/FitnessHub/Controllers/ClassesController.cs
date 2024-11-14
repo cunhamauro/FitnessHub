@@ -440,6 +440,17 @@ namespace FitnessHub.Controllers
 
             if (onlineClass != null)
             {
+                if (onlineClass.Clients == null)
+                {
+                    return ClassNotFound();
+                }
+
+                if (onlineClass.Clients.Count > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
+
+                    return View("GymClassDetails", onlineClass);
+                }
                 await _classRepository.DeleteAsync(onlineClass);
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
@@ -489,8 +500,6 @@ namespace FitnessHub.Controllers
         {
             Admin thisAdmin = await _userHelper.GetUserAsync(this.User) as Admin;
 
-            List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
-            List<SelectListItem> selectGymList = new List<SelectListItem>();
             List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
             List<SelectListItem> selectClassTypeList = await _classTypeRepository.GetTypesSelectListAsync();
 
@@ -506,29 +515,15 @@ namespace FitnessHub.Controllers
                 });
             }
 
-            foreach (Gym gym in gymsList)
-            {
-                selectGymList.Add(new SelectListItem
-                {
-                    Text = $"{gym.Id} - {gym.Name} - {gym.City}, {gym.Country}",
-                    Value = gym.Id.ToString(),
-                });
-            }
-
             GymClassViewModel model = new GymClassViewModel
             {
                 InstructorsList = selectInstructorList,
-                GymsList = selectGymList,
                 CategoriesList = selectCategoryList,
                 ClassTypeList = selectClassTypeList,
                 DateStart = DateTime.UtcNow,
                 DateEnd = DateTime.UtcNow.AddMinutes(60),
                 GymId = thisAdmin.GymId.Value,
             };
-
-            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
-
-            ViewBag.GymId = admin.GymId;
 
             return View(model);
         }
@@ -541,8 +536,6 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateGymClass(GymClassViewModel model)
         {
-            List<Gym> gymsList = await _gymRepository.GetAll().ToListAsync();
-            List<SelectListItem> selectGymList = new List<SelectListItem>();
             List<SelectListItem> selectCategoryList = await _classCategoryRepository.GetCategoriesSelectListAsync();
             List<SelectListItem> selectClassTypeList = await _classTypeRepository.GetTypesSelectListAsync();
 
@@ -558,17 +551,7 @@ namespace FitnessHub.Controllers
                 });
             }
 
-            foreach (Gym g in gymsList)
-            {
-                selectGymList.Add(new SelectListItem
-                {
-                    Text = $"{g.Id} - {g.Name} - {g.City}, {g.Country}",
-                    Value = g.Id.ToString(),
-                });
-            }
-
             model.InstructorsList = selectInstructorList;
-            model.GymsList = selectGymList;
             model.CategoriesList = selectCategoryList;
             model.ClassTypeList = selectClassTypeList;
 
@@ -640,36 +623,39 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("ClassTypeId", "Class type not found");
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                GymClass gymClass = new GymClass
-                {
-                    Gym = gym,
-                    Instructor = instructor,
-                    DateStart = model.DateStart,
-                    DateEnd = model.DateEnd,
-                    Category = category,
-                    ClassType = type,
-                    Capacity = model.Capacity,
-                };
-
-                await _classRepository.CreateAsync(gymClass);
-
-                ClassHistory record = new ClassHistory()
-                {
-                    Id = gymClass.Id,
-                    GymName = gym.Name,
-                    ClassType = type.Name,
-                    SubClass = "GymClass",
-                    Category = category.Name,
-                    InstructorId = instructor.Id,
-                    DateStart = model.DateStart,
-                    DateEnd = model.DateEnd,
-                    Capacity = model.Capacity,
-                };
-
-                await _classHistoryRepository.CreateAsync(record);
+                return View(model);
             }
+
+            GymClass gymClass = new GymClass
+            {
+                Gym = gym,
+                Instructor = instructor,
+                DateStart = model.DateStart,
+                DateEnd = model.DateEnd,
+                Category = category,
+                ClassType = type,
+                Capacity = model.Capacity,
+            };
+
+            await _classRepository.CreateAsync(gymClass);
+
+            ClassHistory record = new ClassHistory()
+            {
+                Id = gymClass.Id,
+                GymName = gym.Name,
+                ClassType = type.Name,
+                SubClass = "GymClass",
+                Category = category.Name,
+                InstructorId = instructor.Id,
+                DateStart = model.DateStart,
+                DateEnd = model.DateEnd,
+                Capacity = model.Capacity,
+            };
+
+            await _classHistoryRepository.CreateAsync(record);
+
             return RedirectToAction(nameof(GymClasses));
         }
 
@@ -713,11 +699,10 @@ namespace FitnessHub.Controllers
                 Category = gymClass.Category,
                 Capacity = gymClass.Capacity,
                 ClassType = gymClass.ClassType,
+                GymId = gymClass.Id,
             };
 
             Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
-
-            ViewBag.GymId = admin.GymId;
 
             return View(model);
         }
@@ -852,6 +837,18 @@ namespace FitnessHub.Controllers
 
             if (gymClass != null)
             {
+                if (gymClass.Clients == null)
+                {
+                    return ClassNotFound();
+                }
+
+                if(gymClass.Clients.Count > 0)
+                {
+                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
+
+                    return View("GymClassDetails", gymClass);
+                }
+
                 await _classRepository.DeleteAsync(gymClass);
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(gymClass.Id);

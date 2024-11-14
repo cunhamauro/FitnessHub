@@ -11,8 +11,6 @@ namespace FitnessHub.Models
         [Required(ErrorMessage = "Please select a valid instructor")]
         public string? InstructorId { get; set; }
 
-        public List<SelectListItem>? GymsList { get; set; }
-
         [Required(ErrorMessage = "Please select a valid gym")]
         public int GymId { get; set; }
 

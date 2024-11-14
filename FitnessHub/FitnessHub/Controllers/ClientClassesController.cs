@@ -5,6 +5,7 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,6 +81,7 @@ namespace FitnessHub.Controllers
         }
 
         // User side actions
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> AvailableClasses()
         {
             var client = await _userHelper.GetUserAsync(this.User) as Client;
@@ -137,6 +139,7 @@ namespace FitnessHub.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost]
         public async Task<IActionResult> Register(int classId, bool isOnline)
         {
@@ -195,6 +198,7 @@ namespace FitnessHub.Controllers
             return RedirectToAction(nameof(AvailableClasses));
         }
 
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> MyClasses()
         {
             var client = await _userHelper.GetUserAsync(this.User) as Client;
@@ -251,6 +255,7 @@ namespace FitnessHub.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = "Client")]
         [HttpPost]
         public async Task<IActionResult> Unregister(int id)
         {
@@ -286,6 +291,7 @@ namespace FitnessHub.Controllers
             return View();
         }
 
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> ClassDetails(int id)
         {
             var gymClass = await _classRepository.GetGymClassByIdInclude(id);
@@ -326,6 +332,7 @@ namespace FitnessHub.Controllers
         }
 
         //Employee side actions
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> RegisterClientInClass()
         {
             var classes = await _classRepository.GetAllGymClassesInclude();
@@ -348,6 +355,7 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> RegisterClientInClass(RegisterClientInClassViewModel model)
         {
@@ -376,6 +384,7 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> RegisterClientInClassConfirm(RegisterClientInClassViewModel model)
         {
