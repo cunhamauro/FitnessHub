@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241114142500_update")]
-    partial class update
+    [Migration("20241114175456_fixShit323123")]
+    partial class fixShit323123
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -220,11 +220,11 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("NumReviews")
+                    b.Property<int>("NumReviews")
                         .HasColumnType("int");
 
-                    b.Property<int?>("Rating")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -250,8 +250,14 @@ namespace FitnessHub.Migrations
                     b.Property<string>("EmployeeId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("RegistrationDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("Reviewed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -1017,8 +1023,8 @@ namespace FitnessHub.Migrations
                     b.Property<int>("NumReviews")
                         .HasColumnType("int");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Rating")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasIndex("GymId");
 

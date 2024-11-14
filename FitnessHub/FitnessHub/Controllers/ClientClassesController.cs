@@ -21,9 +21,10 @@ namespace FitnessHub.Controllers
         private readonly IClassHistoryRepository _classHistoryRepository;
         private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
+        private readonly IClassTypeRepository _classTypeRepository;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository)
+                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -31,6 +32,7 @@ namespace FitnessHub.Controllers
             _classHistoryRepository = classHistoryRepository;
             _gymHistoryRepository = gymHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
+            _classTypeRepository = classTypeRepository;
         }
 
         public async Task<IActionResult> MyClassHistory()
@@ -67,6 +69,7 @@ namespace FitnessHub.Controllers
 
                 model.Add(new RegisteredInClassesHistoryViewModel
                 {
+                    Id = r.Id,
                     GymName = gClass.GymName,
                     CategoryName = gClass.Category,
                     TypeName = gClass.ClassType,
@@ -76,8 +79,22 @@ namespace FitnessHub.Controllers
                     RegistrationDate = r.RegistrationDate,
                     InstructorEmail = instructor?.Email ?? string.Empty,
                     InstructorFullName = instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : string.Empty,
+                    Reviewed = r.Reviewed,
+                    Rating = r.Rating,
+                    StartDate = gClass.DateStart.Value,
+                    EndDate = gClass.DateEnd.Value,
                 });
+
+                ClassType? type = await _classTypeRepository.GetAll().Where(t => t.Name == gClass.ClassType).FirstOrDefaultAsync();
+
+                if (type == null)
+                {
+                    ViewBag.TypeAvailable = false;
+                }
             }
+
+            model = model.Where(r => r.EndDate < DateTime.UtcNow).ToList();
+
              return View(model);
         }
 
@@ -313,7 +330,8 @@ namespace FitnessHub.Controllers
                     Category = gymClass.Category.Name,
                     GymName = gymClass.Gym?.Name,
                     ClassType = gymClass.ClassType.Name,
-
+                    Rating = gymClass.ClassType.Rating,
+                    NumReviews = gymClass.ClassType.NumReviews,
                 };
                 return View(viewModel);
             }
@@ -455,6 +473,63 @@ namespace FitnessHub.Controllers
                 await _classRepository.UpdateAsync(gymClass);
             }
             return RedirectToAction("Clients", "Account");
+        }
+
+        [Authorize(Roles = "Client")]
+        [HttpPost]
+        public async Task<IActionResult> ReviewClassAndInstructor(int histId, int rating)
+        {
+            var clientClassHistory = await _registeredInClassesHistoryRepository.GetByIdAsync(histId);
+
+            if (clientClassHistory == null)
+            {
+                return RedirectToAction(nameof(MyClassHistory));
+            }
+
+            Client? client = await _userHelper.GetClientIncludeAsync(clientClassHistory.UserId);
+
+            if (client == null)
+            {
+                return RedirectToAction(nameof(MyClassHistory));
+            }
+
+            var classHistory = await _classHistoryRepository.GetByIdAsync(clientClassHistory.ClassId);
+
+            if (classHistory == null)
+            {
+                return RedirectToAction(nameof(MyClassHistory));
+            }
+
+            ClassType? type = await _classTypeRepository.GetAll().Where(t => t.Name == classHistory.ClassType).FirstOrDefaultAsync();
+
+            if (type == null)
+            {
+                return RedirectToAction(nameof(MyClassHistory));
+            }
+
+            Instructor? instructor = await _userHelper.GetUserByIdAsync(classHistory.InstructorId) as Instructor;
+
+            if (instructor == null)
+            {
+                return RedirectToAction(nameof(MyClassHistory));
+            }
+
+            type.NumReviews++;
+            type.Rating = ((type.Rating * (type.NumReviews - 1)) + rating) / type.NumReviews;
+
+            await _classTypeRepository.UpdateAsync(type);
+
+            instructor.NumReviews++;
+            instructor.Rating = ((instructor.Rating * (instructor.NumReviews - 1)) + rating) / instructor.NumReviews;
+
+            await _userHelper.UpdateUserAsync(instructor);
+
+            clientClassHistory.Reviewed = true;
+            clientClassHistory.Rating = rating;
+
+            await _registeredInClassesHistoryRepository.UpdateAsync(clientClassHistory);
+
+            return RedirectToAction(nameof(MyClassHistory));
         }
 
         private async Task<List<ClassDetailsViewModel>> LoadClassDetails()

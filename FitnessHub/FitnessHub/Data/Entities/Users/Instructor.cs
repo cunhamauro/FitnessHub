@@ -10,9 +10,9 @@ namespace FitnessHub.Data.Entities.Users
         public Gym? Gym { get; set; }
 
         [Range(1,5)]
-        public int Rating {  get; set; }
+        public decimal Rating {  get; set; }
 
         [Display(Name = "Reviews")]
-        public int NumReviews {  get; set; }
+        public int NumReviews { get; set; } = 0;
     }
 }

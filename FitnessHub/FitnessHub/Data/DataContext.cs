@@ -108,6 +108,18 @@ namespace FitnessHub.Data
                        .Property(m => m.Price)
                        .HasColumnType("decimal(18,2)");
 
+            builder.Entity<Instructor>()
+                       .Property(m => m.Rating)
+                       .HasColumnType("decimal(18,2)");
+
+            builder.Entity<ClassType>()
+                       .Property(m => m.Rating)
+                       .HasColumnType("decimal(18,2)");
+
+            builder.Entity<RegisteredInClassesHistory>()
+                       .Property(m => m.Rating)
+                       .HasColumnType("decimal(18,2)");
+
             // Disable database ID generation
             builder.Entity<ClassHistory>()
                        .Property(e => e.Id)

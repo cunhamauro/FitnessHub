@@ -78,7 +78,9 @@ namespace FitnessHub.Migrations
                     ClassId = table.Column<int>(type: "int", nullable: false),
                     EmployeeId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Canceled = table.Column<bool>(type: "bit", nullable: false),
-                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    RegistrationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Reviewed = table.Column<bool>(type: "bit", nullable: false),
+                    Rating = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -384,7 +386,7 @@ namespace FitnessHub.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ClassCategoryId = table.Column<int>(type: "int", nullable: true),
-                    Rating = table.Column<int>(type: "int", nullable: true),
+                    Rating = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     NumReviews = table.Column<int>(type: "int", nullable: true),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -451,7 +453,7 @@ namespace FitnessHub.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     GymId = table.Column<int>(type: "int", nullable: false),
-                    Rating = table.Column<int>(type: "int", nullable: false),
+                    Rating = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     NumReviews = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

@@ -21,7 +21,7 @@ namespace FitnessHub.Models
         public string? Platform { get; set; }
 
         [Range(1, 5)]
-        public int? Rating { get; set; }
+        public decimal Rating { get; set; }
 
         [Display(Name = "Reviews")]
         public int? NumReviews { get; set; } = 0;
