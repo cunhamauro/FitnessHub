@@ -682,12 +682,14 @@ namespace FitnessHub.Controllers
             if (this.User.IsInRole("Admin"))
             {
                 var admin = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
                 if (admin == null)
                 {
                     return UserNotFound();
                 }
 
                 var adminGym = await _gymRepository.GetGymByUserAsync(admin);
+
                 if (adminGym == null)
                 {
                     return GymNotFound();

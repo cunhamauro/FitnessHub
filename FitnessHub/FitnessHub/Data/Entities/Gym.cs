@@ -19,11 +19,6 @@ namespace FitnessHub.Data.Entities
         [Required]
         public string? Address { get; set; }
 
-        public int Rating {  get; set; }
-
-        [Display(Name = "Reviews")]
-        public int NumReviews { get; set; } = 0;
-
         public string Data => $"{Name} - {Address}, {City}, {Country}";
 
         [Display(Name = "Image")]

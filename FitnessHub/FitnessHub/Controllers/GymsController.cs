@@ -169,8 +169,6 @@ namespace FitnessHub.Controllers
                 Id = gym.Id,
                 Country = gym.Country,
                 City = gym.City,
-                Rating = gym.Rating,
-                NumReviews = gym.NumReviews,
                 Name = gym.Name,
                 Address = gym.Address,
                 ImagePath = gym.ImagePath,
@@ -193,8 +191,6 @@ namespace FitnessHub.Controllers
                     var gym = new Gym()
                     {
                         Id = model.Id,
-                        Rating = model.Rating,
-                        NumReviews = model.NumReviews,
                         Country = model.Country,
                         City = model.City,
                         Address = model.Address,

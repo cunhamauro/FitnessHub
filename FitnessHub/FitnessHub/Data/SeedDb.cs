@@ -56,6 +56,15 @@ namespace FitnessHub.Data
                 Address = "Rua do KimJongUn"
             };
 
+            var gymHist = new GymHistory
+            {
+                Name = "GymTest1",
+                Country = "North Korea",
+                City = "PyongYang",
+                Address = "Rua do KimJongUn",
+                Id = 1,
+            };
+
             var gym2 = new Gym
             {
                 Name = "GymTest2",
@@ -64,12 +73,23 @@ namespace FitnessHub.Data
                 Address = "Rua do Putin"
             };
 
+            var gymHist2 = new GymHistory
+            {
+                Name = "GymTest2",
+                Country = "Russia",
+                City = "Moscow",
+                Address = "Rua do Putin",
+                Id = 2,
+            };
+
             if (!_context.Gyms.Any())
             {
                 await _context.Gyms.AddAsync(gym);
                 await _context.Gyms.AddAsync(gym2);
+                await _context.GymsHistory.AddAsync(gymHist);
+                await _context.GymsHistory.AddAsync(gymHist2);
             }
-            
+
             var category = new MachineCategory
             {
                 Name = "Chest",
@@ -206,10 +226,13 @@ namespace FitnessHub.Data
 
             var employeeHist = new StaffHistory
             {
+                GymId = 1,
                 Id = employee.Id,
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
+                Role = "Employee",
+                PhoneNumber = "77777777"
             };
 
 
@@ -230,10 +253,13 @@ namespace FitnessHub.Data
 
             var instrucHist = new StaffHistory
             {
+                GymId = 1,
                 Id = instructor.Id,
                 FirstName = instructor.FirstName,
                 LastName = instructor.LastName,
                 Email = instructor.Email,
+                Role = "Instructor",
+                PhoneNumber = "77777777"
             };
 
             if (!_context.StaffHistory.Any())
@@ -294,7 +320,7 @@ namespace FitnessHub.Data
                 PhoneNumber = client2.PhoneNumber,
             };
 
-            if (!_context.StaffHistory.Any())
+            if (!_context.ClientsHistory.Any())
             {
                 await _context.ClientsHistory.AddAsync(clientHist);
                 await _context.ClientsHistory.AddAsync(clientHist2);

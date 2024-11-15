@@ -19,10 +19,10 @@ else
                 <thead>
                     <tr>
                         <th>
-                            Class
+                            Type
                         </th>
                         <th>
-                            Type
+                            Class
                         </th>
                         <th>
                             Category
@@ -62,9 +62,6 @@ else
                     {
                         <tr>
                             <td>
-                                @item.ClassType
-                            </td>
-                            <td>
                                 @if (item.SubClass == "OnlineClass")
                                 {
                                     <span>Online</span>
@@ -78,6 +75,10 @@ else
                                     <span>Video</span>
                                 }
                             </td>
+                            <td>
+                                @item.ClassType
+                            </td>
+                          
                             <td>
                                 @Html.DisplayFor(modelItem => item.Category)
                             </td>
@@ -127,7 +128,11 @@ else
                                 }
                             </td>
                             <td>
-                                @if (item.Platform == null)
+                                @if (item.SubClass == "VideoClass")
+                                {
+                                    <span>Youtube</span>
+                                }
+                                else if (item.Platform == null)
                                 {
                                     <span>N/A</span>
                                 }

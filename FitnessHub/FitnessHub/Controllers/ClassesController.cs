@@ -70,8 +70,8 @@ namespace FitnessHub.Controllers
                 classesHistory.Add(new ClassHistoryViewModel
                 {
                     ClientList = clientEmailsList,
-                    InstructorFullName = $"{instructor.FirstName} {instructor.LastName}",
-                    InstructorEmail = instructor.Email,
+                    InstructorFullName = instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : string.Empty,
+                    InstructorEmail = instructor?.Email ?? string.Empty,
                     Category = ch.Category,
                     Id = ch.Id,
                     SubClass = ch.SubClass,
@@ -917,8 +917,12 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateVideoClass(VideoClassViewModel model)
         {
+            if (string.IsNullOrEmpty(model.VideoClassUrl))
+            {
+                ModelState.AddModelError("VideoClassUrl", "Please enter a Youtube video URL");
+            }
 
-            if (model.VideoClassUrl.Length > 4 && !model.VideoClassUrl.ToLower().Contains("youtu"))
+            if (model.VideoClassUrl.Length < 4 || !model.VideoClassUrl.ToLower().Contains("youtu"))
             {
                 ModelState.AddModelError("VideoClassUrl", "Only URL's from Youtube videos are accepted");
             }
