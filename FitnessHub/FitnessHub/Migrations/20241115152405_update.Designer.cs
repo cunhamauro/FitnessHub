@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241114214406_update")]
+    [Migration("20241115152405_update")]
     partial class update
     {
         /// <inheritdoc />
