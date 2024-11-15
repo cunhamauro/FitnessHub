@@ -15,8 +15,13 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label">Client Email</label>
-                <input type="email" name="email" class="form-control" required />
-                <span asp-validation-for="ClientEmail" class="text-danger"></span>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </span>
+                    <input type="email" name="email" class="form-control" required />
+                    <span asp-validation-for="ClientEmail" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group text-center mt-4">
                 <button type="submit" class="btn btn-primary">Find Client</button>
