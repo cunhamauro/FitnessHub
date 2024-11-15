@@ -182,7 +182,7 @@ namespace FitnessHub.Controllers
 
                 if (onlineClass == null)
                 {
-                    return NotFound();
+                    return ClassNotFound();
                 }
 
                 if (!onlineClass.Clients.Any(c => c.Id == client.Id))

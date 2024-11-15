@@ -36,7 +36,7 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return CategoryNotFound();
             }
 
             var classCategory = await _classCategoryRepository.GetByIdAsync(id.Value);

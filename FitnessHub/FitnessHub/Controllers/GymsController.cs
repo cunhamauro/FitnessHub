@@ -57,6 +57,7 @@ namespace FitnessHub.Controllers
 
             ViewBag.GoogleMapsKey = _configuration["GoogleMapsApi:Key"];
 
+
             return View(gym);
         }
 

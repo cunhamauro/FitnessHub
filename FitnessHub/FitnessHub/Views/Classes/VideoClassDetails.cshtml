@@ -42,12 +42,13 @@
                     </dl>
 
                     <div class="form-group">
-                        <a asp-action="UpdateVideoClass" asp-route-id="@Model?.Id" class="btn btn-warning me-2">
-                            <i class="fa-solid fa-pen me-2"></i>Edit
-                        </a>
                         <a asp-action="VideoClasses" class="btn btn-secondary">
                             <i class="fa-solid fa-chevron-left me-2"></i>Back
                         </a>
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
+                            <i class="fa-solid fa-trash-can me-2"></i>Delete
+                        </button>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mt-4"></div>
                     </div>
                 </div>
             </div>
@@ -68,3 +69,35 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete this video class?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" asp-action="DeleteVideoClass" method="post" style="display:inline;">
+                    <input type="hidden" id="classId" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var classId = button.getAttribute('data-class-id');
+        var form = document.getElementById('deleteForm');
+        form.querySelector('#classId').value = classId;
+    });
+</script>
+
