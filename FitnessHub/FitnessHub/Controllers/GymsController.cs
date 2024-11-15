@@ -21,8 +21,15 @@ namespace FitnessHub.Controllers
         private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly IConfiguration _configuration;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public GymsController(IGymRepository gymRepository, CountryService countryService, IGymHistoryRepository gymHistoryRepository, IConfiguration configuration,  IUserHelper userHelper)
+        public GymsController(
+            IGymRepository gymRepository, 
+            CountryService countryService, 
+            IGymHistoryRepository gymHistoryRepository, 
+            IConfiguration configuration,  
+            IUserHelper userHelper,
+            IImageHelper imageHelper)
 
         {
             _gymRepository = gymRepository;
@@ -30,7 +37,7 @@ namespace FitnessHub.Controllers
             _gymHistoryRepository = gymHistoryRepository;
             _configuration = configuration;
             _userHelper = userHelper;
-
+            _imageHelper = imageHelper;
         }
 
         // GET: Gyms
@@ -56,6 +63,7 @@ namespace FitnessHub.Controllers
             }
 
             ViewBag.GoogleMapsKey = _configuration["GoogleMapsApi:Key"];
+
 
             return View(gym);
         }
@@ -86,9 +94,9 @@ namespace FitnessHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Gym gym)
+        public async Task<IActionResult> Create(GymViewModel model)
         {
-            if (gym.Country == "0")
+            if (model.Country == "0")
             {
                 ModelState.AddModelError("Country", "Please select a valid Country");
             }
@@ -97,6 +105,20 @@ namespace FitnessHub.Controllers
             {
                 try
                 {
+                    var gym = new Gym()
+                    {
+                        Name = model.Name,
+                        City = model.City,
+                        Country = model.Country,
+                        Address = model.Address,
+                    };
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        var path = await _imageHelper.UploadImageAsync(model.ImageFile, "gyms");
+                        gym.ImagePath = path;
+                    }
+
                     await _gymRepository.CreateAsync(gym);
 
                     var gymHistory = new GymHistory()
@@ -125,7 +147,7 @@ namespace FitnessHub.Controllers
 
             ViewBag.Cities = new SelectList(new List<string>());
 
-            return View(gym);
+            return View(model);
         }
 
         // GET: Gyms/Edit/5
@@ -142,7 +164,19 @@ namespace FitnessHub.Controllers
                 return GymNotFound();
             }
 
-            return View(gym);
+            var model = new GymViewModel()
+            {
+                Id = gym.Id,
+                Country = gym.Country,
+                City = gym.City,
+                Rating = gym.Rating,
+                NumReviews = gym.NumReviews,
+                Name = gym.Name,
+                Address = gym.Address,
+                ImagePath = gym.ImagePath,
+            };
+
+            return View(model);
         }
 
         // POST: Gyms/Edit/5
@@ -150,12 +184,29 @@ namespace FitnessHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Gym gym)
+        public async Task<IActionResult> Edit(GymViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var gym = new Gym()
+                    {
+                        Id = model.Id,
+                        Rating = model.Rating,
+                        NumReviews = model.NumReviews,
+                        Country = model.Country,
+                        City = model.City,
+                        Address = model.Address,
+                        Name = model.Name,
+                    };
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        var path = await _imageHelper.UploadImageAsync(model.ImageFile, "gyms");
+                        gym.ImagePath = path;
+                    }
+
                     await _gymRepository.UpdateAsync(gym);
 
                     var gymHistory = await _gymHistoryRepository.GetByIdTrackAsync(gym.Id);
@@ -174,7 +225,7 @@ namespace FitnessHub.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _gymRepository.ExistsAsync(gym.Id))
+                    if (!await _gymRepository.ExistsAsync(model.Id))
                     {
                         return GymNotFound();
                     }
@@ -185,7 +236,7 @@ namespace FitnessHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(gym);
+            return View(model);
         }
 
         // GET: Gyms/Delete/5

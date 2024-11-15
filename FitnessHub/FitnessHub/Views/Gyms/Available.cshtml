@@ -19,17 +19,6 @@
     <hr style="margin-bottom:1.8rem" />
 </div>
 
-<style>
-    .btn-bottom-right {
-        position: absolute;
-        bottom: 13px;
-        right: 13px;
-        cursor: pointer;
-        z-index: 10; /* Ensure button is above the image */
-    }
-</style>
-
-
 @if (Model == null || Model.Any())
 {
     <div class="row justify-content-center mt-2" id="gymsContainer">
@@ -45,21 +34,7 @@
                         <img src="@gym.ImageDisplay" alt="@gym.Name" class="img-fluid w-100">
 
                         <!-- Button positioned in the lower right corner -->
-                        <button class="btn btn-primary btn-bottom-right"><i class="fa-solid fa-circle-info me-2"></i>Info</button>
-
-                      @*
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@gym.Name</div>
-                      <div class="card-body">
-                        <div class="card-text">
-                            <p><strong>Country:</strong> @gym.Country</p>
-                            <p><strong>City:</strong> @gym.City</p>
-                            <p><strong>Address:</strong> @gym.Address</p>
-                            <p style="margin-bottom: 0">
-                                <a asp-action="Details" asp-route-id="@gym.Id" class="btn btn-primary me-2"><i class="fa-solid fa-list me-2"></i>Details</a>
-                            </p>
-                        </div>  
-                        *@
-                        
+                        <a asp-action="Details" asp-route-id="@gym.Id" class="btn btn-primary btn-bottom-right"><i class="fa-solid fa-circle-info me-2"></i>More</a>
                     </div>
                     <div class="card-footer" style="color: whitesmoke;">
                         <i class="fa-solid fa-location-dot me-2"></i><small>@gym.City, @gym.Country</small>
@@ -73,7 +48,7 @@ else
 {
     <div class="container mb-4 view-text">
         <div class="text-light">
-            There aren't any Memberships currently available. <br />
+            There aren't any Gyms currently available. <br />
             But don't give up! <br />
             Come back late or contact us for more information!
         </div>
