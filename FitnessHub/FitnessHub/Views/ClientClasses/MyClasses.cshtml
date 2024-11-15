@@ -39,8 +39,8 @@
                             <td>@classEntity.DateEnd.ToString("g")</td>
                             <td>@classEntity.Location</td>
                             <td>
-                                <a asp-action="ClassDetails" asp-route-id="@classEntity.Id" class="btn btn-info"><i class="fa-solid fa-list me-2"></i>
-                                    Details
+                                <a asp-action="ClassDetails" asp-route-id="@classEntity.Id" class="btn btn-info me-2"><i class="fa-solid fa-list me-2"></i>
+                                    More
                                 </a>
                                 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmUnregisterModal" data-class-id="@classEntity.Id">
                                     <i class="fa-solid fa-trash-can me-2"></i>

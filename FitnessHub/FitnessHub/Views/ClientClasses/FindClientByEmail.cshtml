@@ -1,14 +1,20 @@
 ﻿@model RegisterClientInClassViewModel
+
+@{
+    ViewData["Title"] = "Find Client";
+}
+
+
 <div class="container mb-4 view-text">
     <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Find Client</h2>
     <hr style="margin-bottom: 2.2rem" />
 </div>
-<div class="row justify-content-center mt-2">
-    <div class="col-md-6">
-        <form  asp-action="FindClientByEmail" method="post">
+<div class="row justify-content-center mt-2 view-form-style">
+    <div class="col-md-4">
+        <form asp-action="FindClientByEmail" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label>Client Email</label>
+                <label class="control-label">Client Email</label>
                 <input type="email" name="email" class="form-control" required />
                 <span asp-validation-for="ClientEmail" class="text-danger"></span>
             </div>

@@ -1,15 +1,19 @@
 ﻿using FitnessHub.Data.Entities.Users;
+using FitnessHub.Helpers;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace FitnessHub.Data.Repositories
 {
     public class MembershipDetailsRepository : GenericRepository<MembershipDetails>, IMembershipDetailsRepository
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
 
-        public MembershipDetailsRepository(DataContext context) : base(context)
+        public MembershipDetailsRepository(DataContext context, IUserHelper userHelper) : base(context)
         {
             _context = context;
+            _userHelper = userHelper;
         }
 
         public async Task<MembershipDetails> GetMembershipDetailsByIdIncludeMembership(int id)
@@ -36,6 +40,26 @@ namespace FitnessHub.Data.Repositories
             }
 
             return anualRevenue;
+        }
+
+        
+
+        public async Task<bool> ClientHasMemberShip(ClaimsPrincipal client)
+        {
+            var user = await _userHelper.GetUserAsync(client) as Client;
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            var memberShipDetailClient =  await _context.MembershipDetails.Where(m => m.Id == user.MembershipDetailsId).FirstOrDefaultAsync(); ;
+
+            if (user.MembershipDetailsId == null || memberShipDetailClient == null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }
