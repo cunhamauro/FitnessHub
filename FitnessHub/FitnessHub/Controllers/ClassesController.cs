@@ -105,14 +105,14 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id.Value);
 
             if (onlineClass == null)
             {
-                return NotFound();
+                return ClassNotFound();
             }
 
             return View(onlineClass);
@@ -1049,7 +1049,7 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return ClassNotFound(); 
             }
 
             VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id.Value);
