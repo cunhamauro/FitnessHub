@@ -31,10 +31,10 @@ else
                 <thead>
                     <tr>
                         <th>
-                            @Html.DisplayNameFor(model => model.Category)
+                            Class
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Gym)
+                            @Html.DisplayNameFor(model => model.Category)
                         </th>
                         <th>
                             @Html.DisplayNameFor(model => model.Instructor)
@@ -57,10 +57,10 @@ else
                     {
                         <tr>
                             <td>
-                                @item.Category.Name
+                                @item.ClassType.Name
                             </td>
                             <td>
-                                @item.Gym.Id - @item.Gym.Name - @item.Gym.Country, @item.Gym.City
+                                @item.Category.Name
                             </td>
                             <td>
                                 @item.Instructor.FullName
@@ -79,8 +79,8 @@ else
                                 @Html.DisplayFor(modelItem => item.Clients.Count)
                             </td>
                             <td>
-                                <div style="display: flex; gap: 5px;">
-                                    <a asp-action="UpdateGymClass" asp-route-id="@item.Id" class="btn btn-warning">
+                                <div style="display: flex;">
+                                    <a asp-action="UpdateGymClass" asp-route-id="@item.Id" class="btn btn-warning me-2">
                                         <i class="fa-solid fa-pen me-2"></i>Update
                                     </a>
                                     <a asp-action="GymClassDetails" asp-route-id="@item.Id" class="btn btn-info">

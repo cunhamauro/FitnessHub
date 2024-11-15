@@ -9,10 +9,10 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public Instructor? Instructor { get; set; }
 
-        [Display(Name = "Date Start")]
+        [Display(Name = "Start Date")]
         public DateTime DateStart { get; set; }
 
-        [Display(Name = "Date End")]
+        [Display(Name = "End Date")]
         public DateTime DateEnd { get; set; }
 
         public List<Client>? Clients { get; set; }

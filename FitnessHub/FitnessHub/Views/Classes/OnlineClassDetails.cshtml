@@ -2,7 +2,7 @@
 
 
 @{
-    ViewData["Title"] = "OnlineClassDetails";
+    ViewData["Title"] = "Online Class Details";
 }
 
 <div class="container detailsdelete-text">
@@ -25,20 +25,18 @@
                             }
                             else
                             {
-                                <span>@Model.ClassType.Rating/5</span>
-
-                                <i class="fa-solid fa-star"></i>
+                                <span>@(Model.ClassType.Rating % 1 == 0 ? $"{Model.ClassType.Rating:0}" : $"{Model.ClassType.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
                             }
                             (@Model.ClassType.NumReviews)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Category):
+                            @Html.DisplayNameFor(model => model.Category)
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Category.Name
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Instructor):
+                            @Html.DisplayNameFor(model => model.Instructor)
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Instructor.FirstName @Model.Instructor.LastName <br /> (@Model.Instructor.Email)
@@ -53,28 +51,26 @@
                                 }
                                 else
                                 {
-                                    <span>@Model.Instructor.Rating/5</span>
-
-                                    <i class="fa-solid fa-star"></i>
+                                    <span>@(Model.ClassType.Rating % 1 == 0 ? $"{Model.ClassType.Rating:0}" : $"{Model.ClassType.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
                                 }
                                 (@Model.Instructor.NumReviews)
                             </div>
 
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.DateStart):
+                            @Html.DisplayNameFor(model => model.DateStart)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.DateStart)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.DateEnd):
+                            @Html.DisplayNameFor(model => model.DateEnd)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.DateEnd)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Platform):
+                            @Html.DisplayNameFor(model => model.Platform)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.Platform)
@@ -82,7 +78,7 @@
                     </dl>
 
                     <div class="form-group">
-                        <a asp-action="OnlineClasses" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                        <a asp-action="OnlineClasses" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
                             <i class="fa-solid fa-trash-can me-2"></i>Delete
                         </button>

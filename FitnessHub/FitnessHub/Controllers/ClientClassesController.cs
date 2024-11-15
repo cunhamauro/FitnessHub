@@ -1,5 +1,4 @@
-﻿using FitnessHub.Data.Entities;
-using FitnessHub.Data.Entities.GymClasses;
+﻿using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
@@ -8,7 +7,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
 namespace FitnessHub.Controllers
 {
@@ -95,7 +93,7 @@ namespace FitnessHub.Controllers
 
             model = model.Where(r => r.EndDate < DateTime.UtcNow).ToList();
 
-             return View(model);
+            return View(model);
         }
 
         // User side actions
@@ -154,6 +152,7 @@ namespace FitnessHub.Controllers
                 }
             }
             viewModel.Classes = viewModel.Classes.OrderBy(c => c.DateStart).ToList();
+
             return View(viewModel);
         }
 
@@ -194,12 +193,7 @@ namespace FitnessHub.Controllers
             }
             else
             {
-                var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
-
-                if(gymClass.Gym.Id != client.GymId)
-                {
-                    return ClassNotFound();
-                }
+                var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
 
                 if (gymClass == null)
                 {
@@ -323,7 +317,10 @@ namespace FitnessHub.Controllers
             {
                 var viewModel = new ClassesDetailsViewModel
                 {
-                    InstructorName = gymClass.Instructor.FullName,
+                    InstructorFullName = gymClass.Instructor.FullName,
+                    InstructorEmail = gymClass.Instructor.Email,
+                    InstructorRating = gymClass.Instructor.Rating,
+                    InstructorReviews = gymClass.Instructor.NumReviews,
                     DateStart = gymClass.DateStart,
                     DateEnd = gymClass.DateEnd,
                     Location = gymClass.Gym?.Name ?? "N/A",
@@ -342,20 +339,25 @@ namespace FitnessHub.Controllers
             {
                 var viewModel = new ClassesDetailsViewModel
                 {
-                    InstructorName = onlineClass.Instructor.FullName,
+                    InstructorFullName = onlineClass.Instructor.FullName,
+                    InstructorEmail = onlineClass.Instructor.Email,
+                    InstructorRating = onlineClass.Instructor.Rating,
+                    InstructorReviews = onlineClass.Instructor.NumReviews,
                     DateStart = onlineClass.DateStart,
                     DateEnd = onlineClass.DateEnd,
                     Location = "Online",
                     Category = onlineClass.Category.Name,
                     Platform = onlineClass.Platform,
                     ClassType = onlineClass.ClassType.Name,
+                    Rating = onlineClass.ClassType.Rating,
+                    NumReviews = onlineClass.ClassType.NumReviews,
                 };
                 return View(viewModel);
             }
             return ClassNotFound();
         }
 
-       //Employee side actions
+        //Employee side actions
 
         [Authorize(Roles = "Employee")]
         public IActionResult FindClientByEmail()
@@ -389,7 +391,7 @@ namespace FitnessHub.Controllers
             var client = await _userHelper.GetUserByEmailAsync(email) as Client;
             if (client == null)
             {
-                return RedirectToAction("FindClientByEmail"); 
+                return RedirectToAction("FindClientByEmail");
             }
 
             var employee = await _userHelper.GetUserAsync(this.User) as Employee;

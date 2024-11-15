@@ -4,7 +4,8 @@ namespace FitnessHub.Models
 {
     public class ClassesDetailsViewModel
     {
-        public string? InstructorName { get; set; }
+        public string? InstructorFullName { get; set; }
+        public string? InstructorEmail{ get; set; }
 
         public DateTime DateStart { get; set; }
 
@@ -25,5 +26,9 @@ namespace FitnessHub.Models
 
         [Display(Name = "Reviews")]
         public int? NumReviews { get; set; } = 0;
+
+        public decimal InstructorRating {  get; set; }
+
+        public int? InstructorReviews { get; set; } = 0;
     }
 }

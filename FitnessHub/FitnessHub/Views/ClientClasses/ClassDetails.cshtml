@@ -1,5 +1,9 @@
 ﻿@model ClassesDetailsViewModel
 
+@{
+    ViewData["Title"] = "Class Details";
+}
+
 <div class="container detailsdelete-text">
     <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Class Details</h2>
     <hr />
@@ -9,52 +13,70 @@
             <div class="card">
                 <div class="card-body">
                     <dl class="row">
+                        <dd class="col-sm-12" style="font-size: 2rem; font-weight:700; margin-bottom: -5px !important">
+                            @Model.ClassType
+                        </dd>
+                        <dd class="col-sm-12">
+                            @if (Model.NumReviews < 1)
+                            {
+                                <span>N/A</span><i class="fa-solid fa-star"></i>
+                            }
+                            else
+                            {
+                                <span>@(Model.Rating % 1 == 0 ? $"{Model.Rating:0}" : $"{Model.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
+                            }
+                            (@Model.NumReviews)
+                        </dd>
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Category)
                         </dt>
                         <dd class="col-sm-12">@Model.Category</dd>
 
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.InstructorName)
+                            Instructor
                         </dt>
-                        <dd class="col-sm-12">@Model.InstructorName</dd>
+                        <dd class="col-sm-12">
+                            @Model.InstructorFullName <br /> (@Model.InstructorEmail)
 
-                        <dt class="col-sm-12">Start Time:</dt>
-                        <dd class="col-sm-12">@Model.DateStart.ToString("g")</dd>
+                            <br />
+                            <div style="font-size: 0.8em !important">
+                                @if (Model.InstructorReviews < 1)
+                                {
+                                    <span>N/A</span>
 
-                        <dt class="col-sm-12">End Time:</dt>
-                        <dd class="col-sm-12">@Model.DateEnd.ToString("g")</dd>
+                                    <i class="fa-solid fa-star"></i>
+                                }
+                                else
+                                {
+                                    <span>@(Model.InstructorRating % 1 == 0 ? $"{Model.InstructorRating:0}" : $"{Model.InstructorRating:0.##}")</span>
+
+                                    @Html.Raw("/5")
+
+                                    <i class="fa-solid fa-star ms-1"></i>
+                                }
+                                (@Model.InstructorReviews)
+                            </div>
+                        </dd>
 
                         @if (!string.IsNullOrEmpty(Model.GymName))
                         {
-                            <dt class="col-sm-12">Location:</dt>
+                            <dt class="col-sm-12">Location</dt>
                             <dd class="col-sm-12">@Model.GymName</dd>
                         }
                         else if (!string.IsNullOrEmpty(Model.Platform))
                         {
-                            <dt class="col-sm-12">Platform:</dt>
-                            <dd class="col-sm-12">@Model.Platform</dd>
-                            <dt class="col-sm-12">Location:</dt>
+                            <dt class="col-sm-12">Location</dt>
                             <dd class="col-sm-12">Online</dd>
-                        }
-                          <dd class="col-sm-12">
-                            @if (Model.NumReviews > 0)
-                            {
-                                @Model.Rating
 
-                                @Html.Raw("/5")
-                            }
-                            else
-                            {
-                                @Html.Raw("N/A")
-                            }
-                        </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.NumReviews)
-                        </dt>
-                        <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.NumReviews)
-                        </dd>
+                            <dt class="col-sm-12">Platform</dt>
+                            <dd class="col-sm-12">@Model.Platform</dd>
+                        }
+
+                        <dt class="col-sm-12">Start Date</dt>
+                        <dd class="col-sm-12">@Model.DateStart.ToString("g")</dd>
+
+                        <dt class="col-sm-12">End Date</dt>
+                        <dd class="col-sm-12">@Model.DateEnd.ToString("g")</dd>
                     </dl>
                     <div class="form-group">
                         @if (Context.Request.Headers["Referer"].ToString().Contains("MyClasses"))
@@ -66,7 +88,7 @@
                         else
                         {
                             <a asp-action="AvailableClasses" class="btn btn-secondary">
-                                <i class="fa-solid fa-chevron-left me-2"></i>Back to Available Classes
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back
                             </a>
                         }
                     </div>
