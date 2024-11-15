@@ -21,10 +21,21 @@ namespace FitnessHub.Services
             if (response.IsSuccessStatusCode)
             {
                 var countries = JsonConvert.DeserializeObject<List<CountryApi>>(result);
+
+                List<CountryApi> countryList = new List<CountryApi>();
+
+                foreach (var country in countries)
+                {
+                    if (!string.IsNullOrEmpty(country.Callingcode) && country.Callingcode.ToLower() != "undefined")
+                    {
+                        countryList.Add(country);
+                    }
+                }
+
                 return new Response
                 {
                     IsSuccess = true,
-                    Results = countries.OrderBy(c => c.Name).ToList()
+                    Results = countryList.OrderBy(c => c.Name).ToList()
                 };
             }
 

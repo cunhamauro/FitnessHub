@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241114175456_fixShit323123")]
-    partial class fixShit323123
+    [Migration("20241114211535_update")]
+    partial class update
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -135,6 +135,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<string>("Country")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -260,7 +263,6 @@ namespace FitnessHub.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

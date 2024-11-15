@@ -37,6 +37,7 @@ namespace FitnessHub.Helpers
         public async Task<IEnumerable<CountryApi>> LoadCountriesAsync()
         {
             var countriesResult = await _countryService.GetCountriesAsync();
+
             var countries = (IEnumerable<CountryApi>)countriesResult.Results;
 
             return countries;

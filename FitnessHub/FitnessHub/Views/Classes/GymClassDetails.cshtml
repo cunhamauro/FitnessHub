@@ -13,7 +13,10 @@
             <div class="card">
                 <div class="card-body">
                     <dl class="row">
-                        <dd class="col-sm-12 mb-2">
+                        <dd class="col-sm-12" style="font-size: 2rem; font-weight:700; margin-bottom: -5px !important">
+                            @Model.ClassType.Name
+                        </dd>
+                        <dd class="col-sm-12">
                             @if (Model.ClassType.NumReviews < 1)
                             {
                                 <span>N/A</span>
@@ -22,20 +25,18 @@
                             }
                             else
                             {
-                                <span>@Model.ClassType.Rating/5</span>
-
-                                <i class="fa-solid fa-star"></i>
+                                <span>@(Model.ClassType.Rating % 1 == 0 ? $"{Model.ClassType.Rating:0}" : $"{Model.ClassType.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
                             }
                             (@Model.ClassType.NumReviews)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Category):
+                            @Html.DisplayNameFor(model => model.Category)
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Category.Name
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Instructor):
+                            @Html.DisplayNameFor(model => model.Instructor)
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Instructor.FirstName @Model.Instructor.LastName <br /> (@Model.Instructor.Email)
@@ -50,34 +51,32 @@
                             }
                             else
                             {
-                                <span>@Model.Instructor.Rating/5</span>
-
-                                <i class="fa-solid fa-star"></i>
+                                    <span>@(Model.Instructor.Rating % 1 == 0 ? $"{Model.Instructor.Rating:0}" : $"{Model.Instructor.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
                             }
                             (@Model.Instructor.NumReviews)
                             </div>
 
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Gym):
+                            @Html.DisplayNameFor(model => model.Gym)
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Gym.Id - @Model.Gym.Name - @Model.Gym.Country, @Model.Gym.City
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.DateStart):
+                            @Html.DisplayNameFor(model => model.DateStart)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.DateStart)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.DateEnd):
+                            @Html.DisplayNameFor(model => model.DateEnd)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.DateEnd)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Capacity):
+                            @Html.DisplayNameFor(model => model.Capacity)
                         </dt>
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.Capacity)
@@ -91,7 +90,7 @@
 
                     </dl>
                     <div class="form-group">
-                        <a asp-action="GymClasses" class="btn btn-secondary">
+                        <a asp-action="GymClasses" class="btn btn-secondary me-2">
                             <i class="fa-solid fa-chevron-left me-2"></i>Back
                         </a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
