@@ -27,5 +27,8 @@ namespace FitnessHub.Models
 
         [Display(Name = "Name")]
         public string FullName => $"{FirstName} {LastName}";
+
+        [Display(Name = "Image")]
+        public string? Avatar { get; set; }
     }
 }

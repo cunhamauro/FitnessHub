@@ -4,7 +4,8 @@ namespace FitnessHub.Data.Entities.History
 {
     public class StaffHistory
     {
-        public string? Id { get; set; }
+        public int Id { get; set; }
+        public string? StaffId { get; set; }
 
         [Display(Name = "First Name")]
         public string? FirstName { get; set; }

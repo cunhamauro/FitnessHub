@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241115144254_update")]
-    partial class update
+    [Migration("20241116155452_AddStaffHistoryIntId")]
+    partial class AddStaffHistoryIntId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,12 +143,6 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NumReviews")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -502,6 +496,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("ClientInstructorAppointmentsHistory");
@@ -610,8 +607,11 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("FitnessHub.Data.Entities.History.StaffHistory", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -632,6 +632,9 @@ namespace FitnessHub.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StaffId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

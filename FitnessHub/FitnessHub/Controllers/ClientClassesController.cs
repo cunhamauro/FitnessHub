@@ -42,6 +42,8 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            //var gym = await 
+
             List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
 
             List<RegisteredInClassesHistoryViewModel> model = new();
@@ -55,14 +57,20 @@ namespace FitnessHub.Controllers
                 StaffHistory? employee = null;
                 StaffHistory? instructor = null;
 
+                var gym = await _gymHistoryRepository.GetByName(gClass.GymName);
+                if(gym == null)
+                {
+                    return GymNotFound();
+                }
+
                 if (!string.IsNullOrEmpty(r.EmployeeId))
                 {
-                    employee = await _staffHistoryRepository.GetByIdTrackAsync(r.EmployeeId);
+                    employee = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(r.EmployeeId, gym.Id);
                 }
 
                 if (!string.IsNullOrEmpty(gClass.InstructorId))
                 {
-                    instructor = await _staffHistoryRepository.GetByIdTrackAsync(gClass.InstructorId);
+                    instructor = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(gClass.InstructorId, gym.Id);
                 }
 
                 model.Add(new RegisteredInClassesHistoryViewModel
@@ -556,6 +564,11 @@ namespace FitnessHub.Controllers
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
     }
 }

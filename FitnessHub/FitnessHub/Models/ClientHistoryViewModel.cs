@@ -18,6 +18,10 @@ namespace FitnessHub.Models
 
         public string? Gym { get; set; }
 
+        [Display(Name = "Phone")]
         public string? PhoneNumber { get; set; }
+
+        [Display(Name = "Name")]
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

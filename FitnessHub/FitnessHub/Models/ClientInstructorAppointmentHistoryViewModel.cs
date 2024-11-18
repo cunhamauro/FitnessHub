@@ -23,5 +23,7 @@ namespace FitnessHub.Models
 
         [Display(Name = "Assign Date")]
         public DateTime? AssignDate { get; set; }
+
+        public string? Status { get; set; }
     }
 }

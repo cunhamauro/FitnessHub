@@ -13,5 +13,7 @@
         public int GymId { get; set; }
 
         public DateTime? AssignDate { get; set; }
+
+        public bool IsResolved { get; set; } 
     }
 }

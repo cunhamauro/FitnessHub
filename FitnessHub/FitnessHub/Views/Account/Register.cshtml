@@ -39,7 +39,7 @@
                 <div class="col-md-3">
                     <label asp-for="CountryCallingcode" class="control-label">Country</label>
                     <select asp-for="CountryCallingcode" asp-items="Model.Countries" class="form-control" id="countrySelect">
-                        <option value="0" disabled selected>Select a country</option>
+                        <option value="0" disabled selected>Code</option>
                     </select>
                     <span asp-validation-for="CountryCallingcode" class="text-danger"></span>
                 </div>
@@ -77,10 +77,10 @@
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary me-2">
                     <i class="fa-solid fa-address-card me-2"></i>Register
                 </button>
-                <a asp-action="Login" class="btn btn-secondary me-2"><i class="fa-solid fa-arrow-left me-2"></i>Back to login</a>
+                <a asp-action="Login" class="btn btn-secondary me-2"><i class="fa-solid fa-arrow-left me-2"></i>Back</a>
             </div>
         </form>
     </div>
