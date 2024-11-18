@@ -1,6 +1,7 @@
-﻿
+﻿@model SendEmailViewModel
+
 @{
-    ViewData["Title"] = "Contacts";
+    ViewData["Title"] = "Contact us";
 }
 
 <div class="container mb-4 view-text">
@@ -10,15 +11,52 @@
     <div class="text-light page-content">
         We’re here to help! Whether you have questions about our memberships, classes, or just want to learn more about what we offer at FitnessHub, feel free to reach out to us.<br /><br />
 
-        <h5>Contact Information</h5>
-        You can contact our team at <a href="mailto:fitnesshub.globalnetwork@gmail.com">fitnesshub.globalnetwork@gmail.com</a> for any inquiries, including:<br/><br/>
-        <ul>
-            <li>Membership details</li>
-            <li>Class schedules and bookings</li>
-            <li>Personal training and programs</li>
-            <li>General questions and support</li>
-        </ul>
-        <br />
+
+        <div class="row view-form-style mt-4 mb-2">
+            <div class="col-md-6 offset-md-3">
+                <form asp-action="Contacts" id="form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="your@email.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label"></label>
+                        <input asp-for="Name" class="form-control" placeholder="Your name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Subject" class="control-label"></label>
+                        <input asp-for="Subject" class="form-control" maxlength="128" placeholder="Message subject" value="@Model.Subject"/>
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Message" class="control-label"></label>
+                        <textarea asp-for="Message" id="message" class="form-control" rows="6" style="height: 200px" maxlength="512" placeholder="Message body"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <button id="button" type="submit" class="btn btn-primary me-4">
+                            <i class="fa-solid fa-envelope me-2"></i>Send
+                        </button>
+                    </div>
+                </form>
+
+                @if(ViewBag.ShowMessage == true)
+                {
+                    <span class="@ViewBag.Color">@ViewBag.Message</span>
+                }
+
+            </div>
+        </div>
+
+        <hr />
 
         <h5>Customer Support</h5>
         Our customer support team is available to assist you 24/7, so whether you need help with your account, are experiencing issues with our services, or have questions about our global gym access, we’re just an email away.<br /><br />
@@ -33,3 +71,13 @@
     </div>
 
 </div>
+
+<script>
+    document.getElementById('form').addEventListener('submit', function (event) {
+        var button = document.getElementById("button");
+
+        button.disabled = true;
+
+        button.innerHTML = "<i class='fa-solid fa-envelope me-2'></i>Sending";
+    });
+</script>

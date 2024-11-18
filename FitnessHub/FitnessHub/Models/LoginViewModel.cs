@@ -5,12 +5,11 @@ namespace FitnessHub.Models
     public class LoginViewModel
     {
         [Required]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Please enter a valid e-mail address")]
         public string? Username { get; set; }
 
 
         [Required]
-        [MinLength(8)]
         public string? Password { get; set; }
 
 

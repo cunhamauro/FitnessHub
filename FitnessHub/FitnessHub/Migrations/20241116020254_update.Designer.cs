@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241115144254_update")]
+    [Migration("20241116020254_update")]
     partial class update
     {
         /// <inheritdoc />
@@ -137,18 +137,15 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FlagUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("NumReviews")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -434,6 +431,9 @@ namespace FitnessHub.Migrations
                     b.Property<DateTime?>("DateStart")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
@@ -444,6 +444,9 @@ namespace FitnessHub.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubClass")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoClassUrl")
@@ -958,6 +961,14 @@ namespace FitnessHub.Migrations
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.VideoClass", b =>
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoClassUrl")
                         .IsRequired()

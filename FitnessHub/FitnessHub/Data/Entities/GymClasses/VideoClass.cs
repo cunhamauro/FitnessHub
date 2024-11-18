@@ -7,5 +7,11 @@ namespace FitnessHub.Data.Entities.GymClasses
         [Required]
         [Display(Name = "Video")]
         public string? VideoClassUrl { get; set; }
+
+        [Required]
+        public string? Title {  get; set; }
+
+        [Required]
+        public string? Description { get; set; }
     }
 }

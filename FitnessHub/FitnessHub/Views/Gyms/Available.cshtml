@@ -24,20 +24,18 @@
     <div class="row justify-content-center mt-2" id="gymsContainer">
         @foreach (var gym in Model)
         {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem" data-country="@gym.Country" data-city="@gym.City">
-                <div class="card">
-                    <div class="card-header" style="text-align: center; font-size: 2em; font-weight: bold;">
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 gym-card" style="margin-bottom: 2.3rem; cursor: pointer" data-country="@gym.Country" data-city="@gym.City"
+                 onclick="window.location.href='@Url.Action("Details", new { id = gym.Id })'">
+                <div class="card h-100">
+                    <div class="card-header text-center fw-bold" style="font-size: 2em;">
                         @gym.Name
                     </div>
-                    <div class="card-body position-relative p-0">
+                    <div class="card-body position-relative p-0 overflow-hidden">
                         <!-- Gym Image -->
-                        <img src="@gym.ImageDisplay" alt="@gym.Name" class="img-fluid w-100">
-
-                        <!-- Button positioned in the lower right corner -->
-                        <a asp-action="Details" asp-route-id="@gym.Id" class="btn btn-primary btn-bottom-right"><i class="fa-solid fa-circle-info me-2"></i>More</a>
+                        <img src="@gym.ImageDisplay" alt="@gym.Name" class="gym-image">
                     </div>
-                    <div class="card-footer" style="color: whitesmoke;">
-                        <i class="fa-solid fa-location-dot me-2"></i><small>@gym.City, @gym.Country</small>
+                    <div class="card-footer text-white">
+                        <i class="fa-solid fa-location-dot me-2"></i><small class="me-3">@gym.City, @gym.Country</small><img src="@gym.FlagUrl" alt="@gym.Country Flag" style="width:auto; height:1.5em; float: inline-end; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3)" />
                     </div>
                 </div>
             </div>

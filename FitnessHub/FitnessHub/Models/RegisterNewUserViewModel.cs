@@ -48,7 +48,7 @@ namespace FitnessHub.Models
 
 
         [Required]
-        [MinLength(8)]
+        [MinLength(8, ErrorMessage = "Please enter a password with a minimum of 8 characters")]
         public string? Password { get; set; }
 
 

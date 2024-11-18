@@ -14,7 +14,6 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public ClassCategory? ClassCategory { get; set; }
 
-        [Range(1, 5)]
         public decimal Rating { get; set; }
 
         [Display(Name = "Reviews")]

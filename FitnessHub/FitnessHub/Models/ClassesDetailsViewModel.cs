@@ -19,6 +19,8 @@ namespace FitnessHub.Models
 
         public string? GymName { get; set; }
 
+        public string? GymAddress { get; set; }
+
         public string? Platform { get; set; }
 
         [Range(1, 5)]

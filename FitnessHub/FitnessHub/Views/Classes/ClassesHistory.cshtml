@@ -54,7 +54,7 @@ else
                         <th>
                             Capacity
                         </th>
-                        <th>Clients</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -172,7 +172,7 @@ else
                                     }
                                     else
                                     {
-                                        <span>N/A</span>
+                                        <span>Available</span>
                                     }
                                 }
                             </td>
@@ -187,7 +187,7 @@ else
                                 }
                             </td>
                             <td>
-                                @if (item.Capacity != null && item.Capacity > 0 @* && item.ClientsList.Count > 0 *@)
+                                @if (item.SubClass != "VideoClass")
                                 {
                                     <div class="form-group">
                                         <button type="button"
@@ -195,7 +195,20 @@ else
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#clientListModal"
                                         data-clients="@System.Text.Json.JsonSerializer.Serialize(item.ClientList)">
-                                            <i class="fa-solid fa-users me-2"></i>List
+                                            <i class="fa-solid fa-users me-2"></i>Clients
+                                        </button>
+                                    </div>
+                                }
+                                else if (item.SubClass == "VideoClass")
+                                {
+                                    <div class="form-group">
+                                        <button type="button"
+                                                class="btn btn-info video-details-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#videoClassModal"
+                                                data-title="@item.Title"
+                                                data-description="@item.Description">
+                                            <i class="fa-solid fa-list me-2"></i>Details
                                         </button>
                                     </div>
                                 }
@@ -221,7 +234,7 @@ else
                 </div>
                 <div class="modal-body">
                     <ul id="clientList">
-                        <!-- Clients will be dynamically added here -->
+
                     </ul>
                 </div>
                 <div class="modal-footer">
@@ -231,17 +244,52 @@ else
         </div>
     </div>
 
+    <!-- Modal Structure -->
+    <div class="modal fade" id="videoClassModal" tabindex="-1" aria-labelledby="videoClassModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoClassModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="videoClassDescription"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('videoClassModal');
+            const modalTitle = document.getElementById('videoClassModalLabel');
+            const modalDescription = document.getElementById('videoClassDescription');
+
+            // Add event listener for all buttons with the "video-details-btn" class
+            document.querySelectorAll('.video-details-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const title = this.getAttribute('data-title');
+                    const description = this.getAttribute('data-description');
+
+                    // Set the modal content
+                    modalTitle.textContent = title || 'No video title';
+                    modalDescription.textContent = description || 'No video description available';
+                });
+            });
+        });
+    </script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Add a class for cells with "N/A" content
             document.querySelectorAll("td").forEach(td => {
                 if (td.textContent.trim() === "N/A") {
                     td.classList.add("na-cell");
                 }
             });
         });
-    </script>
 
-    <script>
         document.addEventListener('DOMContentLoaded', function () {
             const clientListModal = document.getElementById('clientListModal');
 
@@ -250,13 +298,21 @@ else
                 const clients = JSON.parse(button.getAttribute('data-clients'));
 
                 const clientListElement = document.getElementById('clientList');
-                clientListElement.innerHTML = '';  // Clear existing content
+                clientListElement.innerHTML = ''; // Clear existing content
 
-                clients.forEach(client => {
-                    const li = document.createElement('li');
-                    li.textContent = client;  // Assuming client is a string, adjust as necessary
-                    clientListElement.appendChild(li);
-                });
+                // Check if there are any clients
+                if (clients.length === 0) {
+                    const noClientsMessage = document.createElement('p');
+                    noClientsMessage.textContent = "There are no clients registered in this class";
+                    noClientsMessage.classList.add('no-clients-message');
+                    clientListElement.appendChild(noClientsMessage);
+                } else {
+                    clients.forEach(client => {
+                        const li = document.createElement('li');
+                        li.textContent = client; // Assuming client is a string, adjust if necessary
+                        clientListElement.appendChild(li);
+                    });
+                }
             });
         });
     </script>

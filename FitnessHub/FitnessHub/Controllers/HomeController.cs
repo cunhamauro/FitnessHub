@@ -1,4 +1,4 @@
-using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
@@ -16,6 +16,8 @@ namespace FitnessHub.Controllers
         private readonly IGymRepository _gymRepository;
         private readonly IClassRepository _classRepository;
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
+        private readonly IMailHelper _mailHelper;
+        private readonly IConfiguration _configuration;
 
         public HomeController(
             ILogger<HomeController> logger, 
@@ -23,7 +25,9 @@ namespace FitnessHub.Controllers
             IMembershipDetailsRepository membershipDetailsRepository,
             IGymRepository gymRepository,
             IClassRepository classRepository,
-            IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository)
+            IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository,
+            IMailHelper mailHelper,
+            IConfiguration configuration)
         {
             _logger = logger;
             _userHelper = userHelper;
@@ -31,6 +35,8 @@ namespace FitnessHub.Controllers
             _gymRepository = gymRepository;
             _classRepository = classRepository;
             _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
+            _mailHelper = mailHelper;
+            _configuration = configuration;
         }
 
         [Authorize(Roles = "MasterAdmin")]
@@ -65,9 +71,101 @@ namespace FitnessHub.Controllers
             return View();
         }
 
-        public IActionResult Contacts()
+        public async Task<IActionResult> Contacts()
         {
-            return View();
+            var email = "";
+            var name = "";
+
+            if (this.User.Identity.IsAuthenticated)
+            {
+                var user = await _userHelper.GetUserAsync(this.User);
+
+                if (user != null)
+                {
+                    email = user.Email;
+                    name = user.FullName;
+                }
+            }
+
+            var model = new SendEmailViewModel()
+            {
+                Email = email,
+                Name = name,
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Contacts(SendEmailViewModel model)
+        {
+            string email = model.Email;
+            string title = model.Subject;
+            string message = model.Message;
+            string name = model.Name;
+
+            if (string.IsNullOrEmpty(email))
+            {
+                ModelState.AddModelError("Email", "Please write a valid email");
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                ModelState.AddModelError("Name", "Please write a valid name");
+            }
+
+            if (string.IsNullOrEmpty(title))
+            {
+                ModelState.AddModelError("Email", "Please write a valid subject");
+            }
+
+            if (string.IsNullOrEmpty(message))
+            {
+                ModelState.AddModelError("Email", "Please write a valid message");
+            }
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(email);
+
+                string footerMessage = $"{email} is not registered at FitnessHub";
+
+                if (user != null)
+                {
+                    IList<string> role = await _userHelper.GetUserRolesAsync(user);
+                    footerMessage = $"{email} is a FitnessHub {role.First()}";
+                }
+
+                title = $@"<span style=""font-size: 15px; color: #a9a9a9"">From: {name}&nbsp;[{email}]</span><br/>{title}";
+
+                string body = _mailHelper.GetEmailTemplate(title, message, footerMessage);
+
+                string sender = _configuration["Mail:SenderEmail"];
+
+                var response = await _mailHelper.SendEmailAsync(sender, $"Message from {name}", body);
+
+                ViewBag.ShowMessage = true;
+
+                if (response.IsSuccess)
+                {
+                    model.Subject = "";
+                    model.Message = "";
+
+                    ModelState["Message"].AttemptedValue = "";
+
+                    ViewBag.Message = "The email was successfully sent";
+                    ViewBag.Color = "text-success";
+
+                    return View(model);
+                }
+                else
+                {
+                    ViewBag.Message = "The email could not be sent. Try again";
+                    ViewBag.Color = "text-danger";
+                }
+            }
+
+            return View(model);
         }
 
         public IActionResult About()

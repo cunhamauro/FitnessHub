@@ -13,6 +13,8 @@ namespace FitnessHub.Data.Entities
         [Required]
         public string? Country { get; set; }
 
+        public string? FlagUrl {  get; set; }
+
         [Required]
         public string? City { get; set; }
 

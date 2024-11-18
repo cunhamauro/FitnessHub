@@ -28,6 +28,20 @@
                             @Model.Category.Name
                         </dd>
 
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Title)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Model.Title
+                        </dd>
+
+                        <dt class="col-sm-12">
+                            @Html.DisplayNameFor(model => model.Description)
+                        </dt>
+                        <dd class="col-sm-12">
+                            @Model.Description
+                        </dd>
+
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.VideoClassUrl)
                             <br /><div class="mt-2"><a class="videoButton" target="_blank" href="@Model.VideoClassUrl"><i style="font-size: 2.5em" class="fa-brands fa-youtube"></i></a></div>
