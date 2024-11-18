@@ -1,8 +1,8 @@
-﻿@* @using FitnessHub.Data.Entities.Users
-@using FitnessHub.Helpers
-@inject IUserHelper UserHelper
+﻿@using FitnessHub.Data.Repositories
+@* @inject IUserHelper UserHelper *@
+@inject IMembershipDetailsRepository memberShipDetails
 
-@{
+@* @{
     var user = new User();
 
     if (this.User.Identity.IsAuthenticated)
@@ -75,9 +75,12 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
-                                </li>
+                                @if (await memberShipDetails.ClientHasMemberShip(this.User))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
+                                    </li>
+                                }
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span>Account</span>
