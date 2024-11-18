@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Syncfusion.Licensing;
 using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace FitnessHub
 {
@@ -19,6 +20,36 @@ namespace FitnessHub
             var builder = WebApplication.CreateBuilder(args);
 
             IConfiguration configuration = builder.Configuration;
+
+            // Configure Swagger
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "FitnessHub API", Version = "v1" });
+
+                // Defines a secure scheme for JWT
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer"
+                });
+                // Implements authentication for all API endpoints
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                    {
+                        {
+                            new OpenApiSecurityScheme
+                            {
+                                Reference = new OpenApiReference
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                }
+                            },
+                            new string[] { }
+                        }
+                    });
+            });
 
             builder.Services.AddIdentity<User, IdentityRole>(cfg =>
             {
@@ -120,6 +151,12 @@ namespace FitnessHub
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseStatusCodePagesWithReExecute("/Home/PageNotFound");

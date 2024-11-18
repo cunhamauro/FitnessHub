@@ -31,6 +31,9 @@ else
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.ImageDisplay)
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.Name)
                         </th>
                         <th>
@@ -46,6 +49,9 @@ else
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+                                <img style="height:10vh; width:auto" class="img-fluid" src="@item.ImageDisplay" />
+                            </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>

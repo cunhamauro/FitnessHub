@@ -227,7 +227,7 @@ namespace FitnessHub.Data
             var employeeHist = new StaffHistory
             {
                 GymId = 1,
-                Id = employee.Id,
+                StaffId = employee.Id,
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 Email = employee.Email,
@@ -254,7 +254,7 @@ namespace FitnessHub.Data
             var instrucHist = new StaffHistory
             {
                 GymId = 1,
-                Id = instructor.Id,
+                StaffId = instructor.Id,
                 FirstName = instructor.FirstName,
                 LastName = instructor.LastName,
                 Email = instructor.Email,

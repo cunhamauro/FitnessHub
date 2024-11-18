@@ -5,7 +5,7 @@ namespace FitnessHub.Models
 {
     public class AdminEditUserViewModel
     {
-        public string? Id { get; set; }
+        public string? UserId { get; set; }
 
 
         [Required]

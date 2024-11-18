@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FitnessHub.Controllers
 {
-    [Authorize(Roles = "MasterAdmin, Admin")]
     public class UsersController : Controller
     {
         private readonly IUserHelper _userHelper;
@@ -48,6 +47,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Users
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> Index()
         {
             var users = new List<User>();
@@ -88,7 +88,9 @@ namespace FitnessHub.Controllers
                     LastName = user.LastName,
                     Email = user.Email,
                     Role = role,
-                    Gym = gym
+                    Gym = gym,
+                    Avatar = user.Avatar,
+                    
                 });
             }
 
@@ -96,6 +98,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Users/Details/5
+        [Authorize(Roles = "MasterAdmin, Admin, Instructor")]
         public async Task<IActionResult> Details(string? id)
         {
             if (id == null)
@@ -154,6 +157,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Users/Create
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> Create()
         {
             var model = new AdminRegisterNewUserViewModel();
@@ -327,7 +331,7 @@ namespace FitnessHub.Controllers
                         {
                             var staffHistory = new StaffHistory()
                             {
-                                Id = user.Id,
+                                StaffId = user.Id,
                                 FirstName = user.FirstName,
                                 LastName = user.LastName,
                                 Email = user.Email,
@@ -423,6 +427,7 @@ namespace FitnessHub.Controllers
         }
 
         // GET: Users/Edit/5
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -438,7 +443,7 @@ namespace FitnessHub.Controllers
 
             var model = new AdminEditUserViewModel
             {
-                Id = user.Id,
+                UserId = user.Id,
                 Email = user.Email,
                 FullName = user.FullName,
             };
@@ -461,13 +466,22 @@ namespace FitnessHub.Controllers
             {
                 if (user is Client client)
                 {
-                    model.GymId = client.GymId.Value;
-                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+                    var gym = await _gymRepository.GetByIdAsync(client.GymId.Value);
+                    if(gym == null)
                     {
-                        Value = gym.Id.ToString(),
-                        Text = $"{gym.Data}",
+                        return GymNotFound();
+                    }
 
-                    });
+                    model.GymId = client.GymId.Value;
+                    model.Gyms = new List<SelectListItem>
+                    {
+                        new SelectListItem
+                        {
+                            Value = gym.Id.ToString(),
+                            Text = gym.Data,
+                            Selected = true,
+                        }
+                    };
                 }
 
                 if (user is Employee employee)
@@ -507,7 +521,7 @@ namespace FitnessHub.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByIdAsync(model.Id);
+                var user = await _userHelper.GetUserByIdAsync(model.UserId);
                 if (user == null)
                 {
                     return UserNotFound();
@@ -522,25 +536,30 @@ namespace FitnessHub.Controllers
                 user.Email = model.Email;
                 user.UserName = model.Email;
 
+                var role = string.Empty;
+
                 if (user is Admin admin)
                 {
                     admin.Gym = gym;
+                    role = "Admin";
                 }
 
                 if (user is Instructor instructor)
                 {
                     instructor.Gym = gym;
+                    role = "Instructor";
                 }
 
                 if (user is Employee employee)
                 {
                     employee.Gym = gym;
+                    role = "Employee";
                 }
 
-                if (user is Client client)
-                {
-                    client.Gym = gym;
-                }
+                //if (user is Client client)
+                //{
+                //    client.Gym = gym;
+                //}
 
                 var result = await _userHelper.UpdateUserAsync(user);
                 if (!result.Succeeded)
@@ -557,17 +576,23 @@ namespace FitnessHub.Controllers
                         return ClientHistoryNotFound();
                     }
 
-                    clientHistory.GymId = gym.Id;
+                    //clientHistory.GymId = gym.Id;
                     clientHistory.Email = user.Email;
 
                     await _clientHistoryRepository.UpdateAsync(clientHistory);
                 }
 
-                var staffHistory = await _staffHistoryRepository.GetByIdTrackAsync(user.Id);
-                if (staffHistory == null)
+                var staffHistory = new StaffHistory
                 {
-                    return StaffHistoryNotFound();
-                }
+                    StaffId = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    BirthDate = user.BirthDate,
+                    GymId = gym.Id,
+                    Role = role,
+                    PhoneNumber = user.PhoneNumber
+                };
 
                 staffHistory.GymId = gym.Id;
                 staffHistory.Email = user.Email;
@@ -581,6 +606,7 @@ namespace FitnessHub.Controllers
         }
 
         //GET: Users/Delete/5
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -669,6 +695,7 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> ClientsHistory()
         {
             var clientsHistory = new List<ClientHistory>();
@@ -719,6 +746,7 @@ namespace FitnessHub.Controllers
             return View(clientsHistoryModel);
         }
 
+        [Authorize(Roles = "MasterAdmin, Admin")]
         public async Task<IActionResult> StaffHistory()
         {
             var staffHistory = new List<StaffHistory>();

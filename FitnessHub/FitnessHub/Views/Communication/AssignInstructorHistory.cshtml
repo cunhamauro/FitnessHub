@@ -41,6 +41,9 @@ else
                         <th>
                             @Html.DisplayNameFor(model => model.AssignDate)
                         </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,6 +67,9 @@ else
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.AssignDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Status)
                             </td>
                         </tr>
                     }

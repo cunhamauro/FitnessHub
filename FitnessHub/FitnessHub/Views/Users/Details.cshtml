@@ -44,11 +44,10 @@
                             @Html.DisplayFor(model => model.Email)
                         </dd>
                         <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Gym)
+                            @Html.DisplayNameFor(model => model.Gym.Name)
                         </dt>
                         <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.Gym.Name)<br />
-                            @Model.Gym.Address
+                            @Html.DisplayFor(model => model.Gym.Data)<br />
                         </dd>
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Role)
@@ -58,15 +57,25 @@
                         </dd>
                     </dl>
 
-                    <div class="form-group">
-                        <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
-                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id" @ViewBag.Status>
-                            <i class="fa-solid fa-trash-can me-2"></i>Delete
-                        </button>
-                        <div asp-validation-summary="ModelOnly" class="text-danger mt-4">
+                    @if(this.User.Identity.IsAuthenticated && !this.User.IsInRole("Instructor"))
+                    {
+                        <div class="form-group">
+                            <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id" @ViewBag.Status>
+                                <i class="fa-solid fa-trash-can me-2"></i>Delete
+                            </button>
+                            <div asp-validation-summary="ModelOnly" class="text-danger mt-4">
+                            </div>
                         </div>
-                    </div>
-
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <a asp-controller="Communication" asp-action="ClientsAssignments" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                            <div asp-validation-summary="ModelOnly" class="text-danger mt-4">
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

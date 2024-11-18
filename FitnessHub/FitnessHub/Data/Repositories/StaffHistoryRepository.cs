@@ -28,9 +28,9 @@ namespace FitnessHub.Data.Repositories
             return _context.Set<StaffHistory>().Where(c => c.GymId == gymId).AsNoTracking();
         }
 
-        public async Task<StaffHistory?> GetByIdTrackAsync(string id)
+        public async Task<StaffHistory?> GetByStaffIdAndGymIdTrackAsync(string staffId, int gymId)
         {
-            return await _context.Set<StaffHistory>().FirstOrDefaultAsync(e => e.Id == id);
+            return await _context.Set<StaffHistory>().FirstOrDefaultAsync(e => e.StaffId == staffId && e.GymId == gymId);
         }
 
         public async Task UpdateAsync(StaffHistory staffHistory)

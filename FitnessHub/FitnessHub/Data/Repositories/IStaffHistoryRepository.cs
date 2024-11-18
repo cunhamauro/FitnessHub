@@ -12,6 +12,6 @@ namespace FitnessHub.Data.Repositories
 
         Task UpdateAsync(StaffHistory staffHistory);
 
-        Task<StaffHistory?> GetByIdTrackAsync(string id);
+        Task<StaffHistory?> GetByStaffIdAndGymIdTrackAsync(string staffId, int gymId);
     }
 }
