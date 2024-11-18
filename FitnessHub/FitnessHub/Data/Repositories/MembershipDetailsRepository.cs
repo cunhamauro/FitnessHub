@@ -53,12 +53,23 @@ namespace FitnessHub.Data.Repositories
                 return false;
             }
 
+            if (user.MembershipDetailsId == null )
+            {
+                return false;
+            }
+
             var memberShipDetailClient =  await _context.MembershipDetails.Where(m => m.Id == user.MembershipDetailsId).FirstOrDefaultAsync(); ;
 
             if (user.MembershipDetailsId == null || memberShipDetailClient == null)
             {
                 return false;
             }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return false;
+            }
+
             return true;
         }
     }
