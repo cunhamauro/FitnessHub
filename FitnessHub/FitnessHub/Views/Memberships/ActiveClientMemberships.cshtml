@@ -59,12 +59,9 @@ else
                             @if (ViewBag.IsEmployee == true)
                             {
                                 <td>
-                                    <form asp-action="CancelClientMembership">
-                                        <input type="hidden" name="clientEmail" value="@item.ClientEmail" />
-                                        <button type="submit" class="btn btn-danger me-2 mt-2">
-                                            <i class="fa-solid fa-trash-can me-2"></i>Cancel
-                                        </button>
-                                    </form>
+                                    <button type="button" class="btn btn-danger me-2 mt-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-client-email="@item.ClientEmail">
+                                        <i class="fa-solid fa-trash-can me-2"></i>Cancel
+                                    </button>
                                 </td>
                             }
                         </tr>
@@ -74,3 +71,34 @@ else
         </div>
     </div>
 }
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirm Cancel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to cancel the membership ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" asp-action="CancelClientMembership" method="post" style="display:inline;">
+                    <input type="hidden" id="clientEmail" name="clientEmail" />
+                    <button type="submit" class="btn btn-danger">Cancel Membership</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var clientEmail = button.getAttribute('data-client-email');
+        var form = document.getElementById('deleteForm');
+        form.querySelector('#clientEmail').value = clientEmail;
+    });
+</script>
