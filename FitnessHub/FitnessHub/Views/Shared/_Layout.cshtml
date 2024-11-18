@@ -1,5 +1,8 @@
 ﻿@using FitnessHub.Data.Entities.Users
 @using FitnessHub.Helpers
+@using FitnessHub.Data.Repositories
+
+@inject IMembershipDetailsRepository memberShipDetails
 @inject IUserHelper UserHelper
 
 @{
@@ -75,9 +78,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
-                                </li>
+
+                                @if (await memberShipDetails.ClientHasMemberShip(this.User))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
+                                    </li>
+                                }
                             }
                         }
                         else

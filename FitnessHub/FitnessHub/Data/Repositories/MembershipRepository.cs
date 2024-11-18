@@ -6,6 +6,9 @@ namespace FitnessHub.Data.Repositories
     {
         public MembershipRepository(DataContext context) : base(context)
         {
+
         }
+
+
     }
 }
