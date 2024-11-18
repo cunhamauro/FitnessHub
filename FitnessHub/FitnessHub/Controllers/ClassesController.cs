@@ -95,6 +95,9 @@ namespace FitnessHub.Controllers
                     Platform = ch.Platform,
                     InstructorId = ch.InstructorId,
                     Canceled = ch.Canceled,
+                    ClassType = ch.ClassType,
+                    Title = ch.Title,
+                    Description = ch.Description,
                 });
             }
 
@@ -944,6 +947,16 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("CategoryId", "Please select a valid category");
             }
 
+            if (string.IsNullOrEmpty(model.Title))
+            {
+                ModelState.AddModelError("Title", "Please enter a video title");
+            }
+
+            if (string.IsNullOrEmpty(model.Description))
+            {
+                ModelState.AddModelError("Description", "Please enter a video description");
+            }
+
             ClassCategory category = await _classCategoryRepository.GetByIdTrackAsync(model.CategoryId);
 
             if (category == null)
@@ -970,6 +983,8 @@ namespace FitnessHub.Controllers
                     VideoClassUrl = model.VideoClassUrl,
                     Category = category,
                     ClassType = type,
+                    Title = model.Title,
+                    Description = model.Description,
                 };
 
                 await _classRepository.CreateAsync(videoClass);
@@ -981,6 +996,8 @@ namespace FitnessHub.Controllers
                     Category = category.Name,
                     VideoClassUrl = model.VideoClassUrl,
                     ClassType = type.Name,
+                    Title = model.Title,
+                    Description = model.Description,
                 };
 
                 await _classHistoryRepository.CreateAsync(record);
@@ -1026,6 +1043,16 @@ namespace FitnessHub.Controllers
             if (videoClass.VideoClassUrl.Length > 4 && !videoClass.VideoClassUrl.ToLower().Contains("youtu"))
             {
                 ModelState.AddModelError("VideoClassUrl", "Only URL's from Youtube videos are accepted");
+            }
+
+            if (string.IsNullOrEmpty(videoClass.Title))
+            {
+                ModelState.AddModelError("Title", "Please enter a video title");
+            }
+
+            if (string.IsNullOrEmpty(videoClass.Description))
+            {
+                ModelState.AddModelError("Description", "Please enter a video description");
             }
 
             if (ModelState.IsValid)

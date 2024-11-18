@@ -64,7 +64,6 @@ namespace FitnessHub.Controllers
 
             ViewBag.GoogleMapsKey = _configuration["GoogleMapsApi:Key"];
 
-
             return View(gym);
         }
 
@@ -96,13 +95,23 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(GymViewModel model)
         {
+            var countriesResult = await _countryService.GetCountriesAsync();
+            var countriesList = (IEnumerable<CountryApi>)countriesResult.Results;
+
             if (model.Country == "0")
+            {
+                ModelState.AddModelError("Country", "Please select a valid Country");
+            }
+
+            if (!countriesList.Any(c => c.Name == model.Country))
             {
                 ModelState.AddModelError("Country", "Please select a valid Country");
             }
 
             if (ModelState.IsValid)
             {
+                var flagUrl = countriesList.FirstOrDefault(c => c.Name == model.Country).Flag;
+
                 try
                 {
                     var gym = new Gym()
@@ -111,6 +120,7 @@ namespace FitnessHub.Controllers
                         City = model.City,
                         Country = model.Country,
                         Address = model.Address,
+                        FlagUrl = flagUrl,
                     };
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
@@ -172,6 +182,7 @@ namespace FitnessHub.Controllers
                 Name = gym.Name,
                 Address = gym.Address,
                 ImagePath = gym.ImagePath,
+                FlagUrl = gym.FlagUrl,
             };
 
             return View(model);
@@ -190,6 +201,7 @@ namespace FitnessHub.Controllers
                 {
                     var gym = new Gym()
                     {
+                        FlagUrl = model.FlagUrl,
                         Id = model.Id,
                         Country = model.Country,
                         City = model.City,

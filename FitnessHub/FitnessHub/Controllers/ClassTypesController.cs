@@ -179,6 +179,7 @@ namespace FitnessHub.Controllers
                 try
                 {
                     oldType.Name = model.Name;
+
                     oldType.Description = model.Description;
 
                     if (model.ImageFile != null)

@@ -53,7 +53,8 @@ namespace FitnessHub.Data
                 Name = "GymTest1",
                 Country = "North Korea",
                 City = "PyongYang",
-                Address = "Rua do KimJongUn"
+                Address = "Rua do KimJongUn",
+                FlagUrl = "https://flagcdn.com/kp.svg",
             };
 
             var gymHist = new GymHistory
@@ -70,7 +71,8 @@ namespace FitnessHub.Data
                 Name = "GymTest2",
                 Country = "Russia",
                 City = "Moscow",
-                Address = "Rua do Putin"
+                Address = "Rua do Putin",
+                FlagUrl = "https://flagcdn.com/ru.svg",
             };
 
             var gymHist2 = new GymHistory

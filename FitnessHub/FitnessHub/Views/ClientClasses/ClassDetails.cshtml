@@ -58,14 +58,18 @@
                             </div>
                         </dd>
 
+                        <dt class="col-sm-12">Location</dt>
                         @if (!string.IsNullOrEmpty(Model.GymName))
                         {
-                            <dt class="col-sm-12">Location</dt>
-                            <dd class="col-sm-12">@Model.GymName</dd>
+                            <dd class="col-sm-12">
+                                <a asp-controller="Gyms" asp-action="Details" asp-route-id="@ViewBag.GymId" style="text-decoration: none">
+                                    @Model.GymName
+                                </a><br />
+                                @Model.GymAddress
+                            </dd>
                         }
                         else if (!string.IsNullOrEmpty(Model.Platform))
                         {
-                            <dt class="col-sm-12">Location</dt>
                             <dd class="col-sm-12">Online</dd>
 
                             <dt class="col-sm-12">Platform</dt>

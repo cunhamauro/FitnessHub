@@ -37,6 +37,9 @@ else
                             @Html.DisplayNameFor(model => model.Category)
                         </th>
                         <th>
+                            Title
+                        </th>
+                        <th>
                             @Html.DisplayNameFor(model => model.VideoClassUrl)
                         </th>
                         <th></th>
@@ -51,6 +54,9 @@ else
                             </td>
                             <td>
                                 @item.Category.Name
+                            </td>
+                            <td>
+                                @item.Title
                             </td>
                             <td>
                                 <a class="videoButton" target="_blank" href="@item.VideoClassUrl"><i style="font-size: 1.6em" class="fa-brands fa-youtube"></i></a>

@@ -14,6 +14,34 @@ namespace FitnessHub.Helpers
             _configuration = configuration;
         }
 
+        public string GetEmailTemplate(string title, string message, string footer_text)
+        {
+            return $@"<div style=""background-color:#FFFFFF; margin:0; padding:0;"">
+                        <table width=""100%"" style=""background-color:#000000;"">
+                            <tr>
+                                <td align=""center"" style=""padding: 10px;"">
+                                    <img src=""https://i.ibb.co/Kq6QmPP/fitnesshublogo.png"" alt=""Header Image"" style=""max-width:40%; height:auto;"">
+                                </td>
+                            </tr>
+                        </table>
+                        <table width=""600"" style=""margin: 0 auto; background-color: #FFFFFF;"">
+                            <tr>
+                                <td style=""padding: 30px;"">
+                                    <h1 style=""font-size: 24px; color: #000;"">{title}</h1>
+                                    <p style=""color: #4D4D4D;"">{message}</p>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width=""100%"" style=""background-color:#000000;"">
+                            <tr>
+                                <td align=""center"" style=""padding: 15px;"">
+                                    <p style=""color: #FFFFFF; font-weight: bold"">{footer_text}</p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>";
+        }
+
         public async Task<Response> SendEmailAsync(string to, string subject, string body)
         {
             var senderEmail = _configuration["Mail:SenderEmail"];

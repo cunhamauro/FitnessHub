@@ -354,7 +354,11 @@ namespace FitnessHub.Controllers
                     ClassType = gymClass.ClassType.Name,
                     Rating = gymClass.ClassType.Rating,
                     NumReviews = gymClass.ClassType.NumReviews,
+                    GymAddress = $"{gymClass?.Gym?.Address ?? ""}, {gymClass?.Gym?.City ?? ""}, {gymClass?.Gym?.Country ?? ""}"
                 };
+
+                ViewBag.GymId = gymClass.Gym.Id;
+
                 return View(viewModel);
             }
 
@@ -377,6 +381,7 @@ namespace FitnessHub.Controllers
                     Rating = onlineClass.ClassType.Rating,
                     NumReviews = onlineClass.ClassType.NumReviews,
                 };
+
                 return View(viewModel);
             }
             return ClassNotFound();
