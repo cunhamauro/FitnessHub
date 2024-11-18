@@ -1,15 +1,18 @@
-﻿@* @using FitnessHub.Data.Entities.Users
+﻿@using FitnessHub.Data.Entities.Users
 @using FitnessHub.Helpers
+@using FitnessHub.Data.Repositories
+
+@inject IMembershipDetailsRepository memberShipDetails
 @inject IUserHelper UserHelper
 
 @{
-    var user = new User();
+    var currentUser = new User();
 
     if (this.User.Identity.IsAuthenticated)
     {
-        user = await UserHelper.GetUserAsync(this.User);
+        currentUser = await UserHelper.GetUserAsync(this.User);
     }
-} *@
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +48,7 @@
 
                         @if (this.User.Identity.IsAuthenticated)
                         {
-                            @if (this.User.IsInRole("Admin") || this.User.IsInRole("Employee") || this.User.IsInRole("Instructor") || this.User.IsInRole("MasterAdmin"))
+                            @if (!this.User.IsInRole("Client"))
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -75,37 +78,13 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
-                                </li>
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span>Account</span>
-                                    </a>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClasses">My Classes</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts">My Workouts</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="RequestInstructor">Request Instructor</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembershipHistory">My Membership History</a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
-                                        </li>
-                                    </ul>
-                                </li>
+
+                                @if (await memberShipDetails.ClientHasMemberShip(this.User))
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
+                                    </li>
+                                }
                             }
                         }
                         else
@@ -135,7 +114,7 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Gyms" asp-action="Index">Gyms</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Admins</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="Index">Memberships</a>
@@ -297,13 +276,63 @@
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right" style="margin-left: 2%">
-                        @if (this.User.Identity.IsAuthenticated)
+                        @if (this.User.Identity.IsAuthenticated && !this.User.IsInRole("Client"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="ChangeUser"><span>@this.User.Identity.Name</span></a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>@this.User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="changeUser">Update Account</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                                    </li>
+                                </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Account" asp-action="Logout"><span>Logout</span></a>
+                                <img src="@Url.Content(currentUser.Avatar)" alt="User Avatar" class="rounded-circle" style="width: 40px; height: 40px;" />
+                            </li>
+                        }
+                        else if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Client"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>@this.User.Identity.Name</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="changeUser">Update Account</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClasses">My Classes</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts">My Workouts</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="RequestInstructor">Request Instructor</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembershipHistory">My Membership History</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item">
+                                <img src="@Url.Content(currentUser.Avatar)" alt="User Avatar" class="rounded-circle" style="width: 40px; height: 40px;" />
                             </li>
                         }
                         else

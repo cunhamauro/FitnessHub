@@ -39,6 +39,9 @@ else
                 <thead>
                     <tr>
                         <th>
+                            @Html.DisplayNameFor(model => model.Avatar)
+                        </th>
+                        <th>
                             User
                         </th>
                         @if(this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
@@ -62,13 +65,16 @@ else
                     {
                         <tr>
                             <td>
+                                <img style="height:10vh; width:auto" class="img-fluid" src="@item.Avatar" />
+                            </td>
+                            <td>
                                 @item.FullName <br />
                                 (<span>@item.Email</span>)
                             </td>
                             @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
                             {
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Gym.Data)
+                                    @Html.DisplayFor(modelItem => item.Gym.Name)
                                 </td>
                             }
                             @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))

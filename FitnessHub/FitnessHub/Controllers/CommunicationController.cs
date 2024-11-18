@@ -243,6 +243,12 @@ namespace FitnessHub.Controllers
                     return ClientNotFound();
                 }
 
+                var status = string.Empty;
+                if (request.IsResolved)
+                    status = "Resolve";
+                else
+                    status = "Pending";
+
                 requestsModel.Add(new RequestInstructorHistoryViewModel()
                 {
                     Id = request.Id,
@@ -250,6 +256,7 @@ namespace FitnessHub.Controllers
                     ClientEmail = client.Email,
                     Notes = request.Notes,
                     RequestDate = request.RequestDate,
+                    Status = status,
                 });
             }
 
@@ -337,6 +344,8 @@ namespace FitnessHub.Controllers
                     return RequestNotFound();
                 }
 
+                requestHistory.IsResolved = true;
+
                 try
                 {
                     var appointment = new ClientInstructorAppointment
@@ -360,7 +369,6 @@ namespace FitnessHub.Controllers
 
                     await _clientInstructorAppointmentHistoryRepository.CreateAsync(appointmentHistory);
 
-                    requestHistory.IsResolved = true;
                     await _requestInstructorHistoryRepository.UpdateAsync(requestHistory);
 
                     await _requestInstructorRepository.DeleteAsync(request);
@@ -450,6 +458,13 @@ namespace FitnessHub.Controllers
                     return EmployeeNotFound();
                 }
 
+                var status = string.Empty;
+
+                if (assignment.IsResolved)
+                    status = "Resolved";
+                else
+                    status = "Pending";
+
                 assignmentsModel.Add(new ClientInstructorAppointmentHistoryViewModel()
                 {
                     Id = assignment.Id,
@@ -460,6 +475,7 @@ namespace FitnessHub.Controllers
                     EmployeeEmail = employee.Email,
                     EmployeeName = employee.FullName,
                     AssignDate = assignment.AssignDate,
+                    Status = status,
                 });
             }
 
@@ -485,6 +501,44 @@ namespace FitnessHub.Controllers
             var assignments = _clientInstructorAppointmentRepository.GetAllByInstructorWithClients(instructor.Id);
 
             return View(assignments);
+        }
+
+        [Authorize(Roles = "Instructor")]
+        [HttpPost]
+        public async Task<IActionResult> ResolveAssignment(int id)
+        {
+            var instructor = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name) as Instructor;
+            if (instructor == null)
+            {
+                return InstructorNotFound();
+            }
+
+            var assignment = await _clientInstructorAppointmentRepository.GetByIdAsync(id);
+            if (assignment == null)
+            {
+                return AssignmentNotFound();
+            }
+
+            var assignmentHistory = await _clientInstructorAppointmentHistoryRepository.GetByIdTrackAsync(assignment.Id);
+            if ( assignmentHistory == null)
+            {
+                return AssignmentNotFound();
+            }
+
+            assignmentHistory.IsResolved = true;
+
+            try
+            {
+                await _clientInstructorAppointmentHistoryRepository.UpdateAsync(assignmentHistory);
+
+                await _clientInstructorAppointmentRepository.DeleteAsync(assignment);
+
+                return RedirectToAction(nameof(ClientsAssignments));
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public IActionResult ClientNotFound()
@@ -515,6 +569,11 @@ namespace FitnessHub.Controllers
         public IActionResult RequestNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Request not found", Message = "No requests match that ID..." });
+        }
+
+        public IActionResult AssignmentNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Assignment not found", Message = "No assignments match that ID..." });
         }
     }
 }

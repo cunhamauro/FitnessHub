@@ -4,6 +4,7 @@ using FitnessHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241116155452_AddStaffHistoryIntId")]
+    partial class AddStaffHistoryIntId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,9 +135,6 @@ namespace FitnessHub.Migrations
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FlagUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImagePath")
@@ -428,9 +428,6 @@ namespace FitnessHub.Migrations
                     b.Property<DateTime?>("DateStart")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
@@ -441,9 +438,6 @@ namespace FitnessHub.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubClass")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoClassUrl")
@@ -967,14 +961,6 @@ namespace FitnessHub.Migrations
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.VideoClass", b =>
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.GymClasses.Class");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VideoClassUrl")
                         .IsRequired()

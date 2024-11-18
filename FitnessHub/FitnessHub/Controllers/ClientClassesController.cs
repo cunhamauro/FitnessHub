@@ -7,6 +7,7 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace FitnessHub.Controllers
 {
@@ -20,9 +21,10 @@ namespace FitnessHub.Controllers
         private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IClassTypeRepository _classTypeRepository;
+        private readonly IMembershipDetailsRepository _membershipDetailsRepository;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository)
+                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository, IMembershipDetailsRepository membershipDetailsRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -31,6 +33,7 @@ namespace FitnessHub.Controllers
             _gymHistoryRepository = gymHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
             _classTypeRepository = classTypeRepository;
+            _membershipDetailsRepository = membershipDetailsRepository;
         }
 
         public async Task<IActionResult> MyClassHistory()
@@ -41,6 +44,8 @@ namespace FitnessHub.Controllers
             {
                 return UserNotFound();
             }
+
+            //var gym = await 
 
             List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
 
@@ -55,14 +60,20 @@ namespace FitnessHub.Controllers
                 StaffHistory? employee = null;
                 StaffHistory? instructor = null;
 
+                var gym = await _gymHistoryRepository.GetByName(gClass.GymName);
+                if(gym == null)
+                {
+                    return GymNotFound();
+                }
+
                 if (!string.IsNullOrEmpty(r.EmployeeId))
                 {
-                    employee = await _staffHistoryRepository.GetByIdTrackAsync(r.EmployeeId);
+                    employee = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(r.EmployeeId, gym.Id);
                 }
 
                 if (!string.IsNullOrEmpty(gClass.InstructorId))
                 {
-                    instructor = await _staffHistoryRepository.GetByIdTrackAsync(gClass.InstructorId);
+                    instructor = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(gClass.InstructorId, gym.Id);
                 }
 
                 model.Add(new RegisteredInClassesHistoryViewModel
@@ -105,6 +116,13 @@ namespace FitnessHub.Controllers
             if (client == null)
             {
                 return UserNotFound();
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            {
+                return MembershipNotFound();
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
@@ -165,6 +183,13 @@ namespace FitnessHub.Controllers
             if (client == null)
             {
                 return UserNotFound();
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            {
+                return RedirectToAction("Available","Memberships");
             }
 
             var history = new RegisteredInClassesHistory
@@ -382,9 +407,19 @@ namespace FitnessHub.Controllers
             }
 
             var client = await _userHelper.GetUserByEmailAsync(email) as Client;
+
             if (client == null)
             {
                 ModelState.AddModelError(string.Empty, "Client not found.");
+                var model = new RegisterClientInClassViewModel { ClientEmail = email };
+                return View("FindClientByEmail", model);
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            {
+                ModelState.AddModelError(string.Empty, "Client does not have a membership");
                 var model = new RegisterClientInClassViewModel { ClientEmail = email };
                 return View("FindClientByEmail", model);
             }
@@ -435,6 +470,15 @@ namespace FitnessHub.Controllers
             if (client == null)
             {
                 ModelState.AddModelError(string.Empty, "Client not found.");
+                model.Classes = await LoadClassDetails();
+                return View("RegisterClientInClass", model);
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            {
+                ModelState.AddModelError(string.Empty, "Client does not have a membership.");
                 model.Classes = await LoadClassDetails();
                 return View("RegisterClientInClass", model);
             }
@@ -558,9 +602,19 @@ namespace FitnessHub.Controllers
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
         }
 
+        public IActionResult MembershipNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time to add another membership?" });
+        }
+
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
     }
 }
