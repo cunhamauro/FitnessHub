@@ -47,6 +47,22 @@ namespace FitnessHub.Helpers
                 model.Username, model.Password, model.RememberMe, false);
         }
 
+        public async Task<bool> CheckPasswordAsync(User user, string password)
+        {
+            return await _userManager.CheckPasswordAsync(user, password);
+        }
+
+        public async Task<object?> GetUserImageAsync(string email)
+        {
+            return await _userManager.Users
+                .Where(u => u.Email == email)
+                .Select(u => new
+                {
+                    u.ImagePath,
+                })
+                .SingleOrDefaultAsync();
+        }
+
         public async Task LogoutAsync()
         {
             await _signInManager.SignOutAsync();

@@ -330,7 +330,7 @@ namespace FitnessHub.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("ChangeUser");
+                        return RedirectToAction(nameof(ChangeUser));
                     }
                     else
                     {
@@ -433,7 +433,7 @@ namespace FitnessHub.Controllers
                     "Account",
                     new { token = myToken }, protocol: HttpContext.Request.Scheme);
 
-                Response response = await _mailHelper.SendEmailAsync(model.Email, "Flight Ticket Manager Password Reset", $"<h1>FitnessHub Password Reset</h1>" +
+                Response response = await _mailHelper.SendEmailAsync(model.Email, "FitnessHub Password Reset", $"<h1>FitnessHub Password Reset</h1>" +
                     $"To reset the password click in this link:</br></br>" +
                     $"<a href = \"{link}\">Reset Password</a>");
 
