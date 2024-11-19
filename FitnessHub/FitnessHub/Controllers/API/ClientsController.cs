@@ -121,12 +121,17 @@ namespace FitnessHub.Controllers.API
             }
 
             var result = await _userHelper.ConfirmEmailAsync(user, token);
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return Redirect($"{_baseUrl}Account/Login");
+                return BadRequest("Invalid email confirmation token.");
             }
 
-            return BadRequest("Invalid email confirmation token.");
+            if (this.User.Identity.IsAuthenticated)
+            {
+                await _userHelper.LogoutAsync();
+            }
+
+            return Redirect($"{_baseUrl}Account/Login");
         }
 
         [HttpPost("[action]")]
