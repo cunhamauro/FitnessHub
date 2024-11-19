@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Daily Calories Intake Calculator";
+}
+
+<h2>Daily Calories Intake Calculator</h2>
+
+<form method="post">
+    <label style="color:white" for="height">Height (cm):</label>
+    <input style="color:black" type="number" name="height" id="height" placeholder="Enter height in centimeters" required />
+
+    <label style="color:white" for="weight">Weight (kg):</label>
+    <input style="color:black" type="number" name="weight" id="weight" placeholder="Enter weight in kilograms" required /><br /><br />
+
+    <label style="color:white">Gender:</label>
+    <input type="radio" name="genre" value="Male" id="male" checked />
+    <label for="male" style="color:white">Male</label>
+    
+    <input type="radio" name="genre" value="Female" id="female" />
+    <label for="female" style="color:white">Female</label><br /><br />
+
+    <label style="color:white" for="age">Age:</label>
+    <input style="color:black" type="number" name="age" id="age" required placeholder="Enter your age" required /><br /><br />
+
+    <label style="color:white">Objective:</label>
+    <input type="radio" name="objective" value="maintain" id="maintain" checked />
+    <label for="maintain" style="color:white">Maintain Weight</label>
+
+    <input type="radio" name="objective" value="lose weight" id="loseWeight" />
+    <label for="loseWeight" style="color:white">Lose Weight</label>
+
+    <input type="radio" name="objective" value="gain muscle" id="gainMuscle" />
+    <label for="gainMuscle" style="color:white">Gain Muscle</label><br /><br />
+
+    <label style="color:white">Activity Level:</label>
+    <input type="radio" name="activityLevel" value="low" id="low" checked />
+    <label for="low" style="color:white">Low</label>
+
+    <input type="radio" name="activityLevel" value="moderate" id="moderate" />
+    <label for="moderate" style="color:white">Moderate</label>
+
+    <input type="radio" name="activityLevel" value="high" id="high" />
+    <label for="high" style="color:white">High</label><br /><br />
+
+    <button type="submit">Calculate</button>
+</form>
+
+@if (ViewBag.DailyCalories != null)
+{
+    <div style="color:white; margin-top: 20px;">
+        <strong>Calculated Daily Calories: </strong> @ViewBag.DailyCalories kcal
+    </div>
+}

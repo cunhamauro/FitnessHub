@@ -106,10 +106,16 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateImc">IMC</a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateWaterRequirements">Water Intake</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="DailyCaloriesInTake">Daily Calories InTake</a>
+                                    </li>
                                 </ul>
                             </li>
                         }
-                    
+                        
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
                         {
                             <li class="nav-item dropdown">
