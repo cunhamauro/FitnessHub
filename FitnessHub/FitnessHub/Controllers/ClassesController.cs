@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
@@ -8,7 +9,9 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.EJ2.Spreadsheet;
 
 namespace FitnessHub.Controllers
 {
@@ -23,8 +26,9 @@ namespace FitnessHub.Controllers
         private readonly IClassTypeRepository _classTypeRepository;
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
+        private readonly IMailHelper _mailHelper;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository, IClientHistoryRepository clientHistoryRepository, IStaffHistoryRepository staffHistoryRepository)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository, IClientHistoryRepository clientHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IMailHelper mailHelper)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -35,6 +39,7 @@ namespace FitnessHub.Controllers
             _classTypeRepository = classTypeRepository;
             _clientHistoryRepository = clientHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
+            _mailHelper = mailHelper;
         }
 
         // Index not in use
@@ -43,6 +48,83 @@ namespace FitnessHub.Controllers
         //{
         //    return View(await _context.Class.ToListAsync());
         //}
+
+        [Authorize(Roles = "Instructor")]
+        public async Task<IActionResult> InstructorClasses(int filter)
+        {
+            Instructor user = await _userHelper.GetUserAsync(this.User) as Instructor;
+
+            ViewBag.Filter = filter;
+
+            if (user == null)
+            {
+                return UserNotFound();
+            }
+
+            Gym gym = await _gymRepository.GetByIdAsync(user.GymId.Value);
+
+            if (gym == null)
+            {
+                return GymNotFound();
+            }
+            List<ClassHistory> classes = new();
+
+            if (filter == 1)
+            {
+                classes = await _classHistoryRepository.GetAll().Where(c => !string.IsNullOrEmpty(c.InstructorId) && c.DateStart > DateTime.UtcNow && c.InstructorId == user.Id).ToListAsync();
+            }
+            else if (filter == 2)
+            {
+                classes = await _classHistoryRepository.GetAll().Where(c => !string.IsNullOrEmpty(c.InstructorId) && c.DateStart <= DateTime.UtcNow && c.InstructorId == user.Id).ToListAsync();
+            }
+            else
+            {
+                classes = await _classHistoryRepository.GetAll().Where(c => !string.IsNullOrEmpty(c.InstructorId) && c.InstructorId == user.Id).ToListAsync();
+            }
+
+            List<ClassHistoryViewModel> classesHistory = new();
+
+            List<RegisteredInClassesHistory> registrations = await _registeredInClassesHistoryRepository.GetAll().ToListAsync();
+
+            foreach (var ch in classes)
+            {
+                List<string> clientEmailsList = new List<string>();
+
+                foreach (var registration in registrations)
+                {
+                    if (registration.ClassId == ch.Id)
+                    {
+                        var registeredUser = await _clientHistoryRepository.GetByIdTrackAsync(registration.UserId);
+                        clientEmailsList.Add(registeredUser.Email);
+                    }
+                }
+
+                StaffHistory instructor = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(ch.InstructorId, gym.Id);
+
+                classesHistory.Add(new ClassHistoryViewModel
+                {
+                    ClientList = clientEmailsList,
+                    InstructorFullName = instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : string.Empty,
+                    InstructorEmail = instructor?.Email ?? string.Empty,
+                    Category = ch.Category,
+                    Id = ch.Id,
+                    SubClass = ch.SubClass,
+                    Capacity = ch.Capacity,
+                    VideoClassUrl = ch.VideoClassUrl,
+                    DateStart = ch.DateStart,
+                    DateEnd = ch.DateEnd,
+                    GymName = ch.GymName,
+                    Platform = ch.Platform,
+                    InstructorId = ch.InstructorId,
+                    Canceled = ch.Canceled,
+                    ClassType = ch.ClassType,
+                    Title = ch.Title,
+                    Description = ch.Description,
+                });
+            }
+
+            return View(classesHistory);
+        }
 
         [Authorize(Roles = "Admin, Employee")]
         public async Task<IActionResult> ClassesHistory()
@@ -260,6 +342,12 @@ namespace FitnessHub.Controllers
 
                 await _classHistoryRepository.CreateAsync(record);
 
+                string classesUrl = Url.Action("InstructorClasses", "Classes");
+
+                string body = _mailHelper.GetEmailTemplate($"{type.Name} Online Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{model.Platform}</span>", @$"Check your other <a href=""{classesUrl}"">scheduled classes</a>");
+
+                Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Online class scheduled", body, null, null);
+
                 return RedirectToAction(nameof(OnlineClasses));
             }
 
@@ -452,21 +540,33 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteOnlineClassConfirmed(int id)
         {
-            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
+            OnlineClass? onlineClass = await _classRepository.GetOnlineClassByIdIncludeTracked(id);
 
             if (onlineClass != null)
             {
-                if (onlineClass.Clients == null)
+                List<Client> clients = new List<Client>(onlineClass.Clients);
+
+                if (clients.Count > 0)
                 {
-                    return ClassNotFound();
+                    foreach (var client in clients)
+                    {
+                        onlineClass.Clients.Remove(client);
+                        await _classRepository.UpdateAsync(onlineClass);
+
+                        var clientClassHistory = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id && c.ClassId == onlineClass.Id).FirstOrDefaultAsync();
+
+                        clientClassHistory.Canceled = true;
+
+                        await _registeredInClassesHistoryRepository.UpdateAsync(clientClassHistory);
+
+                        string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
+
+                        string body = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {client.FirstName}, your online <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, with Instructor <span style=""font-weight: bold"">{onlineClass.Instructor.FirstName} {onlineClass.Instructor.LastName}</span>, was just cancelled!", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+
+                        Response response = await _mailHelper.SendEmailAsync(client.Email, "Online class cancelled", body, null, null);
+                    }
                 }
 
-                if (onlineClass.Clients.Count > 0)
-                {
-                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
-
-                    return View("GymClassDetails", onlineClass);
-                }
                 await _classRepository.DeleteAsync(onlineClass);
 
                 ClassHistory record = await _classHistoryRepository.GetByIdAsync(onlineClass.Id);
@@ -474,6 +574,14 @@ namespace FitnessHub.Controllers
                 record.Canceled = true;
 
                 await _classHistoryRepository.UpdateAsync(record);
+
+                Instructor instructor = onlineClass.Instructor;
+
+                string classesUrlInst = Url.Action("InstructorClasses", "Classes");
+
+                string bodyInst = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, was just cancelled!", @$"Check your other <a href=""{classesUrlInst}"">scheduled classes</a>");
+
+                Response responseInst = await _mailHelper.SendEmailAsync(instructor.Email, "Online class cancelled", bodyInst, null, null);
             }
 
             return RedirectToAction(nameof(OnlineClasses));
@@ -662,6 +770,7 @@ namespace FitnessHub.Controllers
             {
                 Id = gymClass.Id,
                 GymName = gym.Name,
+                GymId = gym.Id,
                 ClassType = type.Name,
                 SubClass = "GymClass",
                 Category = category.Name,
@@ -672,6 +781,12 @@ namespace FitnessHub.Controllers
             };
 
             await _classHistoryRepository.CreateAsync(record);
+
+            string classesUrl = Url.Action("InstructorClasses", "Classes");
+
+            string body = _mailHelper.GetEmailTemplate($"{type.Name} Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gym.Data}</span>", @$"Check your other <a href=""{classesUrl}"">scheduled classes</a>");
+
+            Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Class scheduled", body, null, null);
 
             return RedirectToAction(nameof(GymClasses));
         }
@@ -850,20 +965,31 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteGymClassConfirmed(int id)
         {
-            GymClass? gymClass = await _classRepository.GetGymClassByIdInclude(id);
+            GymClass? gymClass = await _classRepository.GetGymClassByIdIncludeTracked(id);
 
             if (gymClass != null)
             {
-                if (gymClass.Clients == null)
-                {
-                    return ClassNotFound();
-                }
+                List<Client> clients = new List<Client>(gymClass.Clients);
 
-                if(gymClass.Clients.Count > 0)
+                if (clients.Count > 0)
                 {
-                    ModelState.AddModelError(string.Empty, "This class cannot be deleted because it has registered clients.");
+                    foreach (var client in clients)
+                    {
+                        gymClass.Clients.Remove(client);
+                        await _classRepository.UpdateAsync(gymClass);
 
-                    return View("GymClassDetails", gymClass);
+                        var clientClassHistory = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id && c.ClassId == gymClass.Id).FirstOrDefaultAsync();
+
+                        clientClassHistory.Canceled = true;
+
+                        await _registeredInClassesHistoryRepository.UpdateAsync(clientClassHistory);
+
+                        string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
+
+                        string body = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {client.FirstName}, your <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, with Instructor <span style=""font-weight: bold"">{gymClass.Instructor.FirstName} {gymClass.Instructor.LastName}</span>, was just cancelled!", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+
+                        Response response = await _mailHelper.SendEmailAsync(client.Email, "Class cancelled", body, null, null);
+                    }
                 }
 
                 await _classRepository.DeleteAsync(gymClass);
@@ -873,6 +999,14 @@ namespace FitnessHub.Controllers
                 record.Canceled = true;
 
                 await _classHistoryRepository.UpdateAsync(record);
+
+                Instructor instructor = gymClass.Instructor;
+
+                string classesUrlInst = Url.Action("InstructorClasses", "Classes");
+
+                string bodyInst = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, was just cancelled!", @$"Check your other <a href=""{classesUrlInst}"">scheduled classes</a>");
+
+                Response responseInst = await _mailHelper.SendEmailAsync(instructor.Email, "Class canceled", bodyInst, null, null);
             }
 
             return RedirectToAction(nameof(GymClasses));
@@ -1366,7 +1500,7 @@ namespace FitnessHub.Controllers
                 .Include(t => t.ClassCategory)
                 .ToListAsync();
 
-            if (categoryId.HasValue && categoryId != 0)
+            if (categoryId.HasValue && categoryId.Value != 0)
             {
                 types = types.Where(t => t.ClassCategory != null && t.ClassCategory.Id == categoryId.Value).ToList();
             }

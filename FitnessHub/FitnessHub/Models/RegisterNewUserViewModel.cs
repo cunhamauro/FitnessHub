@@ -28,7 +28,6 @@ namespace FitnessHub.Models
         [Display(Name = "Phone")]
         public string? PhoneNumber { get; set; }
 
-
         public string? CountryCallingcode { get; set; }
 
 

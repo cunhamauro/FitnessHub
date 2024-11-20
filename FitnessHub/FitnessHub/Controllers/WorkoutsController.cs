@@ -1,11 +1,14 @@
-﻿using FitnessHub.Data.Entities.GymMachines;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities.GymMachines;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.EJ2.Linq;
 
 namespace FitnessHub.Controllers
 {
@@ -15,13 +18,17 @@ namespace FitnessHub.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IMachineRepository _machineRepository;
         private readonly IExerciseRepository _exerciseRepository;
+        private readonly IMailHelper _mailHelper;
+        private readonly IPdfHelper _pdfHelper;
 
-        public WorkoutsController(IWorkoutRepository workoutRepository, IUserHelper userHelper, IMachineRepository machineRepository, IExerciseRepository exerciseRepository)
+        public WorkoutsController(IWorkoutRepository workoutRepository, IUserHelper userHelper, IMachineRepository machineRepository, IExerciseRepository exerciseRepository, IMailHelper mailHelper, IPdfHelper pdfHelper)
         {
             _workoutRepository = workoutRepository;
             _userHelper = userHelper;
             _machineRepository = machineRepository;
             _exerciseRepository = exerciseRepository;
+            _mailHelper = mailHelper;
+            _pdfHelper = pdfHelper;
         }
 
         // GET: Client Workouts
@@ -186,7 +193,17 @@ namespace FitnessHub.Controllers
                     });
                 }
 
+                workout.Exercises = workout.Exercises.OrderBy(exer => exer.DayOfWeek).ToList();
+
                 await _workoutRepository.CreateAsync(workout);
+
+                MemoryStream workoutsPdf = _pdfHelper.GenerateWorkoutPdf(client, instructor, workout);
+
+                string body = _mailHelper.GetEmailTemplate("New Workout", @$"Hey, {client.FirstName}, check your new workout plan assigned by <span style=""font-weight: bold"">{instructor.FirstName} {instructor.LastName} [{instructor.Email}]</span>.<br/>You can find it attached here or in your FitnessHub account.", $"Enjoy your new workout");
+
+                DateTime date = DateTime.UtcNow;
+
+                Response response = await _mailHelper.SendEmailAsync(client.Email, "Workout Assigned", body, workoutsPdf, $"fitnesshub_workout_{client.FirstName.ToLower()}_{client.LastName.ToLower()}_{date.ToString("dMyyyy")}");
 
                 return RedirectToAction(nameof(Index));
             }
@@ -266,6 +283,21 @@ namespace FitnessHub.Controllers
             };
 
             return View(model);
+        }
+
+        public async Task<IActionResult> DownloadWorkoutPdf(int id)
+        {
+            Workout model = await _workoutRepository.GetWorkoutByIdIncludeAsync(id);
+            Client client = model.Client;
+            Instructor instructor = model.Instructor;
+
+            // Generate the PDF content
+            var pdfStream = _pdfHelper.GenerateWorkoutPdf(client, instructor, model);
+
+            DateTime date = DateTime.UtcNow;
+
+            // Return the PDF as a file response
+            return File(pdfStream, "application/pdf", @$"fitnesshub_workout_{client.FirstName.ToLower()}_{client.LastName.ToLower()}_{date.ToString("dMyyyy")}.pdf");
         }
 
         // POST: Workouts/Edit/5
@@ -460,6 +492,7 @@ namespace FitnessHub.Controllers
             }
 
             List<Exercise> exercisesToRemove = new List<Exercise>();
+
             foreach (var exercise in workout.Exercises)
             {
                 exercisesToRemove.Add(exercise); // Collecting exercises to delete

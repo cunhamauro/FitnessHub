@@ -45,7 +45,14 @@ namespace FitnessHub.Data.Repositories
         public async Task<GymClass?> GetGymClassByIdIncludeTracked(int id)
         {
             return await _context.Set<GymClass>()
-                .Include(g => g.Clients) // Ensure Clients are included
+                .Include(g => g.Clients).Include(g => g.Category).Include(g => g.ClassType).Include(g => g.Gym).Include(g => g.Instructor) // Ensure Clients are included
+                .FirstOrDefaultAsync(g => g.Id == id);
+        }
+
+        public async Task<OnlineClass?> GetOnlineClassByIdIncludeTracked(int id)
+        {
+            return await _context.Set<OnlineClass>()
+                .Include(g => g.Clients).Include(g => g.Category).Include(g => g.ClassType).Include(g => g.Instructor) // Ensure Clients are included
                 .FirstOrDefaultAsync(g => g.Id == id);
         }
 

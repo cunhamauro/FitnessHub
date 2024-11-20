@@ -1,4 +1,7 @@
-﻿using FitnessHub.Data.Entities.History;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.GymClasses;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -17,14 +20,18 @@ namespace FitnessHub.Controllers
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
         private readonly IMembershipHistoryRepository _membershipHistoryRepository;
         private readonly IClientMembershipHistoryRepository _clientMembershipHistoryRepository;
+        private readonly IMailHelper _mailHelper;
+        private readonly IGymRepository _gymRepository;
 
-        public MembershipsController(IMembershipRepository membershipRepository, IUserHelper userHelper, IMembershipDetailsRepository membershipDetailsRepository, IMembershipHistoryRepository membershipHistoryRepository, IClientMembershipHistoryRepository clientMembershipHistoryRepository)
+        public MembershipsController(IMembershipRepository membershipRepository, IUserHelper userHelper, IMembershipDetailsRepository membershipDetailsRepository, IMembershipHistoryRepository membershipHistoryRepository, IClientMembershipHistoryRepository clientMembershipHistoryRepository, IMailHelper mailHelper, IGymRepository gymRepository)
         {
             _membershipRepository = membershipRepository;
             _userHelper = userHelper;
             _membershipDetailsRepository = membershipDetailsRepository;
             _membershipHistoryRepository = membershipHistoryRepository;
             _clientMembershipHistoryRepository = clientMembershipHistoryRepository;
+            _mailHelper = mailHelper;
+            _gymRepository = gymRepository;
         }
 
         [Authorize(Roles = "Admin, Employee")]
@@ -103,7 +110,7 @@ namespace FitnessHub.Controllers
         {
             var membership = await _membershipRepository.GetByIdTrackAsync(id);
 
-            if(membership == null)
+            if (membership == null)
             {
                 return MembershipNotFound();
             }
@@ -170,6 +177,59 @@ namespace FitnessHub.Controllers
         }
 
         [Authorize(Roles = "Employee")]
+        [HttpPost]
+        public async Task<IActionResult> RenewClientMembership(string email)
+        {
+            Client client = await _userHelper.GetUserByEmailAsync(email) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            if (client.MembershipDetailsId == null)
+            {
+                return MembershipNotFound();
+            }
+
+            var membershipDetails = await _membershipDetailsRepository.GetMembershipDetailsByIdIncludeMembership(client.MembershipDetailsId.Value);
+
+            if (membershipDetails == null)
+            {
+                return MembershipNotFound();
+            }
+
+            Membership membership = membershipDetails.Membership;
+
+            if (membership == null)
+            {
+                return MembershipNotFound();
+            }
+
+            if (membershipDetails.Status == true)
+            {
+                return MembershipActive();
+            }
+
+            // This session is to renew membership
+            membershipDetails.Status = true;
+            membershipDetails.DateRenewal = DateTime.UtcNow.AddMonths(12);
+
+            await _membershipDetailsRepository.UpdateAsync(membershipDetails);
+
+            var record = await _clientMembershipHistoryRepository.GetByIdAsync(membershipDetails.Id);
+
+            record.Status = true;
+            record.DateRenewal = membershipDetails.DateRenewal;
+
+            await _clientMembershipHistoryRepository.UpdateAsync(record);
+
+            return RedirectToAction("Memberships", "ActiveClientMemberships");
+        }
+
+
+
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> SignUpClient()
         {
             List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
@@ -229,8 +289,6 @@ namespace FitnessHub.Controllers
                 membershipDetails.SignUpDate = DateTime.UtcNow;
 
                 client.MembershipDetails = membershipDetails;
-                client.IdentificationNumber = model.IdNumber;
-                client.FullAddress = model.FullAddress;
 
                 await _membershipDetailsRepository.CreateAsync(membershipDetails);
                 await _userHelper.UpdateUserAsync(client);
@@ -269,6 +327,9 @@ namespace FitnessHub.Controllers
 
         public async Task<IActionResult> CancelClientMembership(string clientEmail)
         {
+            Employee employee = await _userHelper.GetUserAsync(this.User) as Employee;
+            Gym gym = await _gymRepository.GetByIdAsync(employee.GymId.Value);
+                
             Client client = await _userHelper.GetUserByEmailAsync(clientEmail) as Client;
 
             if (client == null)
@@ -296,6 +357,12 @@ namespace FitnessHub.Controllers
             await _membershipDetailsRepository.DeleteAsync(details);
             client.MembershipDetails = null;
             await _userHelper.UpdateUserAsync(client);
+
+            var membership = details.Membership;
+
+            string membershipsUrl = Url.Action("Available", "Memberships");
+            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", @$"Check our other <a href=""{membershipsUrl}"">available memberships</a>");
+            Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership cancellation", body, null, null);
 
             return RedirectToAction(nameof(ActiveClientMemberships));
         }
@@ -365,31 +432,34 @@ namespace FitnessHub.Controllers
 
             if (ModelState.IsValid)
             {
-                MembershipDetails membershipDetails = new();
 
-                membershipDetails.Membership = membership;
-                membershipDetails.DateRenewal = DateTime.UtcNow.AddMonths(12);
-                membershipDetails.SignUpDate = DateTime.UtcNow;
+                //string membershipName, int membershipId, string membershipDescription, string amount
 
-                client.MembershipDetails = membershipDetails;
-                client.IdentificationNumber = model.IdNumber;
-                client.FullAddress = model.FullAddress;
+                return RedirectToAction("MembershipCheckoutSession", "Stripe", new { userId = client.Id, userEmail = client.Email, membershipName = membership.Name, membershipId = membership.Id, membershipDescription = membership.Description, amount = membership.AnnualFee });
 
-                await _membershipDetailsRepository.CreateAsync(membershipDetails);
-                await _userHelper.UpdateUserAsync(client);
+                //MembershipDetails membershipDetails = new();
 
-                ClientMembershipHistory record = new()
-                {
-                    Id = membershipDetails.Id,
-                    DateRenewal = membershipDetails.DateRenewal,
-                    MembershipHistoryId = membership.Id,
-                    UserId = client.Id,
-                    SignUpDate = membershipDetails.SignUpDate,
-                };
+                //membershipDetails.Membership = membership;
+                //membershipDetails.DateRenewal = DateTime.UtcNow.AddMonths(12);
+                //membershipDetails.SignUpDate = DateTime.UtcNow;
 
-                await _clientMembershipHistoryRepository.CreateAsync(record);
+                //client.MembershipDetails = membershipDetails;
 
-                return RedirectToAction(nameof(MyMembership));
+                //await _membershipDetailsRepository.CreateAsync(membershipDetails);
+                //await _userHelper.UpdateUserAsync(client);
+
+                //ClientMembershipHistory record = new()
+                //{
+                //    Id = membershipDetails.Id,
+                //    DateRenewal = membershipDetails.DateRenewal,
+                //    MembershipHistoryId = membership.Id,
+                //    UserId = client.Id,
+                //    SignUpDate = membershipDetails.SignUpDate,
+                //};
+
+                //await _clientMembershipHistoryRepository.CreateAsync(record);
+
+                //return RedirectToAction(nameof(MyMembership));
             }
 
             List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
@@ -408,6 +478,44 @@ namespace FitnessHub.Controllers
             model.SelectMembership = selectMembership;
 
             return View(model);
+        }
+
+        [Authorize(Roles = "Client")]
+        [HttpPost]
+        public async Task<IActionResult> Renew()
+        {
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            if (client.MembershipDetailsId == null)
+            {
+                return MembershipNotFound();
+            }
+
+            var membershipDetails = await _membershipDetailsRepository.GetMembershipDetailsByIdIncludeMembership(client.MembershipDetailsId.Value);
+
+            if (membershipDetails == null)
+            {
+                return MembershipNotFound();
+            }
+
+            Membership membership = membershipDetails.Membership;
+
+            if (membership == null)
+            {
+                return MembershipNotFound();
+            }
+
+            if (membershipDetails.Status == true)
+            {
+                return MembershipActive();
+            }
+
+            return RedirectToAction("MembershipCheckoutSession", "Stripe", new { userId = client.Id, membershipName = membership.Name, membershipId = membership.Id, membershipDescription = membership.Description, amount = membership.AnnualFee });
         }
 
         [Authorize(Roles = "Client")]
@@ -442,6 +550,12 @@ namespace FitnessHub.Controllers
             client.MembershipDetails = null;
             await _userHelper.UpdateUserAsync(client);
 
+            var membership = details.Membership;
+
+            string membershipsUrl = Url.Action("Available", "Memberships");
+            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by yourself!", @$"Check our other <a href=""{membershipsUrl}"">available memberships</a>");
+            Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership cancellation", body, null, null);
+
             return RedirectToAction(nameof(MyMembership));
         }
 
@@ -467,14 +581,11 @@ namespace FitnessHub.Controllers
             {
                 return MembershipNotFound();
             }
-
             Membership membership = await _membershipRepository.GetByIdAsync(id.Value);
-
             if (membership == null)
             {
                 return MembershipNotFound();
             }
-
             return View(membership);
         }
 
@@ -494,7 +605,6 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> Create(Membership membership)
         {
             List<Membership> memberships = await _membershipRepository.GetAll().ToListAsync();
-
             foreach (var m in memberships)
             {
                 if (m.Name == membership.Name)
@@ -502,27 +612,21 @@ namespace FitnessHub.Controllers
                     ModelState.AddModelError("Name", "There is already a Membership with this Name!");
                 }
             }
-
             membership.OnOffer = true;
-
             if (ModelState.IsValid)
             {
                 await _membershipRepository.CreateAsync(membership);
-
                 MembershipHistory record = new()
                 {
                     Id = membership.Id,
                     Description = membership.Description,
-                    Price = membership.Price,
+                    Price = membership.MonthlyFee,
                     Name = membership.Name,
                     DateCreated = DateTime.UtcNow,
                 };
-
                 await _membershipHistoryRepository.CreateAsync(record);
-
                 return RedirectToAction(nameof(Index));
             }
-
             return View(membership);
         }
 
@@ -533,7 +637,6 @@ namespace FitnessHub.Controllers
             {
                 return MembershipNotFound();
             }
-
             Membership membership = await _membershipRepository.GetByIdAsync(id.Value);
 
             if (membership == null)
@@ -577,7 +680,7 @@ namespace FitnessHub.Controllers
 
                     var record = await _membershipHistoryRepository.GetByIdAsync(membership.Id);
                     record.Description = membership.Description;
-                    record.Price = membership.Price;
+                    record.Price = membership.MonthlyFee;
                     record.Name = membership.Name;
 
                     await _membershipHistoryRepository.UpdateAsync(record);
@@ -626,9 +729,9 @@ namespace FitnessHub.Controllers
         {
             var membership = await _membershipRepository.GetByIdAsync(id);
 
-            if(membership == null)
+            if (membership == null)
             {
-                return MembershipNotFound();            
+                return MembershipNotFound();
             }
 
             var memberShipDetails = await _membershipDetailsRepository.IsMemberShipInDetails(id);
@@ -639,19 +742,45 @@ namespace FitnessHub.Controllers
                 return View("Details", membership);
             }
 
-                await _membershipRepository.DeleteAsync(membership);
+            await _membershipRepository.DeleteAsync(membership);
 
-                var record = await _membershipHistoryRepository.GetByIdAsync(id);
-                record.Canceled = true;
-                await _membershipHistoryRepository.UpdateAsync(record);
-            
+            var record = await _membershipHistoryRepository.GetByIdAsync(id);
+            record.Canceled = true;
+            await _membershipHistoryRepository.UpdateAsync(record);
+
 
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<JsonResult> GetMembershipDetails(int id)
+        {
+            var membership = await _membershipRepository.GetByIdAsync(id);
+
+            if (membership == null)
+            {
+                return Json(new { error = "Membership not found" });
+            }
+
+            // Formatar os valores como moeda (C2)
+            string monthFeeFormatted = membership.MonthlyFee.ToString("C2");
+            string annualFeeFormatted = membership.AnnualFee.ToString("C2");
+
+            return Json(new
+            {
+                monthFee = monthFeeFormatted,
+                annualFee = annualFeeFormatted,
+                description = membership.Description
+            });
+        }
+
         public IActionResult MembershipNotFound()
         {
-            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time to add another membership?" });
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time for another one?" });
+        }
+
+        public IActionResult MembershipActive()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership is active", Message = "Calm down! Save your money for when it ends..." });
         }
 
         public IActionResult UserNotFound()

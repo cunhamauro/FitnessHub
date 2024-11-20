@@ -142,7 +142,7 @@ namespace FitnessHub.Controllers
 
                 string sender = _configuration["Mail:SenderEmail"];
 
-                var response = await _mailHelper.SendEmailAsync(sender, $"Message from {name}", body);
+                var response = await _mailHelper.SendEmailAsync(sender, $"Message from {name}", body, null, null);
 
                 ViewBag.ShowMessage = true;
 

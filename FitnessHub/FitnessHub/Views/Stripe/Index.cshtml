@@ -1,0 +1,13 @@
+﻿@{
+    ViewData["Title"] = "Stripe Checkout";
+}
+
+<h2>Make a Payment</h2>
+<form method="get" asp-action="CreateCheckoutSession">
+    <input name="membershipName" value="Test Membership" />
+    <input name="membershipId" value="123" />
+    <input name="membershipDescription" value="Test Membership Description" />
+    <label>Amount (USD):</label>
+    <input type="number" name="amount" value="10" required />
+    <button type="submit">Pay Now</button>
+</form>

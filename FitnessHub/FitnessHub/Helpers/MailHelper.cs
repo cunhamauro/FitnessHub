@@ -42,7 +42,7 @@ namespace FitnessHub.Helpers
                     </div>";
         }
 
-        public async Task<Response> SendEmailAsync(string to, string subject, string body)
+        public async Task<Response> SendEmailAsync(string to, string subject, string body, MemoryStream pdfStream, string pdfName)
         {
             var senderEmail = _configuration["Mail:SenderEmail"];
             var sender = _configuration["Mail:Sender"];
@@ -59,13 +59,19 @@ namespace FitnessHub.Helpers
             {
                 HtmlBody = body,
             };
+
+            if (pdfStream != null)
+            {
+                bodybuilder.Attachments.Add(pdfName, pdfStream.ToArray(), new ContentType("application", "pdf"));
+            }
+
             message.Body = bodybuilder.ToMessageBody();
 
             try
             {
-                using (var client = new SmtpClient())
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
-                    await client.ConnectAsync(smtp, int.Parse(port), SecureSocketOptions.StartTls);
+                    await client.ConnectAsync(smtp, int.Parse(port), MailKit.Security.SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync(senderEmail, password);
                     await client.SendAsync(message);
                     await client.DisconnectAsync(true);

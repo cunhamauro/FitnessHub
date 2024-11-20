@@ -57,8 +57,9 @@ namespace FitnessHub.Controllers
                 StaffHistory? employee = null;
                 StaffHistory? instructor = null;
 
-                var gym = await _gymHistoryRepository.GetByName(gClass.GymName);
-                if (gym == null)
+                var gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
+
+                if(gym == null)
                 {
                     return GymNotFound();
                 }
@@ -220,7 +221,7 @@ namespace FitnessHub.Controllers
 
             if (isOnline)
             {
-                var onlineClass = await _classRepository.GetOnlineClassByIdInclude(classId);
+                var onlineClass = await _classRepository.GetOnlineClassByIdIncludeTracked(classId);
 
                 if (onlineClass == null)
                 {
@@ -236,7 +237,7 @@ namespace FitnessHub.Controllers
             }
             else
             {
-                var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
+                var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
 
                 if (gymClass == null)
                 {
@@ -643,7 +644,7 @@ namespace FitnessHub.Controllers
 
         public IActionResult MembershipNotFound()
         {
-            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time to add another membership?" });
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time for another one?" });
         }
 
         public IActionResult UserNotFound()
