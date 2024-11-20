@@ -1,6 +1,4 @@
 ﻿using MimeKit;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using FitnessHub.Data.Classes;
 
 namespace FitnessHub.Helpers

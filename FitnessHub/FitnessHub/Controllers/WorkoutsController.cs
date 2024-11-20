@@ -203,7 +203,7 @@ namespace FitnessHub.Controllers
 
                 DateTime date = DateTime.UtcNow;
 
-                Response response = await _mailHelper.SendEmailAsync(client.Email, "Workout Assigned", body, workoutsPdf, $"fitnesshub_workout_{client.FirstName.ToLower()}_{client.LastName.ToLower()}_{date.ToString("dMyyyy")}");
+                Response response = await _mailHelper.SendEmailAsync(client.Email, "Workout Assigned", body, workoutsPdf, $"fitnesshub_workout_{client.FirstName.ToLower()}_{client.LastName.ToLower()}_{date.ToString("dMyyyy")}.pdf");
 
                 return RedirectToAction(nameof(Index));
             }

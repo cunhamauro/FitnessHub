@@ -13,9 +13,9 @@ namespace FitnessHub.Data.Repositories
             _context = context;
         }
 
-        public List<RequestInstructor> GetAllByGymWithClients(Gym gym)
+        public List<RequestInstructor> GetAllByGymWithClients(int gymId)
         {
-            return _context.RequestsIntructor.Where(requests => requests.Gym == gym).Include(requests => requests.Client).ToList();
+            return _context.RequestsIntructor.Where(requests => requests.GymId == gymId).Include(requests => requests.Client).ToList();
         }
 
         public async Task<RequestInstructor?> GetByIdWithClientAndGym(int id)
@@ -23,14 +23,14 @@ namespace FitnessHub.Data.Repositories
             return await _context.RequestsIntructor
                 .Where(request => request.Id == id)
                 .Include(requests => requests.Client)
-                .Include(requests => requests.Gym)
+                .Include(requests => requests.GymId)
                 .FirstOrDefaultAsync();
         }
 
         public async Task<bool> ClientHasPendingRequestForGym(string clientId, int gymId)
         {
             var request = await _context.RequestsIntructor
-                .Where(request => request.Client.Id == clientId && request.Gym.Id == gymId)
+                .Where(request => request.Client.Id == clientId && request.GymId == gymId)
                 .FirstOrDefaultAsync();
 
             if(request != null)

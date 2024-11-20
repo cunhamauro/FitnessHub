@@ -109,8 +109,6 @@ namespace FitnessHub.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("GymId");
-
                     b.ToTable("RequestsIntructor");
                 });
 
@@ -1002,7 +1000,7 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
-                    b.Property<int?>("GymId")
+                    b.Property<int>("GymId")
                         .HasColumnType("int");
 
                     b.Property<int?>("MembershipDetailsId")
@@ -1096,15 +1094,7 @@ namespace FitnessHub.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
-                        .WithMany()
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Client");
-
-                    b.Navigation("Gym");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.Class", b =>
@@ -1307,7 +1297,9 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()
-                        .HasForeignKey("GymId");
+                        .HasForeignKey("GymId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FitnessHub.Data.Entities.Users.User", null)
                         .WithOne()

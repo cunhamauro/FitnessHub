@@ -102,7 +102,7 @@ namespace FitnessHub.Controllers
                     var requestInstructor = new RequestInstructor
                     {
                         Client = client as Client,
-                        Gym = gym,
+                        GymId = gym.Id,
                         Notes = model.Notes,
                     };
 
@@ -194,7 +194,7 @@ namespace FitnessHub.Controllers
                 return GymNotFound();
             }
 
-            var requests = _requestInstructorRepository.GetAllByGymWithClients(gym);
+            var requests = _requestInstructorRepository.GetAllByGymWithClients(gym.Id);
 
             return View(requests);
         }

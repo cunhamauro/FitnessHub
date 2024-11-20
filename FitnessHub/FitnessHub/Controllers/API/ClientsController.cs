@@ -325,7 +325,7 @@ namespace FitnessHub.Controllers.API
             }
 
             Response response = await _mailHelper.SendEmailAsync(model.Email, "FitnessHub Password Reset", $"<h1>FitnessHub Password Reset</h1>" +
-                    $"To reset your password use this token:</br></br> {myToken}");
+                    $"To reset your password use this token:</br></br> {myToken}", null, null);
             if (response.IsSuccess)
             {
                 return Ok(new { Message = "The token to recover your password has been sent to your email." });

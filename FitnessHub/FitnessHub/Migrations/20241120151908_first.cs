@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -577,7 +577,7 @@ namespace FitnessHub.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MembershipDetailsId = table.Column<int>(type: "int", nullable: true),
-                    GymId = table.Column<int>(type: "int", nullable: true)
+                    GymId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -592,7 +592,8 @@ namespace FitnessHub.Migrations
                         name: "FK_Clients_Gyms_GymId",
                         column: x => x.GymId,
                         principalTable: "Gyms",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Clients_MembershipDetails_MembershipDetailsId",
                         column: x => x.MembershipDetailsId,
@@ -718,12 +719,6 @@ namespace FitnessHub.Migrations
                         name: "FK_RequestsIntructor_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RequestsIntructor_Gyms_GymId",
-                        column: x => x.GymId,
-                        principalTable: "Gyms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -973,11 +968,6 @@ namespace FitnessHub.Migrations
                 name: "IX_RequestsIntructor_ClientId",
                 table: "RequestsIntructor",
                 column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestsIntructor_GymId",
-                table: "RequestsIntructor",
-                column: "GymId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_ClientId",
