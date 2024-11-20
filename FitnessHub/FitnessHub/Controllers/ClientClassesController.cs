@@ -7,7 +7,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace FitnessHub.Controllers
 {
@@ -45,8 +44,6 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            //var gym = await 
-
             List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
 
             List<RegisteredInClassesHistoryViewModel> model = new();
@@ -61,7 +58,7 @@ namespace FitnessHub.Controllers
                 StaffHistory? instructor = null;
 
                 var gym = await _gymHistoryRepository.GetByName(gClass.GymName);
-                if(gym == null)
+                if (gym == null)
                 {
                     return GymNotFound();
                 }
@@ -130,7 +127,7 @@ namespace FitnessHub.Controllers
                 return MembershipNotFound();
             }
 
-            if(memberShipDetailClient.Status == false)
+            if (memberShipDetailClient.Status == false)
             {
                 return MembershipNotFound();
             }
@@ -196,11 +193,21 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            if (client.MembershipDetailsId == null)
+            {
+                return RedirectToAction("Available", "Memberships");
+            }
+
             var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
-            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            if (memberShipDetailClient == null)
             {
-                return RedirectToAction("Available","Memberships");
+                return RedirectToAction("Available", "Memberships");
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return RedirectToAction("Available", "Memberships");
             }
 
             var history = new RegisteredInClassesHistory
