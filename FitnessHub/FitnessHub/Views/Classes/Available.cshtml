@@ -21,7 +21,6 @@
     <div class="col-6 view-text">
         <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 2vh">@ViewData["Title"]</h2>
     </div>
-    <hr style="margin-bottom:1.8rem" />
 </div>
 
 @if (Model.Any())
@@ -65,6 +64,7 @@
 }
 else
 {
+    <hr style="margin-bottom:1.8rem" />
     <div class="container mb-4 view-text">
         <div class="text-light">
             There aren't any Classes currently available. <br />

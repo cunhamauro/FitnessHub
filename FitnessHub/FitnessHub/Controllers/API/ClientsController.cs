@@ -1,6 +1,7 @@
 ﻿using FitnessHub.Data.Classes;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
+using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models.API;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -25,20 +27,22 @@ namespace FitnessHub.Controllers.API
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
         private readonly IClientHistoryRepository _clientHistoryRepository;
-        private readonly string _baseUrl = "https://localhost:44370/";
+        private readonly AppSettings _appSettings;
+        //private readonly string _baseUrl = "https://localhost:44370/";
 
         public ClientsController(
             IUserHelper userHelper,
             IMailHelper mailHelper,
             IImageHelper imageHelper,
             IConfiguration configuration,
-            IClientHistoryRepository clientHistoryRepository)
+            IClientHistoryRepository clientHistoryRepository,IOptions<AppSettings> appSettings)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _imageHelper = imageHelper;
             _configuration = configuration;
             _clientHistoryRepository = clientHistoryRepository;
+            _appSettings = appSettings.Value;
         }
 
         [HttpPost("[action]")]
@@ -95,11 +99,33 @@ namespace FitnessHub.Controllers.API
                 return BadRequest("Couldn't generate token");
             }
 
-            string tokenLink = $"{_baseUrl}api/clients/confirmemail?userid={user.Id}&token={WebUtility.UrlEncode(myToken)}";
+            string tokenLink = $"{_appSettings.Url}api/clients/confirmemail?userid={user.Id}&token={WebUtility.UrlEncode(myToken)}";
 
-            Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                        $"To finalize the register, " +
-                        $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>", null, null);
+            //string? tokenLink = Url.Action("ConfirmEmail", "Clients", new
+            //{
+            //    userid = user.Id,
+            //    token = myToken
+            //}, protocol: HttpContext.Request.Scheme);
+
+            string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Please click this button to confirm your FitnessHub account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <a href=""{tokenLink}"" style=""display: inline-block; background-color: black; color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; text-align: center;"">
+                                        Confirm
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>";
+
+            string body = _mailHelper.GetEmailTemplate("Confirm Account", message, $"Welcome to FitnessHub, {model.FirstName}");
+
+            Response response = await _mailHelper.SendEmailAsync(model.Email, "Account confirmation", body, null, null);
 
             if (response.IsSuccess)
             {
@@ -131,7 +157,7 @@ namespace FitnessHub.Controllers.API
                 await _userHelper.LogoutAsync();
             }
 
-            return Redirect($"{_baseUrl}Account/Login");
+            return Redirect($"{_appSettings.Url}Account/Login");
         }
 
         [HttpPost("[action]")]

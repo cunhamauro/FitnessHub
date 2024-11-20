@@ -49,6 +49,23 @@ namespace FitnessHub.Controllers
         //    return View(await _context.Class.ToListAsync());
         //}
 
+        public async Task<IActionResult> VideoClassTube(int id)
+        {
+            ViewBag.SelectedId = id.ToString();
+
+            ViewBag.ClassCategories = await _classCategoryRepository.GetCategoriesSelectListAsync();
+
+            List<VideoClass> videoClasses = await _classRepository.GetAllVideoClassesInclude();
+
+            if (id > 0)
+            {
+                videoClasses = videoClasses.Where(v => v.Category.Id == id).ToList();
+
+            }
+
+            return View(videoClasses);
+        }
+
         [Authorize(Roles = "Instructor")]
         public async Task<IActionResult> InstructorClasses(int filter)
         {
