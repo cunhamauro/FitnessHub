@@ -64,6 +64,7 @@
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="Available">Classes</a>
                                         </li>
+                                        
                                     </ul>
                                 </li>
                             }
@@ -77,6 +78,25 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span>Tools</span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateImc">IMC</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateWaterRequirements">Water Intake</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="DailyCaloriesInTake">Daily Calories InTake</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="RecordWeightIndex">Progress</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 @if (await memberShipDetails.ClientHasMemberShip(this.User))

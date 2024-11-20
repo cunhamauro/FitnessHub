@@ -4,6 +4,7 @@ using FitnessHub.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20241119204806_UserWeightProgress")]
+    partial class UserWeightProgress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,6 +111,8 @@ namespace FitnessHub.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
+
+                    b.HasIndex("GymId");
 
                     b.ToTable("RequestsIntructor");
                 });
@@ -429,9 +434,6 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("GymId")
-                        .HasColumnType("int");
-
                     b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
@@ -661,15 +663,15 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("MonthlyFee")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("OnOffer")
                         .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -798,12 +800,6 @@ namespace FitnessHub.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<float>("Progress")
-                        .HasColumnType("real");
 
                     b.Property<float>("Weight")
                         .HasColumnType("real");
@@ -1029,8 +1025,14 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
-                    b.Property<int>("GymId")
+                    b.Property<string>("FullAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("GymId")
                         .HasColumnType("int");
+
+                    b.Property<string>("IdentificationNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MembershipDetailsId")
                         .HasColumnType("int");
@@ -1123,7 +1125,15 @@ namespace FitnessHub.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
+                        .WithMany()
+                        .HasForeignKey("GymId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Client");
+
+                    b.Navigation("Gym");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.Class", b =>
@@ -1326,9 +1336,7 @@ namespace FitnessHub.Migrations
                 {
                     b.HasOne("FitnessHub.Data.Entities.Gym", "Gym")
                         .WithMany()
-                        .HasForeignKey("GymId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GymId");
 
                     b.HasOne("FitnessHub.Data.Entities.Users.User", null)
                         .WithOne()
