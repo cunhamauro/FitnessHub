@@ -16,10 +16,6 @@ namespace FitnessHub.Data.Entities.Users
 
         public Gym? Gym { get; set; }
 
-        public string? IdentificationNumber {  get; set; }
-
-        public string? FullAddress {  get; set; }
-
         //public List<ClassDetails>? ClassDetails { get; set; } = new();
     }
 }

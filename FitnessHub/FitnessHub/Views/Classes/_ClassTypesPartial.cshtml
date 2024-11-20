@@ -1,36 +1,51 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
-<div class="row justify-content-center mt-2">
-    @foreach (var classItem in Model)
-    {
-        <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
-            <div class="card">
-                <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header"><div>@classItem.Name</div><div class="text-muted mb-1" style="font-size:1rem">@classItem.ClassCategory.Name</div></div>
-                <div class="card-body">
-                    <div class="text-center mb-3">
-                        <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid" style="max-height: 200px; width: auto;" />
+
+@if (Model.Any())
+{
+    <div class="row justify-content-center mt-2">
+        @foreach (var classItem in Model)
+        {
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
+                <div class="card">
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">
+                        <div>@classItem.Name</div>
+                        <div class="text-muted mb-1" style="font-size:1rem">@classItem.ClassCategory.Name</div>
                     </div>
-                    <div class="card-text">
-                        <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
+                    <div class="card-body" style="padding: 0">
+                        <div class="text-center ">
+                            <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid class-image" />
+                        </div>
+                        <div class="card-text" style="padding: 1rem">
+                            <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
-                    <small>
-                        <span style="float:left">
-                            Rating: @{
-                                if (classItem.NumReviews > 0)
-                                {
-                                    <span>@(classItem.Rating % 1 == 0 ? $"{classItem.Rating:0}" : $"{classItem.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
+                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
+                        <small>
+                            <span style="float:left">
+                                Rating: @{
+                                    if (classItem.NumReviews > 0)
+                                    {
+                                        <span>@(classItem.Rating % 1 == 0 ? $"{classItem.Rating:0}" : $"{classItem.Rating:0.##}")</span>
+                                        @Html.Raw("/5")
+                                        <i class="fa-solid fa-star ms-1"></i>
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("N/A")
+                                        <i class="fa-solid fa-star ms-1"></i>
+                                    }
                                 }
-                                else
-                                {
-                                    @Html.Raw("N/A")<i class="fa-solid fa-star ms-1"></i>
-                                }
-                            }
-                        </span><span style="float: right">Reviews: @classItem.NumReviews</span>
-                    </small>
+                            </span>
+                            <span style="float: right">Reviews: @classItem.NumReviews</span>
+                        </small>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-</div>
+        }
+    </div>
+}
+else
+{
+        <h4 class="no-items-list" style="margin-top:20.5%">No Classes were found!</h4>
+}

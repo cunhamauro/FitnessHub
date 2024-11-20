@@ -18,5 +18,7 @@ namespace FitnessHub.Data.Repositories
 
         Task<GymClass?> GetGymClassByIdIncludeTracked(int id);
 
+        Task<OnlineClass?> GetOnlineClassByIdIncludeTracked(int id);
+
     }
 }

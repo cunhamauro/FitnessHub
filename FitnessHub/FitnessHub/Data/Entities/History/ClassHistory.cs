@@ -12,6 +12,8 @@
 
         public string? ClassType { get; set; }
 
+        public int? GymId {  get; set; }
+
         /// <summary>
         /// Only for GymClass
         /// </summary>

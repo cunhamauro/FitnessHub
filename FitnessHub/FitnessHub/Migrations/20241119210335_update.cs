@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class AddStaffHistoryIntId : Migration
+    public partial class update : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -92,8 +92,11 @@ namespace FitnessHub.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClassType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: true),
                     GymName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateStart = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -167,6 +170,7 @@ namespace FitnessHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Country = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FlagUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -228,7 +232,7 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MonthlyFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OnOffer = table.Column<bool>(type: "bit", nullable: true)
                 },
@@ -573,9 +577,7 @@ namespace FitnessHub.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MembershipDetailsId = table.Column<int>(type: "int", nullable: true),
-                    GymId = table.Column<int>(type: "int", nullable: true),
-                    IdentificationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FullAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    GymId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -661,7 +663,9 @@ namespace FitnessHub.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false),
-                    VideoClassUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    VideoClassUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

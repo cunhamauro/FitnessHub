@@ -9,31 +9,51 @@
 
 <div class="row view-form-style">
     <div class="col-md-4 offset-md-4">
-        <form asp-action="SignUp">
+        <form asp-action="SignUp" onsubmit="return validateTerms();">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="form-group">
                 <label asp-for="MembershipId" class="control-label"></label>
-                <select asp-for="MembershipId" asp-items="@Model.SelectMembership" class="form-control">
+                <select id="membershipId" asp-for="MembershipId" asp-items="@Model.SelectMembership" class="form-control" onchange="showDetails()">
                     <option value="0">Select a Membership</option>
                 </select>
                 <span asp-validation-for="MembershipId" class="text-danger"></span>
             </div>
 
+            <div id="membershipDetails" style="display: none">
             <div class="form-group">
-                <label asp-for="IdNumber" class="control-label"></label>
-                <input asp-for="IdNumber" class="form-control" />
-                <span asp-validation-for="IdNumber" class="text-danger"></span>
+                <label class="control-label">Monthly fee</label>
+                <input readonly id="monthFee" class="form-control" />
             </div>
 
             <div class="form-group">
-                <label asp-for="FullAddress" class="control-label"></label>
-                <input asp-for="FullAddress" class="form-control" />
-                <span asp-validation-for="FullAddress" class="text-danger"></span>
+                <label class="control-label">Total amount</label>
+                <input readonly id="annualFee" class="form-control" />
             </div>
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary me-4 mt-2">
+                <label class="control-label">Description</label>
+                <textarea readonly id="description" class="form-control" rows="5"></textarea>
+            </div>
+            </div>
+
+            <div class="form-check mt-3 mb-3  view-text" style="display: flex; align-items: center;">
+                <!-- Checkbox for accepting terms -->
+                <input type="checkbox" class="form-check-input me-2 checkbox-fixed" id="acceptTerms" disabled onchange="enableSubmit()" />
+                <label class="form-check-label me-1" for="acceptTerms" style="color: whitesmoke">
+                    I have read and accept the
+                </label>
+                <!-- Terms and Conditions link -->
+                <a href="/docs/FitnessHub_Terms_and_Conditions.pdf" target="_blank" title="View Terms and Conditions" onclick="openDocument()">
+                    Terms and Conditions
+                </a>
+                <i class="fa-solid fa-file-contract ms-2" style="cursor: pointer; color: #4ecdff"></i>
+            </div>
+
+            <span id="termsError" class="text-danger mb-2" style="display:none;">You must accept the Terms and Conditions</span>
+
+            <div class="form-group">
+                <button id="submit" type="submit" class="btn btn-primary me-4 mt-2" disabled>
                     <i class="fa-solid fa-check me-2"></i>Sign Up
                 </button>
                 <a asp-action="MyMembership" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
@@ -41,3 +61,80 @@
         </form>
     </div>
 </div>
+
+<!-- AJAX Script to Fetch Membership Details -->
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Event listener for dropdown change
+            $('#membershipId').change(function () {
+                var membershipId = $(this).val();
+
+                // Clear the fields if no membership is selected
+                if (membershipId == 0) {
+                    $('#monthFee').val('');
+                    $('#annualFee').val('');
+                    $('#description').val('');
+                    return;
+                }
+
+                // AJAX request to fetch membership details
+                $.ajax({
+                    url: '/Memberships/GetMembershipDetails', // Ensure this route matches your controller action
+                    type: 'GET',
+                    data: { id: membershipId },
+                    success: function (data) {
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+                        // Populate fields with fetched data
+                        $('#monthFee').val(data.monthFee);
+                        $('#annualFee').val(data.annualFee);
+                        $('#description').val(data.description);
+                    },
+                    error: function () {
+                        alert('Failed to retrieve membership details.');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        function openDocument() {
+            document.getElementById('acceptTerms').disabled = false;
+        }
+
+        function showDetails() {
+            var details = document.getElementById('membershipDetails');
+            var membership = document.getElementById('membershipId').value;
+
+            // Check if a valid membership is selected (greater than 0)
+            if (membership && membership > 0) {
+                details.style.display = 'block';  // Show the details if a valid membership is selected
+            } else {
+                details.style.display = 'none';  // Hide the details if no membership or invalid membership is selected
+            }
+        }
+
+        function enableSubmit() {
+            document.getElementById('submit').disabled = false;
+        }
+
+        function validateTerms() {
+            const checkbox = document.getElementById('acceptTerms');
+            const termsError = document.getElementById('termsError');
+
+            // Check if the checkbox is checked
+            if (!checkbox.checked) {
+                termsError.style.display = 'block';
+                return false; // Prevent form submission
+            } else {
+                termsError.style.display = 'none';
+                return true; // Allow form submission
+            }
+        }
+
+    </script>
+}

@@ -13,17 +13,16 @@
                 <div class="card-body">
                     <dl class="row">
                         <dt class="col-sm-12 mb-2">
-                            Instructor
+                            Assigned by Instructor
                         </dt>
                         <dd class="col-sm-12">
-                            @Model.Instructor.FullName
-                        </dd>
-                        <dd class="col-sm-12">
-                            @Model.Instructor.Email
+                            @Model.Instructor.FullName<br />
+                            (@Model.Instructor.Email)
                         </dd>
                     </dl>
                     <div class="form-group">
-                        <a asp-action="MyWorkouts" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                        <a asp-action="MyWorkouts" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                        <a asp-action="DownloadWorkoutPdf" asp-route-id="@Model.Id" class="btn btn-primary me-2"><i class="fa-solid fa-download me-2"></i>Download</a>
                     </div>
                 </div>
             </div>

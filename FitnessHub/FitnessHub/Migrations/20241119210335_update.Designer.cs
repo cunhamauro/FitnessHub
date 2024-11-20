@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241116020254_update")]
+    [Migration("20241119210335_update")]
     partial class update
     {
         /// <inheritdoc />
@@ -434,6 +434,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GymId")
+                        .HasColumnType("int");
+
                     b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
@@ -504,6 +507,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -613,8 +619,11 @@ namespace FitnessHub.Migrations
 
             modelBuilder.Entity("FitnessHub.Data.Entities.History.StaffHistory", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
@@ -637,6 +646,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("StaffId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("StaffHistory");
@@ -654,15 +666,15 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("MonthlyFee")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("OnOffer")
                         .HasColumnType("bit");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -993,14 +1005,8 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
-                    b.Property<string>("FullAddress")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("GymId")
                         .HasColumnType("int");
-
-                    b.Property<string>("IdentificationNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MembershipDetailsId")
                         .HasColumnType("int");

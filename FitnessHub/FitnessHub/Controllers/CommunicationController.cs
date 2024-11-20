@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.Communication;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
@@ -19,6 +20,7 @@ namespace FitnessHub.Controllers
         private readonly IClientInstructorAppointmentRepository _clientInstructorAppointmentRepository;
         private readonly IRequestInstructorHistoryRepository _requestInstructorHistoryRepository;
         private readonly IClientInstructorAppointmentHistoryRepository _clientInstructorAppointmentHistoryRepository;
+        private readonly IMailHelper _mailHelper;
 
         public CommunicationController(
             IUserHelper userHelper,
@@ -26,7 +28,8 @@ namespace FitnessHub.Controllers
             IRequestInstructorRepository requestInstructorRepository,
             IClientInstructorAppointmentRepository clientInstructorAppointmentRepository,
             IRequestInstructorHistoryRepository requestInstructorHistoryRepository,
-            IClientInstructorAppointmentHistoryRepository clientInstructorAppointmentHistoryRepository)
+            IClientInstructorAppointmentHistoryRepository clientInstructorAppointmentHistoryRepository,
+            IMailHelper mailHelper)
         {
             _userHelper = userHelper;
             _gymRepository = gymRepository;
@@ -34,6 +37,7 @@ namespace FitnessHub.Controllers
             _clientInstructorAppointmentRepository = clientInstructorAppointmentRepository;
             _requestInstructorHistoryRepository = requestInstructorHistoryRepository;
             _clientInstructorAppointmentHistoryRepository = clientInstructorAppointmentHistoryRepository;
+            _mailHelper = mailHelper;
         }
 
         [Authorize(Roles = "Client")]
@@ -372,6 +376,12 @@ namespace FitnessHub.Controllers
                     await _requestInstructorHistoryRepository.UpdateAsync(requestHistory);
 
                     await _requestInstructorRepository.DeleteAsync(request);
+
+                    string assignmentsUrl = Url.Action("ClientsAssignments", "Communication");
+
+                    string body = _mailHelper.GetEmailTemplate($"Client Request Assignment", @$"Hey, {instructor.FirstName}, you were assigned to the client <span style=""font-weight: bold"">{client.FullName} [{client.Email}]</span>.", @$"Check your other <a href=""{assignmentsUrl}"">client assignments</a>");
+
+                    Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Client assigned", body, null, null);
 
                     return RedirectToAction(nameof(ClientsRequests));
                 }

@@ -50,16 +50,28 @@ else
                             }</p>
                         <p><strong>Date of Renewal:</strong> @Model.DateRenewal.ToShortDateString()</p>
 
-                        <form asp-action="CancelMembership">
-                            <button type="submit" class="btn btn-danger me-2 mt-2">
-                                <i class="fa-solid fa-trash-can me-2"></i>Cancel Membership
-                            </button>
-                        </form>
+                        <div class="d-flex">
+                            <form asp-action="CancelMembership" class="me-2">
+                                <button type="submit" class="btn btn-danger me-2">
+                                    <i class="fa-solid fa-trash-can me-2"></i>Cancel
+                                </button>
+                            </form>
+
+                            @if (Model.Status == false)
+                            {
+                                <form asp-action="RenewMembership">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fa-solid fa-rotate me-2"></i>Renew
+                                    </button>
+                                </form>
+                            }
+
+                        </div>
 
                     </div>
                 </div>
                 <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
-                    <small><strong>@Model.Membership.Price.ToString("C2") / Month</strong></small>
+                    <small><strong>@Model.Membership.MonthlyFee.ToString("C2") / Month</strong></small>
                 </div>
             </div>
         </div>

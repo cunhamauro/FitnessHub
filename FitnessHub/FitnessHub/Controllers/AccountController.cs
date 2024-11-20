@@ -7,6 +7,7 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -179,9 +180,29 @@ namespace FitnessHub.Controllers
                         token = myToken
                     }, protocol: HttpContext.Request.Scheme);
 
-                    Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                        $"To allow the user, " +
-                        $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
+                    string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Please click this button to confirm your FitnessHub account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <a href=""{tokenLink}"" style=""display: inline-block; background-color: black; color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; text-align: center;"">
+                                        Confirm
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>";
+
+                    string body = _mailHelper.GetEmailTemplate("Confirm Account", message, $"Welcome to FitnessHub, {model.FirstName}");
+
+                    Response response = await _mailHelper.SendEmailAsync(model.Email, "Account confirmation", body, null, null);
+
+                    //Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                    //    $"To allow the user, " +
+                    //    $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
 
                     if (response.IsSuccess)
                     {
@@ -428,14 +449,31 @@ namespace FitnessHub.Controllers
 
                 var myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
 
-                var link = this.Url.Action(
+                var tokenLink = this.Url.Action(
                     "ResetPassword",
                     "Account",
                     new { token = myToken }, protocol: HttpContext.Request.Scheme);
 
-                Response response = await _mailHelper.SendEmailAsync(model.Email, "Flight Ticket Manager Password Reset", $"<h1>FitnessHub Password Reset</h1>" +
-                    $"To reset the password click in this link:</br></br>" +
-                    $"<a href = \"{link}\">Reset Password</a>");
+                string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Hey, {user.FirstName}, please click this button to recover your FitnessHub account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <a href=""{tokenLink}"" style=""display: inline-block; background-color: black; color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; text-align: center;"">
+                                        Recover
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>";
+
+                string body = _mailHelper.GetEmailTemplate("Recover Account", message, $"Don't forget your password again");
+
+                Response response = await _mailHelper.SendEmailAsync(model.Email, "Account recovery", body, null, null);
+
 
                 if (response.IsSuccess)
                 {
@@ -663,9 +701,25 @@ namespace FitnessHub.Controllers
                             token = resetToken
                         }, protocol: HttpContext.Request.Scheme);
 
-                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                            $"To allow the user, " +
-                            $"plase click in this link:</br></br><a href = \"{tokenLink}\">Click here to change your password</a>");
+                        string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Hey, {model.FirstName}, please click this button to configure your FitnessHub account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <a href=""{tokenLink}"" style=""display: inline-block; background-color: black; color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; text-align: center;"">
+                                        Configure
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>";
+
+                        string body = _mailHelper.GetEmailTemplate("Configure Account", message, $"Welcome to FitnessHub, {model.FirstName}");
+
+                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Account configuration", body, null, null);
 
                         if (response.IsSuccess)
                         {

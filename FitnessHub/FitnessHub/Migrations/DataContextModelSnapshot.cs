@@ -431,6 +431,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GymId")
+                        .HasColumnType("int");
+
                     b.Property<string>("GymName")
                         .HasColumnType("nvarchar(max)");
 
@@ -660,15 +663,15 @@ namespace FitnessHub.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("MonthlyFee")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("OnOffer")
                         .HasColumnType("bit");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
@@ -999,14 +1002,8 @@ namespace FitnessHub.Migrations
                 {
                     b.HasBaseType("FitnessHub.Data.Entities.Users.User");
 
-                    b.Property<string>("FullAddress")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("GymId")
                         .HasColumnType("int");
-
-                    b.Property<string>("IdentificationNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("MembershipDetailsId")
                         .HasColumnType("int");

@@ -152,7 +152,7 @@ namespace FitnessHub.Data
             var membership = new Membership
             {
                 Name = "steroidShip",
-                Price = 20,
+                MonthlyFee = 20,
                 Description = "Pa ficares bixo e morreres cedo",
             };
 

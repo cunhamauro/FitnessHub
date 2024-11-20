@@ -62,7 +62,7 @@ namespace FitnessHub.Controllers.API
 
             Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
                         $"To finalize the register, " +
-                        $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
+                        $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>", null, null);
 
             if (response.IsSuccess)
             {

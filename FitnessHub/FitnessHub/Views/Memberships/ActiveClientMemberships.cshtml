@@ -30,6 +30,9 @@ else
                             Date of Renewal
                         </th>
                         <th>
+                            Status
+                        </th>
+                        <th>
                             Membership
                         </th>
                         @if (ViewBag.IsEmployee == true)
@@ -54,6 +57,17 @@ else
                                 @item.DateRenewal.ToShortDateString()
                             </td>
                             <td>
+                                @if (item.Status == true)
+                                {
+                                    <span>Active</span>
+                                }
+                                else
+                                {
+                                    <span>Inactive</span>
+
+                                }
+                            </td>
+                            <td>
                                 @item.Membership.Name
                             </td>
                             @if (ViewBag.IsEmployee == true)
@@ -65,6 +79,17 @@ else
                                             <i class="fa-solid fa-trash-can me-2"></i>Cancel
                                         </button>
                                     </form>
+
+                                    @if (item.Status == true)
+                                    {
+                                        <form asp-action="RenewClientMembership" class="mt-2 mb-1">
+                                            <input type="hidden" name="clientEmail" value="@item.ClientEmail" />
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa-solid fa-rotate me-2"></i>Renew
+                                            </button>
+                                        </form>
+                                    }
+
                                 </td>
                             }
                         </tr>
