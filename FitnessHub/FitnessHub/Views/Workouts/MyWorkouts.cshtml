@@ -18,6 +18,7 @@ else
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Date</th>
                         <th>Instructor</th>
                         <th>Exercises</th>
                         <th></th>
@@ -27,6 +28,9 @@ else
                     @foreach (var item in Model)
                     {
                         <tr>
+                            <td>
+                                @item.DateModified.ToString("dd-MM-yyy HH:mm")
+                            </td>
                             <td>
                                 @item.Instructor.FullName<br />
                                 @item.Instructor.Email

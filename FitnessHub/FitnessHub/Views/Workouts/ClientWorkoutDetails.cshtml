@@ -13,7 +13,8 @@
                 <div class="card-body">
                     <dl class="row">
                         <dt class="col-sm-12 mb-2">
-                            Assigned by Instructor
+                            Assigned by Instructor<br />
+                            <span style="font-weight: normal">@Html.Raw("@") @Model.DateModified.ToString("dd-MM-yyy HH:mm") </span>
                         </dt>
                         <dd class="col-sm-12">
                             @Model.Instructor.FullName<br />

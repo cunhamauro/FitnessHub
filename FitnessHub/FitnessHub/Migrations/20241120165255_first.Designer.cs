@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241120151908_first")]
+    [Migration("20241120165255_first")]
     partial class first
     {
         /// <inheritdoc />
@@ -393,6 +393,9 @@ namespace FitnessHub.Migrations
 
                     b.Property<string>("ClientId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(450)");

@@ -391,6 +391,9 @@ namespace FitnessHub.Migrations
                     b.Property<string>("ClientId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<DateTime>("DateModified")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("InstructorId")
                         .HasColumnType("nvarchar(450)");
 

@@ -730,7 +730,8 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
