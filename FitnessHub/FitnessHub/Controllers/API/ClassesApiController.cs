@@ -6,11 +6,11 @@ namespace FitnessHub.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClassesController : ControllerBase
+    public class ClassesApiController : ControllerBase
     {
         private readonly IClassRepository _classRepository;
 
-        public ClassesController(IClassRepository classRepository)
+        public ClassesApiController(IClassRepository classRepository)
         {
             _classRepository = classRepository;
         }
