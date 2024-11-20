@@ -1,0 +1,50 @@
+﻿@{
+    ViewData["Title"] = "Calculate Water Intake";
+}
+
+<h2>Calculate Water Intake</h2>
+
+<form method="post">
+    <label style="color:white" for="weight">Weight (kg):</label>
+    <input style="color:black" type="number" name="weight" id="weight" required />
+
+    <button type="submit">Calculate</button>
+</form>
+
+@if (ViewBag.WaterIntake != null)
+{
+    <p style="color:white">Your water intake needed is: @ViewBag.WaterIntake liters</p>
+}
+
+<div style="background-color: transparent; padding: 20px; border-radius: 8px;">
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        Water intake refers to the amount of water a person needs to drink daily to stay properly hydrated and maintain healthy bodily functions.<br />
+        Adequate water consumption is essential for regulating body temperature, maintaining organ function, transporting nutrients, and eliminating waste.
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        The daily recommended water intake can vary based on individual factors such as age, weight, activity level, and environmental conditions. A common guideline for calculating water intake is based on body weight: approximately <strong>35 milliliters per kilogram of body weight</strong>.<br />
+        For example, if a person weighs 70 kg, their estimated daily water intake would be:
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        <code style="background-color: #555; padding: 5px; color: #fff; font-family: monospace;">
+            70 kg × 35 ml/kg = 2,450 ml
+        </code>
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        To make it easier to understand, this amount is often converted into liters:
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        <code style="background-color: #555; padding: 5px; color: #fff; font-family: monospace;">
+            2,450 ml ÷ 1,000 = 2.45 liters
+        </code>
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        This calculation provides a baseline recommendation that may need adjustments for people with higher physical activity levels or exposure to hot climates.
+    </p>
+</div>
+
