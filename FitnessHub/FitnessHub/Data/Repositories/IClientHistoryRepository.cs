@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities.History;
+﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.History;
 
 namespace FitnessHub.Data.Repositories
 {
@@ -13,5 +14,7 @@ namespace FitnessHub.Data.Repositories
         Task UpdateAsync(ClientHistory clientHistory);
 
         Task<ClientHistory?> GetByIdTrackAsync(string id);
+
+        
     }
 }

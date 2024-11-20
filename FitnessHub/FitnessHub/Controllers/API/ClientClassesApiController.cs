@@ -1,22 +1,19 @@
 ﻿using FitnessHub.Data.Entities.GymClasses;
-using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
-using FitnessHub.Models;
 using FitnessHub.Models.API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Formats.Asn1;
 using System.Security.Claims;
 
 namespace FitnessHub.Controllers.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClientClassesController : ControllerBase
+    public class ClientClassesApiController : ControllerBase
     {
         private readonly IUserHelper _userHelper;
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
@@ -27,7 +24,7 @@ namespace FitnessHub.Controllers.API
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IClassTypeRepository _classTypeRepository;
 
-        public ClientClassesController(
+        public ClientClassesApiController(
             IUserHelper userHelper,
             IMembershipDetailsRepository membershipDetailsRepository,
             IClassRepository classRepository,
@@ -221,7 +218,7 @@ namespace FitnessHub.Controllers.API
             }
 
             var records = await _registeredInClassesHistoryRepository.GetAll().Where(r => r.UserId == client.Id && r.Canceled == false).ToListAsync();
-            if(records == null)
+            if (records == null)
             {
                 return NotFound(new { ErrorMessage = "Client has no classes records" });
             }
