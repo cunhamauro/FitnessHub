@@ -246,7 +246,6 @@ namespace FitnessHub.Helpers
                 return "N/A";
             }
         }
-
-       
+     
     }
 }

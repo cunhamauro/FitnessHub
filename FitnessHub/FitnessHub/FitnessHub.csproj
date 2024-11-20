@@ -11,6 +11,7 @@
     <Folder Include="wwwroot\images\machines\" />
     <Folder Include="wwwroot\images\gyms\" />
     <Folder Include="wwwroot\images\machines\" />
+    <Folder Include="wwwroot\images\clientProgress\" />
     <Folder Include="wwwroot\images\types\" />
   </ItemGroup>
 

@@ -1,0 +1,104 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.WeightProgress>
+
+@{
+    ViewData["Title"] = "Weight Progress";
+}
+
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <a style="margin-bottom: 10px;" asp-action="RecordWeight" class="btn btn-primary">
+            <i class="fa-solid fa-bars-progress me-2"></i>New
+        </a>
+
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            <i class="fa-solid fa-trash-can me-2"></i>Reset
+        </button>
+       
+    </div>
+    <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+        Register Progress
+    </h2>
+</div>
+
+
+
+@if (!Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">No weight progress recorded yet.</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Date</th>
+                        <th>Weight (kg)</th>
+                        <th>Progress</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var record in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a target="_blank" src=""><img style="height:10vh; width:auto" class="img-fluid" src="@record.ImageDisplay" /></a>
+                            </td>
+                            <td>@record.Date.ToString("dd-MM-yyyy HH:mm")</td>
+                            <td>@record.Weight kg</td>
+                            <td>
+                                @if (record.Progress > 0)
+                                {
+                                    <span>+@record.Progress (kg)</span>
+                                }
+                                else if (record.Progress < 0)
+                                {
+                                    <span>@record.Progress (kg)</span>
+                                }
+                                else
+                                {
+                                    <span>0 (kg)</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+<hr />
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirm Delete All Records</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete all weight progress records?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteAllForm" asp-action="DeleteRecordWeight" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Confirm Reset</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+        
+    });
+</script>
+
+
