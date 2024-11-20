@@ -1,5 +1,6 @@
 ﻿using FitnessHub.Data.Entities.Users;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace FitnessHub.Data.Entities.GymClasses
 {
@@ -15,6 +16,7 @@ namespace FitnessHub.Data.Entities.GymClasses
         [Display(Name = "End Date")]
         public DateTime DateEnd { get; set; }
 
+        [JsonIgnore]
         public List<Client>? Clients { get; set; }
 
         public int Capacity { get; set; }

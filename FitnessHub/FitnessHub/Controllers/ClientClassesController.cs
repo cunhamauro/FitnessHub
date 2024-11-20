@@ -7,7 +7,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace FitnessHub.Controllers
 {
@@ -44,8 +43,6 @@ namespace FitnessHub.Controllers
             {
                 return UserNotFound();
             }
-
-            //var gym = await 
 
             List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
 
@@ -119,16 +116,27 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            if (client.MembershipDetailsId == null)
+            {
+                return MembershipNotFound();
+            }
+
             var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
-            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            if (memberShipDetailClient == null)
+            {
+                return MembershipNotFound();
+            }
+
+            if (memberShipDetailClient.Status == false)
             {
                 return MembershipNotFound();
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
-            gymClasses = gymClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
+            gymClasses = gymClasses.Where(c => c.Clients.Count < c.Capacity).OrderBy(c => c.DateStart).ToList();
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
+            onlineClasses = onlineClasses.OrderBy(c => c.DateStart).ToList();
 
             var viewModel = new AvailableClassesViewModel
             {
@@ -186,11 +194,21 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            if (client.MembershipDetailsId == null)
+            {
+                return RedirectToAction("Available", "Memberships");
+            }
+
             var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
-            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            if (memberShipDetailClient == null)
             {
-                return RedirectToAction("Available","Memberships");
+                return RedirectToAction("Available", "Memberships");
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return RedirectToAction("Available", "Memberships");
             }
 
             var history = new RegisteredInClassesHistory
@@ -252,7 +270,10 @@ namespace FitnessHub.Controllers
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
+            gymClasses = gymClasses.OrderBy(c => c.DateStart).ToList();
+
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
+            onlineClasses = onlineClasses.OrderBy(o => o.DateStart).ToList();
 
             var viewModel = new AvailableClassesViewModel
             {
@@ -416,14 +437,27 @@ namespace FitnessHub.Controllers
                 return View("FindClientByEmail", model);
             }
 
-            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
-
-            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            if (client.MembershipDetailsId == null )
             {
                 ModelState.AddModelError(string.Empty, "Client does not have a membership");
                 var model = new RegisterClientInClassViewModel { ClientEmail = email };
                 return View("FindClientByEmail", model);
             }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (memberShipDetailClient == null)
+            {
+                ModelState.AddModelError(string.Empty, "Client does not have a membership");
+                var model = new RegisterClientInClassViewModel { ClientEmail = email };
+                return View("FindClientByEmail", model);
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return MembershipNotFound();
+            }
+
             return RedirectToAction(nameof(RegisterClientInClass), new { email });
         }
 
@@ -439,7 +473,7 @@ namespace FitnessHub.Controllers
 
             var classes = await _classRepository.GetAllGymClassesInclude();
 
-            classes = classes.Where(c => c.Gym.Id == employee.GymId && c.Clients.Count < c.Capacity).ToList();
+            classes = classes.Where(c => c.Gym.Id == employee.GymId && c.Clients.Count < c.Capacity).OrderBy(c => c.DateStart).ToList();
 
             var model = new RegisterClientInClassViewModel
             {
@@ -482,6 +516,11 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError(string.Empty, "Client does not have a membership.");
                 model.Classes = await LoadClassDetails();
                 return View("RegisterClientInClass", model);
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return MembershipNotFound();
             }
 
             var employee = await _userHelper.GetUserAsync(this.User);

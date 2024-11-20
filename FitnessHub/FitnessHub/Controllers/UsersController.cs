@@ -482,13 +482,13 @@ namespace FitnessHub.Controllers
             {
                 if (user is Client client)
                 {
-                    var gym = await _gymRepository.GetByIdAsync(client.GymId.Value);
+                    var gym = await _gymRepository.GetByIdAsync(client.GymId);
                     if(gym == null)
                     {
                         return GymNotFound();
                     }
 
-                    model.GymId = client.GymId.Value;
+                    model.GymId = client.GymId;
                     model.Gyms = new List<SelectListItem>
                     {
                         new SelectListItem

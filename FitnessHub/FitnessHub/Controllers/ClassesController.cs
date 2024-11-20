@@ -193,6 +193,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> OnlineClasses() // Index for Online Classes
         {
             List<OnlineClass> onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
+            onlineClasses = onlineClasses.OrderBy(d => d.DateStart).ToList();
             return View(onlineClasses);
         }
 
@@ -595,6 +596,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> GymClasses() // Index for Gym Classes
         {
             List<GymClass> gymClasses = await _classRepository.GetAllGymClassesInclude();
+            gymClasses = gymClasses.OrderBy(d => d.DateStart).ToList();
             return View(gymClasses);
         }
 

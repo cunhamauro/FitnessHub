@@ -210,13 +210,11 @@ namespace FitnessHub.Controllers
                         return View(model);
                     }
 
-                    return DisplayMessage("Email not sent", "There was an error sending the email to confirm the account. Try again later!");
+                    ModelState.AddModelError(string.Empty, "There was an error sending the email to confirm the account. Try again later!");
                 }
                 else
                 {
                     ModelState.AddModelError("Email", "This email is already registered");
-
-                    return View(model);
                 }
             }
 
@@ -351,7 +349,7 @@ namespace FitnessHub.Controllers
 
                     if (result.Succeeded)
                     {
-                        return RedirectToAction("ChangeUser");
+                        return RedirectToAction(nameof(ChangeUser));
                     }
                     else
                     {
@@ -427,6 +425,11 @@ namespace FitnessHub.Controllers
                 return DisplayMessage("Email confirmation failure", "Your account activation has failed! Try again!");
             }
 
+            if (this.User.Identity.IsAuthenticated)
+            {
+                await _userHelper.LogoutAsync();
+            }
+
             return RedirectToAction("Login");
         }
 
@@ -473,7 +476,6 @@ namespace FitnessHub.Controllers
                 string body = _mailHelper.GetEmailTemplate("Recover Account", message, $"Don't forget your password again");
 
                 Response response = await _mailHelper.SendEmailAsync(model.Email, "Account recovery", body, null, null);
-
 
                 if (response.IsSuccess)
                 {

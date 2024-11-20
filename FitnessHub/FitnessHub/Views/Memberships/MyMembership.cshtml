@@ -34,7 +34,7 @@ else
     <div class="row justify-content-center mt-2">
         <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
             <div class="card">
-               <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@Model.Membership.Name</div>
+                <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@Model.Membership.Name</div>
                 <div class="card-body">
                     <div class="card-text">
                         <p>@Model.Membership.Description</p>
@@ -47,7 +47,8 @@ else
                             else
                             {
                                 <span>Inactive</span>
-                            }</p>
+                            }
+                        </p>
                         <p><strong>Date of Renewal:</strong> @Model.DateRenewal.ToShortDateString()</p>
 
                         <div class="d-flex">
@@ -67,7 +68,6 @@ else
                             }
 
                         </div>
-
                     </div>
                 </div>
                 <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
@@ -82,4 +82,34 @@ else
     <hr />
     <h4 class="no-items-list">You have no Membership!</h4>
 }
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to cancel the membership ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" asp-action="CancelMembership" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">Cancel Membership</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var classId = button.getAttribute('data-class-id');
+        var form = document.getElementById('deleteForm');
+        form.querySelector('#classId').value = classId;
+    });
+</script>
 

@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = "Calculate Imc";
+}
+
+<h2>Calculate IMC</h2>
+
+<form method="post">
+    <label style="color:white" for="height">Height (cm):</label>
+    <input style="color:black"  type="number" name="height" id="height" required />
+
+    <label style="color:white" for="weight">Weight (kg):</label>
+    <input style="color:black" type="number" name="weight" id="weight" required />
+
+    <button type="submit">Calculate</button>
+</form>
+
+@if (ViewBag.Imc != null)
+{
+    <p>Your IMC is: @ViewBag.Imc</p>
+}
+
+<br />
+<br />
+<div style="background-color: transparent; padding: 20px; border-radius: 8px;">
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        BMI, or Body Mass Index, is a measurement used to assess whether a person has a healthy body weight for their height.<br />
+        It is calculated by dividing a person's weight in kilograms by the square of their height in meters.
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        <strong>The formula is:</strong><br />
+        <code style="background-color: #555; padding: 5px; color: #fff; font-family: monospace;">
+            BMI = weight (kg) / height (m)<sup>2</sup>
+        </code>
+    </p>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        The result is categorized into different ranges:
+    </p>
+
+    <ul style="color: white; font-size: 18px;">
+        <li><strong>Underweight:</strong> BMI less than 18.5</li>
+        <li><strong>Normal weight:</strong> BMI between 18.5 and 24.9</li>
+        <li><strong>Overweight:</strong> BMI between 25 and 29.9</li>
+        <li><strong>Obesity:</strong> BMI 30 or higher</li>
+    </ul>
+
+    <p style="color: white; font-size: 18px; line-height: 1.6;">
+        While BMI is a useful screening tool, it doesn't directly measure body fat or account for factors like muscle mass or distribution of fat.
+    </p>
+</div>
+
+<@* style>
+    #imc thead, #imc tr, #imc th, #imc td {background-color:white;}
+</style>
+
+<table border="1" id="imc" >
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>IMC Range</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Underweight</td>
+            <td>&lt; 18.5</td>
+        </tr>
+        <tr>
+            <td>Normal Weight</td>
+            <td>18.5 to 24.9</td>
+        </tr>
+        <tr>
+            <td>Overweight</td>
+            <td>25 to 29.9</td>
+        </tr>
+        <tr>
+            <td>Obesity Grade I</td>
+            <td>30 to 34.9</td>
+        </tr>
+        <tr>
+            <td>Obesity Grade II</td>
+            <td>35 to 39.9</td>
+        </tr>
+        <tr>
+            <td>Morbid Obesity</td>
+            <td> greater than or equal to 40</td>
+        </tr>
+    </tbody>
+</table> *@
+
+
+
+
+
