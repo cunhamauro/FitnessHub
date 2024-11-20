@@ -1,0 +1,318 @@
+﻿@model IEnumerable<FitnessHub.Models.ClassHistoryViewModel>
+
+@{
+    ViewData["Title"] = "My Classes";
+}
+@* 
+<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
+    <!-- Wrapper for the button and heading -->
+    <div style="display: inline-flex; align-items: center;">
+        <div style="display: flex; justify-content: center; align-items: flex-start; width: 100%; gap: 20px; padding: 10px;">
+            <!-- Left Column: Radio Buttons -->
+            <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>                <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>                <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>
+            <!-- Right Column: Submit Button -->
+            <div style="flex: 1; display: flex; justify-content: flex-start;">
+                <button type="submit" style="padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    Submit
+                </button>
+            </div>
+        </div>
+        <!-- Heading centered -->
+        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+            My Classes
+        </h2>
+    </div>
+</div> 
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>                <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>                <label>
+                <input type="radio" name="classOption" value="option1" /> Option 1
+            </label>
+        </div>
+        <div class="col-md-4">
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
+                My Classes
+            </h2>
+        </div>
+    </div>
+</div> *@
+
+<div class="container" style="padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh;">
+    <div class="row align-items-center">
+        <!-- Left Column: Dropdown and Submit Button -->
+        <div class="col-md-4 d-flex align-items-center" style="padding: 10px;">
+            <!-- Form for dropdown and button -->
+            <form asp-action="InstructorClasses" style="display: flex; align-items: center; gap: 20px;">
+                <!-- Dropdown -->
+                <select name="filter" id="classesFilter" class="form-control">
+                    @if (ViewBag.Filter == 1)
+                    {
+                        <option value="1" selected>Scheduled Classes</option>
+                        <option value="2">Class History</option>
+                        <option value="3">All Classes</option>
+                    }
+                    else if (ViewBag.Filter == 2)
+                    {
+                        <option value="1">Scheduled Classes</option>
+                        <option value="2" selected>Class History</option>
+                        <option value="3">All Classes</option>
+                    }
+                    else
+                    {
+                        <option value="1">Scheduled Classes</option>
+                        <option value="2">Class History</option>
+                        <option value="3" selected>All Classes</option>
+                    }
+
+                </select>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Filter
+                </button>
+            </form>
+        </div>
+        <!-- Center Column: Title -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; text-align: center;">
+                My Classes
+            </h2>
+        </div>
+        <!-- Right Column: Empty for layout balance -->
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+@if (!Model.Any())
+{
+    <hr />
+
+    if (ViewBag.Filter == 1)
+    {
+        <h4 class="no-items-list">You have no scheduled classes!</h4>
+    }
+    else if (ViewBag.Filter == 2)
+    {
+        <h4 class="no-items-list">You have no class history!</h4>
+    }
+    else
+    {
+        <h4 class="no-items-list">You have no classes!</h4>
+    }
+}
+else
+{
+    <div class="card-container">
+        <div class="card">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Type
+                        </th>
+                        <th>
+                            Class
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Gym
+                        </th>
+                        <th>
+                            Date Start
+                        </th>
+                        <th>
+                            Date End
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Platform)
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th>
+                            Capacity
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.SubClass == "OnlineClass")
+                                {
+                                    <span>Online</span>
+                                }
+                                else if (item.SubClass == "GymClass")
+                                {
+                                    <span>Gym</span>
+                                }
+                                else
+                                {
+                                    <span>Video</span>
+                                }
+                            </td>
+                            <td>
+                                @item.ClassType
+                            </td>
+
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Category)
+                            </td>
+                            <td>
+                                @item.GymName
+                            </td>
+                            <td>
+                                @if (item.DateStart != null)
+                                {
+                                    <span>@item.DateStart</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.DateEnd != null)
+                                {
+                                    <span>@item.DateEnd</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Platform == null)
+                                {
+                                    <span>N/A</span>
+                                }
+                                else
+                                {
+                                    <span>@item.Platform</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Canceled)
+                                {
+                                    <span>Canceled</span>
+                                }
+                                else
+                                {
+                                    @if (item.DateStart != null && item.DateStart > DateTime.UtcNow)
+                                    {
+                                        <span>Scheduled</span>
+                                    }
+                                    else if (item.DateStart != null && item.DateEnd != null && item.DateStart <= DateTime.UtcNow && item.DateEnd > DateTime.UtcNow)
+                                    {
+                                        <span>Started</span>
+                                    }
+                                    else if (item.DateStart != null && item.DateEnd != null && item.DateEnd > DateTime.UtcNow)
+                                    {
+                                        <span>Completed</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Available</span>
+                                    }
+                                }
+                            </td>
+                            <td>
+                                @if (item.Capacity != null && item.Capacity > 0)
+                                {
+                                    <span>@item.Capacity</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+
+                                <div class="form-group">
+                                    <button type="button"
+                                            class="btn btn-primary"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#clientListModal"
+                                            data-clients="@System.Text.Json.JsonSerializer.Serialize(item.ClientList)">
+                                        <i class="fa-solid fa-users me-2"></i>Clients
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div class="modal fade" id="clientListModal" tabindex="-1" aria-labelledby="clientListModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clientListModalLabel">List of Clients</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="clientList">
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Add a class for cells with "N/A" content
+            document.querySelectorAll("td").forEach(td => {
+                if (td.textContent.trim() === "N/A") {
+                    td.classList.add("na-cell");
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const clientListModal = document.getElementById('clientListModal');
+
+            clientListModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const clients = JSON.parse(button.getAttribute('data-clients'));
+
+                const clientListElement = document.getElementById('clientList');
+                clientListElement.innerHTML = ''; // Clear existing content
+
+                // Check if there are any clients
+                if (clients.length === 0) {
+                    const noClientsMessage = document.createElement('p');
+                    noClientsMessage.textContent = "There are no clients registered in this class";
+                    noClientsMessage.classList.add('no-clients-message');
+                    clientListElement.appendChild(noClientsMessage);
+                } else {
+                    clients.forEach(client => {
+                        const li = document.createElement('li');
+                        li.textContent = client; // Assuming client is a string, adjust if necessary
+                        clientListElement.appendChild(li);
+                    });
+                }
+            });
+        });
+    </script>
+}

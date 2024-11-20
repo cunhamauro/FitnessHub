@@ -69,15 +69,22 @@
                                 <select class="form-control" name="exercises[@i].DayOfWeek">
                                     @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
                                     {
-                                        <option value="@day">@day</option>
+                                        @if (Model.Exercises[i].DayOfWeek == day)
+                                        {
+                                            <option selected value="@day">@day</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@day">@day</option>
+                                        }
                                     }
                                 </select>
                                 <span asp-validation-for="Exercises[i].DayOfWeek" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
-                                <label for="Exercise[@i].Notes">Notes</label>
-                                <textarea class="form-control" name="exercises[@i].Notes" rows="3"></textarea>
+                                <label for="Exercise[@i].Notes" class="control-label">Notes</label>
+                                <textarea class="form-control" name="exercises[@i].Notes" rows="3">@Model.Exercises[i].Notes</textarea>
                                 <span asp-validation-for="Exercises[i].Notes" class="text-danger"></span>
                             </div>
 
@@ -192,10 +199,10 @@
                                     <label for="Exercise_${exerciseCount}__Machine" class="control-label">Machine</label>
                                     <select id="Exercise_${exerciseCount}__Machine" class="form-control" name="exercises[${exerciseCount}].MachineId" required>
                                         <option value="">Select a Machine</option>
-        @foreach (var machine in Model.MachinesDTO)
-        {
-                                                    <option value="@machine.Id">@machine.Name</option>
-        }
+                                        @foreach (var machine in Model.MachinesDTO)
+                                        {
+                                           <option value="@machine.Id">@machine.Name</option>
+                                        }
                                     </select>
                                     <span asp-validation-for="Exercise_${exerciseCount}__MachineId" class="text-danger"></span>
                                 </div>
@@ -219,10 +226,10 @@
                                 <div class="form-group">
                                             <label for="Exercise_${exerciseCount}__DayOfWeek" class="control-label">Day of Week</label>
                                     <select class="form-control" name="exercises[${exerciseCount}].DayOfWeek">
-        @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
-        {
-                                                    <option value="@day">@day</option>
-        }
+                                    @foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                                    {
+                                        <option value="@day">@day</option>
+                                    }
                                     </select>
                                     <span asp-validation-for="Exercise_${exerciseCount}__DayOfWeek" class="text-danger"></span>
                                 </div>

@@ -43,8 +43,6 @@ namespace FitnessHub.Data
 
         public DbSet<ClassType> ClassTypes { get; set; }
 
-        public DbSet<RegisteredInClassesHistory> ClassesRegistrationHistory { get; set; }
-
         // Machines
 
         public DbSet<Machine> Machines { get; set; }
@@ -83,6 +81,8 @@ namespace FitnessHub.Data
 
         public DbSet<WeightProgress> WeightProgress { get; set; }
 
+        public DbSet<RegisteredInClassesHistory> ClassesRegistrationHistory { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -103,7 +103,7 @@ namespace FitnessHub.Data
 
             // Make price with two decimals
             builder.Entity<Membership>()
-                       .Property(m => m.Price)
+                       .Property(m => m.MonthlyFee)
                        .HasColumnType("decimal(18,2)");
 
             builder.Entity<MembershipHistory>()

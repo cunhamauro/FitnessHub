@@ -16,14 +16,12 @@
                             Client
                         </dt>
                         <dd class="col-sm-12">
-                            @Model.Client.FullName
-                        </dd>
-                        <dd class="col-sm-12">
-                            @Model.Client.Email
+                            @Model.Client.FullName<br />
+                            (@Model.Client.Email)
                         </dd>
                     </dl>
                     <div class="form-group">
-                        <a asp-action="Index" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                        <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
 
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
                             <i class="fa-solid fa-trash-can me-2"></i>Delete

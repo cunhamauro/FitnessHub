@@ -11,7 +11,9 @@ namespace FitnessHub.Data.Entities.Users
 
         [DataType(DataType.Currency)]
         [Required]
-        public decimal Price { get; set; } // Monthly price
+        public decimal MonthlyFee { get; set; } // Monthly price
+
+        public decimal AnnualFee => MonthlyFee * 12;
 
         [Required]
         public string? Description {  get; set; }

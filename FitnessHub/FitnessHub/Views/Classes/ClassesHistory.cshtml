@@ -40,9 +40,6 @@ else
                             Date End
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.Capacity)
-                        </th>
-                        <th>
                             @Html.DisplayNameFor(model => model.Platform)
                         </th>
                         <th>
@@ -115,16 +112,6 @@ else
                                 else
                                 {
                                     <span>N/A</span>
-                                }
-                            </td>
-                            <td>
-                                @if (item.Capacity == null)
-                                {
-                                    <span>N/A</span>
-                                }
-                                else
-                                {
-                                    <span>@item.Capacity</span>
                                 }
                             </td>
                             <td>

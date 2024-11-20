@@ -7,7 +7,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace FitnessHub.Controllers
 {
@@ -45,8 +44,6 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            //var gym = await 
-
             List<RegisteredInClassesHistory> records = await _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToListAsync();
 
             List<RegisteredInClassesHistoryViewModel> model = new();
@@ -60,7 +57,8 @@ namespace FitnessHub.Controllers
                 StaffHistory? employee = null;
                 StaffHistory? instructor = null;
 
-                var gym = await _gymHistoryRepository.GetByName(gClass.GymName);
+                var gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
+
                 if(gym == null)
                 {
                     return GymNotFound();
@@ -130,7 +128,7 @@ namespace FitnessHub.Controllers
                 return MembershipNotFound();
             }
 
-            if(memberShipDetailClient.Status == false)
+            if (memberShipDetailClient.Status == false)
             {
                 return MembershipNotFound();
             }
@@ -196,11 +194,21 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            if (client.MembershipDetailsId == null)
+            {
+                return RedirectToAction("Available", "Memberships");
+            }
+
             var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
-            if (client.MembershipDetailsId == null || memberShipDetailClient == null)
+            if (memberShipDetailClient == null)
             {
-                return RedirectToAction("Available","Memberships");
+                return RedirectToAction("Available", "Memberships");
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return RedirectToAction("Available", "Memberships");
             }
 
             var history = new RegisteredInClassesHistory
@@ -213,7 +221,7 @@ namespace FitnessHub.Controllers
 
             if (isOnline)
             {
-                var onlineClass = await _classRepository.GetOnlineClassByIdInclude(classId);
+                var onlineClass = await _classRepository.GetOnlineClassByIdIncludeTracked(classId);
 
                 if (onlineClass == null)
                 {
@@ -229,7 +237,7 @@ namespace FitnessHub.Controllers
             }
             else
             {
-                var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
+                var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(classId);
 
                 if (gymClass == null)
                 {
@@ -636,7 +644,7 @@ namespace FitnessHub.Controllers
 
         public IActionResult MembershipNotFound()
         {
-            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time to add another membership?" });
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time for another one?" });
         }
 
         public IActionResult UserNotFound()

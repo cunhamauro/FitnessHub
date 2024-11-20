@@ -5,7 +5,7 @@ namespace FitnessHub.Data.Repositories
 {
     public interface IRequestInstructorRepository : IGenericRepository<RequestInstructor>
     {
-        List<RequestInstructor> GetAllByGymWithClients(Gym gym);
+        List<RequestInstructor> GetAllByGymWithClients(int gymId);
 
         Task<RequestInstructor?> GetByIdWithClientAndGym(int id);
 

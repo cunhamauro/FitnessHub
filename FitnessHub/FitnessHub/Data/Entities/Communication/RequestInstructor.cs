@@ -11,7 +11,7 @@ namespace FitnessHub.Data.Entities.Communication
         public Client? Client { get; set; }
 
         [Required]
-        public Gym? Gym { get; set; }
+        public int GymId { get; set; }
 
         public string? Notes { get; set; }
 

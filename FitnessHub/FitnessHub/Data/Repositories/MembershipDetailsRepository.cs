@@ -34,7 +34,7 @@ namespace FitnessHub.Data.Repositories
 
             foreach (var membership in membershipDetails)
             {
-                var membershipAnualIncome = membership.Membership.Price * 12;
+                var membershipAnualIncome = membership.Membership.MonthlyFee * 12;
 
                 anualRevenue += membershipAnualIncome;
             }

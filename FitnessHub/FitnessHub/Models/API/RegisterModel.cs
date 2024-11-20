@@ -5,34 +5,33 @@ namespace FitnessHub.Models.API
 {
     public class RegisterModel
     {
-        [Required]
+        [Required(ErrorMessage = "First name is required")]
         [Display(Name = "First Name")]
         public string? FirstName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Last name is required")]
         [Display(Name = "Last Name")]
         public string? LastName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Birth Date is required")]
         [AgeValidation]
         [Display(Name = "Birth Date")]
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = false)]
         public DateTime BirthDate { get; set; }
 
-        [Required]
         [DataType(DataType.PhoneNumber)]
         [Display(Name = "Phone")]
         public string? PhoneNumber { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Gym is required")]
         public int GymId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Email is required")]
         [DataType(DataType.EmailAddress)]
         public string? Email { get; set; }
 
-        [Required]
-        [MinLength(8)]
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least {2} characters long.")]
         public string? Password { get; set; }
 
         [Required]

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class first : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -96,6 +96,7 @@ namespace FitnessHub.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClassType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GymId = table.Column<int>(type: "int", nullable: true),
                     GymName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InstructorId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateStart = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -231,7 +232,7 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MonthlyFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     OnOffer = table.Column<bool>(type: "bit", nullable: true)
                 },
@@ -576,9 +577,7 @@ namespace FitnessHub.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     MembershipDetailsId = table.Column<int>(type: "int", nullable: true),
-                    GymId = table.Column<int>(type: "int", nullable: true),
-                    IdentificationNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FullAddress = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    GymId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -593,7 +592,8 @@ namespace FitnessHub.Migrations
                         name: "FK_Clients_Gyms_GymId",
                         column: x => x.GymId,
                         principalTable: "Gyms",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Clients_MembershipDetails_MembershipDetailsId",
                         column: x => x.MembershipDetailsId,
@@ -719,12 +719,6 @@ namespace FitnessHub.Migrations
                         name: "FK_RequestsIntructor_Clients_ClientId",
                         column: x => x.ClientId,
                         principalTable: "Clients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RequestsIntructor_Gyms_GymId",
-                        column: x => x.GymId,
-                        principalTable: "Gyms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -974,11 +968,6 @@ namespace FitnessHub.Migrations
                 name: "IX_RequestsIntructor_ClientId",
                 table: "RequestsIntructor",
                 column: "ClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RequestsIntructor_GymId",
-                table: "RequestsIntructor",
-                column: "GymId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_ClientId",

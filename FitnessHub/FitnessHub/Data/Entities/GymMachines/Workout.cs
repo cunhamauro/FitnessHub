@@ -11,5 +11,7 @@ namespace FitnessHub.Data.Entities.GymMachines
         public Instructor? Instructor { get; set; }
 
         public List<Exercise>? Exercises { get; set; }
+
+        //public DateTime? DateAssigned { get; set; } TODO: Mauro here
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Syncfusion.Licensing;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using FitnessHub.Data.HelperClasses;
 
 namespace FitnessHub
 {
@@ -99,6 +100,7 @@ namespace FitnessHub
             builder.Services.AddScoped<IImageHelper, ImageHelper>();
             builder.Services.AddScoped<ILoadHelper, LoadHelper>();
             builder.Services.AddScoped<IConverterHelper, ConverterHelper>();
+            builder.Services.AddScoped<IPdfHelper, PdfHelper>();
 
             // Repositories
             builder.Services.AddScoped<IClassRepository, ClassRepository>();
@@ -137,6 +139,9 @@ namespace FitnessHub
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
+            builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
             var app = builder.Build();
 

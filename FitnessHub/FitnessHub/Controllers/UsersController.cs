@@ -357,9 +357,25 @@ namespace FitnessHub.Controllers
                             token = resetToken
                         }, protocol: HttpContext.Request.Scheme);
 
-                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                            $"To allow the user, " +
-                            $"plase click in this link:</br></br><a href = \"{tokenLink}\">Click here to confirm your  email and change your password</a>");
+                        string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Hey, {model.FirstName}, please click this button to configure your FitnessHub account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <a href=""{tokenLink}"" style=""display: inline-block; background-color: black; color: white; font-size: 20px; font-weight: bold; padding: 10px 20px; text-decoration: none; border-radius: 5px; text-align: center;"">
+                                        Configure
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>";
+
+                        string body = _mailHelper.GetEmailTemplate("Configure Account", message, $"Welcome to FitnessHub, {model.FirstName}");
+
+                        Response response = await _mailHelper.SendEmailAsync(model.Email, "Account configuration", body, null, null);
 
                         if (response.IsSuccess)
                         {
@@ -466,13 +482,13 @@ namespace FitnessHub.Controllers
             {
                 if (user is Client client)
                 {
-                    var gym = await _gymRepository.GetByIdAsync(client.GymId.Value);
+                    var gym = await _gymRepository.GetByIdAsync(client.GymId);
                     if(gym == null)
                     {
                         return GymNotFound();
                     }
 
-                    model.GymId = client.GymId.Value;
+                    model.GymId = client.GymId;
                     model.Gyms = new List<SelectListItem>
                     {
                         new SelectListItem

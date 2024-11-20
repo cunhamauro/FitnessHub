@@ -12,13 +12,9 @@ namespace FitnessHub.Data.Entities.Users
 
         public List<GymClass>? GymClass { get; set; }
 
-        public int? GymId { get; set; }
+        public int GymId { get; set; }
 
         public Gym? Gym { get; set; }
-
-        public string? IdentificationNumber {  get; set; }
-
-        public string? FullAddress {  get; set; }
 
         //public List<ClassDetails>? ClassDetails { get; set; } = new();
     }
