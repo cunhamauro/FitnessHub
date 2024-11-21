@@ -512,6 +512,11 @@ namespace FitnessHub.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (this.User.Identity.IsAuthenticated)
+                    {
+                        await _userHelper.LogoutAsync();
+                    }
+
                     return RedirectToAction(nameof(Login));
                 }
 

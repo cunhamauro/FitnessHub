@@ -25,7 +25,7 @@ namespace FitnessHub.Controllers.API
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
         private readonly IClientHistoryRepository _clientHistoryRepository;
-        private readonly string _baseUrl = "https://localhost:44370/";
+        private string _baseUrl = string.Empty;
 
         public ClientsController(
             IUserHelper userHelper,
@@ -39,6 +39,8 @@ namespace FitnessHub.Controllers.API
             _imageHelper = imageHelper;
             _configuration = configuration;
             _clientHistoryRepository = clientHistoryRepository;
+
+            _baseUrl = _configuration["AppSettings:Url"];
         }
 
         [HttpPost("[action]")]
@@ -237,6 +239,7 @@ namespace FitnessHub.Controllers.API
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 BirthDate = user.BirthDate,
+                PhoneNumber = user.PhoneNumber,
             };
 
             return Ok(result);
@@ -260,6 +263,7 @@ namespace FitnessHub.Controllers.API
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.BirthDate = model.BirthDate;
+            user.PhoneNumber = model.PhoneNumber;
 
             var result = await _userHelper.UpdateUserAsync(user);
             if (result.Succeeded)
@@ -273,6 +277,7 @@ namespace FitnessHub.Controllers.API
                 clientHistory.FirstName = user.FirstName;
                 clientHistory.LastName = user.LastName;
                 clientHistory.BirthDate = user.BirthDate;
+                clientHistory.PhoneNumber = user.PhoneNumber;
 
                 await _clientHistoryRepository.UpdateAsync(clientHistory);
 

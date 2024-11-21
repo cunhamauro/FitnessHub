@@ -1,6 +1,5 @@
 ﻿using FitnessHub.Data.Classes;
 using FitnessHub.Data.Entities;
-using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
@@ -156,9 +155,18 @@ namespace FitnessHub.Controllers
 
         // GET: User Membership
         [Authorize(Roles = "Client")]
-        public async Task<IActionResult> MyMembership()
+        public async Task<IActionResult> MyMembership(string? userId)
         {
-            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+            Client client = new Client();
+
+            if (userId == null || userId.Length < 2)
+            {
+                client = await _userHelper.GetUserAsync(this.User) as Client;
+            }
+            else
+            {
+                client = await _userHelper.GetUserByIdAsync(userId) as Client;
+            }
 
             if (client == null)
             {
@@ -329,7 +337,7 @@ namespace FitnessHub.Controllers
         {
             Employee employee = await _userHelper.GetUserAsync(this.User) as Employee;
             Gym gym = await _gymRepository.GetByIdAsync(employee.GymId.Value);
-                
+
             Client client = await _userHelper.GetUserByEmailAsync(clientEmail) as Client;
 
             if (client == null)
