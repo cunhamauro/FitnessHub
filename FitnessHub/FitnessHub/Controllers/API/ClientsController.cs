@@ -146,6 +146,11 @@ namespace FitnessHub.Controllers.API
                 return Unauthorized("Invalid email or password.");
             }
 
+            if (user is not Client)
+            {
+                return Unauthorized("User is not client.");
+            }
+
             var key = _configuration["Tokens:Key"] ?? throw new ArgumentNullException("Tokens:Key", "Tokens:Key cannot be null.");
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
@@ -228,7 +233,7 @@ namespace FitnessHub.Controllers.API
         {
             var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            var user = await _userHelper.GetUserByEmailAsync(userEmail);
+            var user = await _userHelper.GetUserByEmailAsync(userEmail) as Client;
             if (user == null)
             {
                 return NotFound(new { ErrorMessage = "User not found" });
@@ -240,6 +245,7 @@ namespace FitnessHub.Controllers.API
                 LastName = user.LastName,
                 BirthDate = user.BirthDate,
                 PhoneNumber = user.PhoneNumber,
+                GymId = user.GymId
             };
 
             return Ok(result);
