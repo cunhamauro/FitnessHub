@@ -220,7 +220,7 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("Role", "Please select a role.");
             }
 
-            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
             {
                 ModelState.AddModelError("PhoneNumber", "Please select a country.");
             }
@@ -234,6 +234,15 @@ namespace FitnessHub.Controllers
             {
                 ModelState.Remove("Role");
             }
+
+            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+            {
+                Value = gym.Id.ToString(),
+                Text = $"{gym.Data}",
+            });
+
+            var countries = await _loadHelper.LoadCountriesAsync();
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             if (ModelState.IsValid)
             {
@@ -294,15 +303,6 @@ namespace FitnessHub.Controllers
                     if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
                     {
                         ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
-
-                        model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-                        {
-                            Value = gym.Id.ToString(),
-                            Text = $"{gym.Data}",
-                        });
-
-                        var countries = await _loadHelper.LoadCountriesAsync();
-                        model.Countries = new SelectList(countries, "Callingcode", "Data");
 
                         return View(model);
                     }
@@ -386,15 +386,6 @@ namespace FitnessHub.Controllers
                 else
                 {
                     ModelState.AddModelError("Email", "This email is already registered");
-
-                    model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-                    {
-                        Value = gym.Id.ToString(),
-                        Text = $"{gym.Data}",
-                    });
-
-                    var countries = await _loadHelper.LoadCountriesAsync();
-                    model.Countries = new SelectList(countries, "Callingcode", "Data");
 
                     return View(model);
                 }
