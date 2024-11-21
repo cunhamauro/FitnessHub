@@ -256,6 +256,15 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> SignUpClient(EmployeeClientMembershipViewModel model)
         {
+            Employee employee = await _userHelper.GetUserAsync(this.User) as Employee;
+
+            Gym gym = await _gymRepository.GetByIdAsync(employee.GymId.Value);
+
+            if (employee == null)
+            {
+                return UserNotFound();
+            }
+
             if (model.MembershipId < 1)
             {
                 ModelState.AddModelError("MembershipId", "Please select a valid Membership");
@@ -303,6 +312,10 @@ namespace FitnessHub.Controllers
                 };
 
                 await _clientMembershipHistoryRepository.CreateAsync(record);
+
+                string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
+                string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have been signed up for a subscription of the membership plan <span style=""font-weight: bold"">{membership.Name}</span> by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+                Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership sign up", body, null, null);
 
                 return RedirectToAction(nameof(ActiveClientMemberships));
             }

@@ -1,8 +1,13 @@
 ﻿@model RegisterClientInClassViewModel
 
-<div class="container mb-4 view-text">
-    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Register Client in Class</h2>
-    <hr style="margin-bottom: 2.2rem" />
+@{
+    ViewData["Title"] = "Manage Client Classes";
+}
+
+<div class="container mb-5 view-text">
+    <h2 style="text-align: center; margin-bottom: 3vh; font-weight: bolder; margin-top: 3.5vh">
+        Manage @Model.ClientFullName's Classes<br /><span style="color: whitesmoke; font-size: 1rem">@Model.ClientEmail</span>
+    </h2>
 </div>
 
 @if (Model.IsEmailValid)
@@ -16,15 +21,19 @@
                 {
                     <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
                         <div class="card">
+                            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header"><div>@classItem.ClassType</div><div class="text-muted mb-1" style="font-size:1rem">@classItem.Category</div></div>
+
                             <div class="card-body">
-                                <h5 style="text-align: center; font-size: 2em; font-weight: bold" class="card-title">@classItem.Category</h5>
-                                <hr />
+                                
                                 <div class="card-text">
                                     <p><strong>Instructor:</strong> @classItem.InstructorName</p>
                                     <p><strong>Start Time:</strong> @classItem.DateStart.ToString("g")</p>
                                     <p><strong>End Time:</strong> @classItem.DateEnd.ToString("g")</p>
                                     <p><strong>Location:</strong> @classItem.Location</p>
                                 </div>
+
+                            </div>
+                            <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
                                 @{
                                     var classId = classItem.Id;
                                 }
@@ -43,15 +52,16 @@
                 }
             </div>
 
-            <div class="form-group text-center mt-2 mb-4">
-                <button type="submit" asp-action="RegisterClientInClassConfirm" class="btn btn-primary me-2">Confirm Changes</button>
-                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+            <div class="form-group text-center mb-4">
+                <button type="submit" asp-action="RegisterClientInClassConfirm" class="btn btn-primary me-2"><i class="fa-solid fa-check me-2"></i>Confirm Changes</button>
+                <a asp-controller="ClientClasses" asp-action="FindClientByEmail" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
         </form>
     }
     else
     {
-        <p>No available classes.</p>
+        <hr style="margin-bottom: 2.2rem" />
+        <h4 class="no-items-list">There are no available Classes!</h4>
     }
 }
 

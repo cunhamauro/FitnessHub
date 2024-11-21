@@ -17,5 +17,11 @@
         public string? Category { get; set; }
 
         public string? ClassType {  get; set; }
+
+        public bool? Full {  get; set; }
+
+        public bool? InWaitlist {  get; set; }
+
+        public bool? Registered {  get; set; }
     }
 }

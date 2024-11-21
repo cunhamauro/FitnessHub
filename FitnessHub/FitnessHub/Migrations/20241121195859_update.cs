@@ -113,6 +113,18 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClassWaitlists",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    ClientEmailsOrderedList = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassWaitlists", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClientInstructorAppointmentsHistory",
                 columns: table => new
                 {
@@ -275,6 +287,23 @@ namespace FitnessHub.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_StaffHistory", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeightProgress",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustomerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Weight = table.Column<float>(type: "real", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Progress = table.Column<float>(type: "real", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeightProgress", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -730,7 +759,8 @@ namespace FitnessHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ClientId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    InstructorId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1008,6 +1038,9 @@ namespace FitnessHub.Migrations
                 name: "ClassHistory");
 
             migrationBuilder.DropTable(
+                name: "ClassWaitlists");
+
+            migrationBuilder.DropTable(
                 name: "ClientGymClass");
 
             migrationBuilder.DropTable(
@@ -1051,6 +1084,9 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "VideoClasses");
+
+            migrationBuilder.DropTable(
+                name: "WeightProgress");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

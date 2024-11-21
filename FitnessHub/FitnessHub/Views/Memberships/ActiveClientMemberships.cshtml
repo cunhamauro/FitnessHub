@@ -80,7 +80,7 @@ else
                                         </button>
                                     </form>
 
-                                    @if (item.Status == true)
+                                    @if (item.Status == false)
                                     {
                                         <form asp-action="RenewClientMembership" class="mt-2 mb-1">
                                             <input type="hidden" name="clientEmail" value="@item.ClientEmail" />
