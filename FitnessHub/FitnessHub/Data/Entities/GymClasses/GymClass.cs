@@ -21,6 +21,8 @@ namespace FitnessHub.Data.Entities.GymClasses
 
         public int Capacity { get; set; }
 
+        public bool Full => Capacity == Clients.Count;
+
         //public List<ClassDetails> ClassDetails { get; set; } = new();
     }
 }
