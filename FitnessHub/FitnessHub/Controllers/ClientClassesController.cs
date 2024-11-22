@@ -8,6 +8,7 @@ using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -29,9 +30,21 @@ namespace FitnessHub.Controllers
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
         private readonly IClassWaitlistRepository _classWaitlistRepository;
         private readonly IMailHelper _mailHelper;
+        private readonly IGymRepository _gymRepository;
+        private readonly IClassCategoryRepository _categoryRepository;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository, IMembershipDetailsRepository membershipDetailsRepository, IClassWaitlistRepository classWaitlistRepository, IMailHelper mailHelper)
+                                  IUserHelper userHelper,
+                                  IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository,
+                                  IClassHistoryRepository classHistoryRepository,
+                                  IGymHistoryRepository gymHistoryRepository,
+                                  IStaffHistoryRepository staffHistoryRepository,
+                                  IClassTypeRepository classTypeRepository,
+                                  IMembershipDetailsRepository membershipDetailsRepository,
+                                  IClassWaitlistRepository classWaitlistRepository,
+                                  IMailHelper mailHelper,
+                                  IGymRepository gymRepository,
+                                  IClassCategoryRepository categoryRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -43,6 +56,8 @@ namespace FitnessHub.Controllers
             _membershipDetailsRepository = membershipDetailsRepository;
             _classWaitlistRepository = classWaitlistRepository;
             _mailHelper = mailHelper;
+            _gymRepository = gymRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<IActionResult> MyClassHistory()
@@ -218,7 +233,8 @@ namespace FitnessHub.Controllers
 
         // User side actions
         [Authorize(Roles = "Client")]
-        public async Task<IActionResult> AvailableClasses()
+
+        public async Task<IActionResult> AvailableClasses(AvailableClassesViewModel model, int LocationId = 0, int CategoryId = 0)
         {
             var client = await _userHelper.GetUserAsync(this.User) as Client;
 
@@ -227,69 +243,57 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            if (client.MembershipDetailsId == null)
-            {
-                return MembershipNotFound();
-            }
+            model.Categories = _categoryRepository.GetAll()
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                .ToList();
 
-            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+            model.LocationList = _gymRepository.GetAll()
+                .Select(g => new SelectListItem
+                {
+                    Value = g.Id.ToString(),
+                    Text = g.Name
+                })
+                .ToList();
 
-            if (memberShipDetailClient == null)
-            {
-                return MembershipNotFound();
-            }
+            model.LocationList.Insert(0, new SelectListItem { Value = "-1", Text = "Online Classes" });
 
-            if (memberShipDetailClient.Status == false)
-            {
-                return MembershipNotFound();
-            }
+            var availableClasses = new List<ClassViewModel>();
+
+            var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
-            gymClasses = gymClasses/*.Where(c => c.Clients.Count < c.Capacity)*/.OrderBy(c => c.DateStart).ToList(); // Removed the filter for only classes with slots, to allow register in queue
-            var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
-            onlineClasses = onlineClasses.OrderBy(c => c.DateStart).ToList();
 
-            var viewModel = new AvailableClassesViewModel
+            if (LocationId > 0)
             {
-                Classes = new List<ClassViewModel>()
-            };
+                gymClasses = gymClasses.Where(c => c.Gym.Id == LocationId).ToList();
+                onlineClasses = new List<OnlineClass>();
+            }
 
-            foreach (var gymClass in gymClasses)
+            if (LocationId == -1)
             {
-                if (!gymClass.Clients.Any(c => c.Id == client.Id))
-                {
+                gymClasses = new List<GymClass>();
+            }
 
-                    var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
-
-                    bool inWait = false;
-
-                    if (waitlist.GetClientEmails().Contains(client.Email))
-                    {
-                        inWait = true;
-                    }
-
-                    viewModel.Classes.Add(new ClassViewModel
-                    {
-                        InstructorName = gymClass.Instructor.FullName,
-                        DateStart = gymClass.DateStart,
-                        DateEnd = gymClass.DateEnd,
-                        Location = gymClass.Gym.Name,
-                        IsOnline = false,
-                        Id = gymClass.Id,
-                        Category = gymClass.Category.Name,
-                        ClassType = gymClass.ClassType.Name,
-                        Full = gymClass.Capacity == gymClass.Clients.Count(),
-                        InWaitlist = inWait,
-                        Registered = gymClass.Clients.Any(c => c.Id == client.Id),
-                    });
-                }
+            if(model.DateFilter != null)
+            {
+                onlineClasses = onlineClasses.Where(c => c.DateStart.Date == model.DateFilter.Value.Date).ToList();
+                gymClasses = gymClasses.Where(c => c.DateStart.Date == model.DateFilter.Value.Date).ToList();
+            }
+            if (CategoryId > 0)
+            {
+                onlineClasses = onlineClasses.Where(c => c.Category.Id == CategoryId).ToList();
+                gymClasses = gymClasses.Where(c => c.Category.Id == CategoryId).ToList();
             }
 
             foreach (var onlineClass in onlineClasses)
             {
                 if (!onlineClass.Clients.Any(c => c.Id == client.Id))
                 {
-                    viewModel.Classes.Add(new ClassViewModel
+                    availableClasses.Add(new ClassViewModel
                     {
                         InstructorName = onlineClass.Instructor.FullName,
                         DateStart = onlineClass.DateStart,
@@ -305,10 +309,30 @@ namespace FitnessHub.Controllers
                     });
                 }
             }
-            viewModel.Classes = viewModel.Classes.OrderBy(c => c.DateStart).ToList();
-
-            return View(viewModel);
+            foreach (var gymClass in gymClasses)
+            {
+                if (!gymClass.Clients.Any(c => c.Id == client.Id))
+                {
+                    availableClasses.Add(new ClassViewModel
+                    {
+                        InstructorName = gymClass.Instructor.FullName,
+                        DateStart = gymClass.DateStart,
+                        DateEnd = gymClass.DateEnd,
+                        Location = gymClass.Gym.Name,
+                        IsOnline = false,
+                        Id = gymClass.Id,
+                        Category = gymClass.Category.Name,
+                        ClassType = gymClass.ClassType.Name,
+                        Full = gymClass.Capacity == gymClass.Clients.Count(),
+                        InWaitlist = false,
+                        Registered = false,
+                    });
+                }
+            }
+            model.Classes = availableClasses.OrderBy(c => c.DateStart).ToList();
+            return View(model);
         }
+
 
         [Authorize(Roles = "Client")]
         [HttpPost]

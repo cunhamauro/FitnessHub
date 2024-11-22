@@ -8,9 +8,45 @@
     <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available Classes</h2>
 </div>
 
+<form method="get" asp-action="AvailableClasses" asp-controller="ClientClasses">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label asp-for="LocationId" class="form-label">Select Location</label>
+                <select asp-for="LocationId" asp-items="Model.LocationList" class="form-select" name="LocationId">
+                    <option value="0">All</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label asp-for="CategoryId" class="form-label">Select Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-select" name="CategoryId">
+                    <option value="0">All</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3 mt-2">
+            <div class="form-group">
+                <label asp-for="DateFilter" class="control-label"></label>
+                <input id="dateStart" asp-for="DateFilter" type="date" class="form-control"
+                       value="@Model.DateFilter?.ToString("yyyy-MM-dd")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="DateFilter" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-3" style="margin-top:30px; margin-left: -8%;">
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass me-2"></i>Filter</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
 @if (Model.Classes.Any())
 {
-    <div class="row justify-content-center mt-2">
+    <div class="row justify-content-center mt-5">
         @foreach (var classItem in Model.Classes)
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
