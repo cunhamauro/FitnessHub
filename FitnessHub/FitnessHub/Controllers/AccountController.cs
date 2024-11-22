@@ -102,12 +102,20 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("Gym", "Please select a gym.");
             }
 
-            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
             {
                 ModelState.AddModelError("PhoneNumber", "Please select a country.");
             }
 
             var countries = await _loadHelper.LoadCountriesAsync();
+
+            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
+            {
+                Value = gym.Id.ToString(),
+                Text = $"{gym.Data}",
+            });
+
+            model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             if (ModelState.IsValid)
             {
@@ -134,14 +142,6 @@ namespace FitnessHub.Controllers
                     if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
                     {
                         ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
-
-                        model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-                        {
-                            Value = gym.Id.ToString(),
-                            Text = $"{gym.Data}",
-                        });
-
-                        model.Countries = new SelectList(countries, "Callingcode", "Data");
 
                         return View(model);
                     }
@@ -206,8 +206,7 @@ namespace FitnessHub.Controllers
 
                     if (response.IsSuccess)
                     {
-                        ViewBag.Message = "The instructions to confirm your account have been sent to your email";
-                        return View(model);
+                        return RedirectToAction(nameof(Login));
                     }
 
                     ModelState.AddModelError(string.Empty, "There was an error sending the email to confirm the account. Try again later!");
@@ -217,14 +216,6 @@ namespace FitnessHub.Controllers
                     ModelState.AddModelError("Email", "This email is already registered");
                 }
             }
-
-            model.Gyms = _gymRepository.GetAll().Select(gym => new SelectListItem
-            {
-                Value = gym.Id.ToString(),
-                Text = $"{gym.Data}",
-            });
-
-            model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             return View(model);
         }
@@ -257,7 +248,7 @@ namespace FitnessHub.Controllers
         {
             var countries = await _loadHelper.LoadCountriesAsync();
 
-            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
             {
                 ModelState.AddModelError("PhoneNumber", "Please select a country.");
             }
@@ -512,6 +503,11 @@ namespace FitnessHub.Controllers
 
                 if (result.Succeeded)
                 {
+                    if (this.User.Identity.IsAuthenticated)
+                    {
+                        await _userHelper.LogoutAsync();
+                    }
+
                     return RedirectToAction(nameof(Login));
                 }
 
@@ -629,7 +625,7 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterNewClient(EmployeeRegisterNewClientViewModel model)
         {
-            if (model.CountryCallingcode == "0" || model.CountryCallingcode == "undefined")
+            if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
             {
                 ModelState.AddModelError("PhoneNumber", "Please select a country.");
             }

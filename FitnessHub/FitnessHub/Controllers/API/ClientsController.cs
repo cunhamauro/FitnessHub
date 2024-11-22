@@ -27,6 +27,7 @@ namespace FitnessHub.Controllers.API
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
         private readonly IClientHistoryRepository _clientHistoryRepository;
+        private string _baseUrl = string.Empty;
         private readonly AppSettings _appSettings;
         //private readonly string _baseUrl = "https://localhost:44370/";
 
@@ -42,6 +43,7 @@ namespace FitnessHub.Controllers.API
             _imageHelper = imageHelper;
             _configuration = configuration;
             _clientHistoryRepository = clientHistoryRepository;
+            _baseUrl = _configuration["AppSettings:Url"];
             _appSettings = appSettings.Value;
         }
 
@@ -170,6 +172,11 @@ namespace FitnessHub.Controllers.API
                 return Unauthorized("Invalid email or password.");
             }
 
+            if (user is not Client)
+            {
+                return Unauthorized("User is not client.");
+            }
+
             var key = _configuration["Tokens:Key"] ?? throw new ArgumentNullException("Tokens:Key", "Tokens:Key cannot be null.");
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
 
@@ -252,7 +259,7 @@ namespace FitnessHub.Controllers.API
         {
             var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            var user = await _userHelper.GetUserByEmailAsync(userEmail);
+            var user = await _userHelper.GetUserByEmailAsync(userEmail) as Client;
             if (user == null)
             {
                 return NotFound(new { ErrorMessage = "User not found" });
@@ -263,6 +270,8 @@ namespace FitnessHub.Controllers.API
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 BirthDate = user.BirthDate,
+                PhoneNumber = user.PhoneNumber,
+                GymId = user.GymId
             };
 
             return Ok(result);
@@ -286,6 +295,7 @@ namespace FitnessHub.Controllers.API
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.BirthDate = model.BirthDate;
+            user.PhoneNumber = model.PhoneNumber;
 
             var result = await _userHelper.UpdateUserAsync(user);
             if (result.Succeeded)
@@ -299,6 +309,7 @@ namespace FitnessHub.Controllers.API
                 clientHistory.FirstName = user.FirstName;
                 clientHistory.LastName = user.LastName;
                 clientHistory.BirthDate = user.BirthDate;
+                clientHistory.PhoneNumber = user.PhoneNumber;
 
                 await _clientHistoryRepository.UpdateAsync(clientHistory);
 
