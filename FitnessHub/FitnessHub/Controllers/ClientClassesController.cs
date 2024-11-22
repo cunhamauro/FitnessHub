@@ -1,4 +1,6 @@
-﻿using FitnessHub.Data.Entities.GymClasses;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
@@ -7,6 +9,10 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Text;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FitnessHub.Controllers
 {
@@ -21,9 +27,11 @@ namespace FitnessHub.Controllers
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IClassTypeRepository _classTypeRepository;
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
+        private readonly IClassWaitlistRepository _classWaitlistRepository;
+        private readonly IMailHelper _mailHelper;
 
         public ClientClassesController(IClassRepository classRepository,
-                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository, IMembershipDetailsRepository membershipDetailsRepository)
+                                  IUserHelper userHelper, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassHistoryRepository classHistoryRepository, IGymHistoryRepository gymHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IClassTypeRepository classTypeRepository, IMembershipDetailsRepository membershipDetailsRepository, IClassWaitlistRepository classWaitlistRepository, IMailHelper mailHelper)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -33,6 +41,8 @@ namespace FitnessHub.Controllers
             _staffHistoryRepository = staffHistoryRepository;
             _classTypeRepository = classTypeRepository;
             _membershipDetailsRepository = membershipDetailsRepository;
+            _classWaitlistRepository = classWaitlistRepository;
+            _mailHelper = mailHelper;
         }
 
         public async Task<IActionResult> MyClassHistory()
@@ -59,7 +69,7 @@ namespace FitnessHub.Controllers
 
                 var gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
 
-                if(gym == null)
+                if (gym == null)
                 {
                     return GymNotFound();
                 }
@@ -105,6 +115,107 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> JoinWaitlist(int classId)
+        {
+            var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
+
+            if (gymClass == null)
+            {
+                return ClassNotFound();
+            }
+
+            if (gymClass.Capacity < gymClass.Clients.Count)
+            {
+                return ClassNotFull();
+            }
+
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            if (gymClass.Clients.Contains(client))
+            {
+                return ClassNotFound();
+            }
+
+            var waitlist = await _classWaitlistRepository.GetByIdAsync(classId);
+
+            if (waitlist == null)
+            {
+                return ClassWaitlistNotFound();
+            }
+
+            int highestNumber = waitlist.ClientEmailsOrderedList.Any()
+                ? waitlist.ClientEmailsOrderedList
+                    .Max(email => int.Parse(email.Split('@')[0])) // Extract number and find max
+                : 0; // Default to 0 if the list is empty
+
+            // Increment the highest number for the new email
+            int number = highestNumber + 1;
+
+            waitlist.ClientEmailsOrderedList.Add($"{number}@{client.Email}");
+
+            await _classWaitlistRepository.UpdateAsync(waitlist);
+
+            return RedirectToAction(nameof(AvailableClasses));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExitWaitlist(int classId)
+        {
+            var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
+
+            if (gymClass == null)
+            {
+                return ClassNotFound();
+            }
+
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            if (gymClass.Clients.Contains(client))
+            {
+                return ClassNotFound();
+            }
+
+            var waitlist = await _classWaitlistRepository.GetByIdAsync(classId);
+
+            if (waitlist == null)
+            {
+                return ClassWaitlistNotFound();
+            }
+
+            //if (waitlist.GetClientEmails().Contains(client.Email))
+            //{
+            //    return ClassWaitlistNotFound();
+            //}
+
+            string emailToRemove = "";
+
+            foreach (var email in waitlist.ClientEmailsOrderedList)
+            {
+                if (email.Contains(client.Email))
+                {
+                    emailToRemove = email;
+                    break;
+                }
+            }
+
+            waitlist.ClientEmailsOrderedList.Remove(emailToRemove);
+
+            await _classWaitlistRepository.UpdateAsync(waitlist);
+
+            return RedirectToAction(nameof(AvailableClasses));
+        }
+
         // User side actions
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> AvailableClasses()
@@ -134,7 +245,7 @@ namespace FitnessHub.Controllers
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
-            gymClasses = gymClasses/*.Where(c => c.Clients.Count < c.Capacity)*/.OrderBy(c => c.DateStart).ToList();
+            gymClasses = gymClasses/*.Where(c => c.Clients.Count < c.Capacity)*/.OrderBy(c => c.DateStart).ToList(); // Removed the filter for only classes with slots, to allow register in queue
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
             onlineClasses = onlineClasses.OrderBy(c => c.DateStart).ToList();
 
@@ -147,6 +258,16 @@ namespace FitnessHub.Controllers
             {
                 if (!gymClass.Clients.Any(c => c.Id == client.Id))
                 {
+
+                    var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                    bool inWait = false;
+
+                    if (waitlist.GetClientEmails().Contains(client.Email))
+                    {
+                        inWait = true;
+                    }
+
                     viewModel.Classes.Add(new ClassViewModel
                     {
                         InstructorName = gymClass.Instructor.FullName,
@@ -157,6 +278,9 @@ namespace FitnessHub.Controllers
                         Id = gymClass.Id,
                         Category = gymClass.Category.Name,
                         ClassType = gymClass.ClassType.Name,
+                        Full = gymClass.Capacity == gymClass.Clients.Count(),
+                        InWaitlist = inWait,
+                        Registered = gymClass.Clients.Any(c => c.Id == client.Id),
                     });
                 }
             }
@@ -175,6 +299,9 @@ namespace FitnessHub.Controllers
                         Id = onlineClass.Id,
                         Category = onlineClass.Category.Name,
                         ClassType = onlineClass.ClassType.Name,
+                        Full = false,
+                        InWaitlist = false,
+                        Registered = false,
                     });
                 }
             }
@@ -219,6 +346,10 @@ namespace FitnessHub.Controllers
                 Canceled = false,
             };
 
+            string classesUrl = Url.Action("AvailableClasses", "Classes");
+            string body = "";
+            string title = "";
+
             if (isOnline)
             {
                 var onlineClass = await _classRepository.GetOnlineClassByIdIncludeTracked(classId);
@@ -233,6 +364,9 @@ namespace FitnessHub.Controllers
                     onlineClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(onlineClass);
                     await _registeredInClassesHistoryRepository.CreateAsync(history);
+
+                    body = _mailHelper.GetEmailTemplate($"Registered in {onlineClass.ClassType.Name} Online Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{onlineClass.ClassType.Name} online class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                    title = "Online class registration";
                 }
             }
             else
@@ -254,8 +388,28 @@ namespace FitnessHub.Controllers
                     gymClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(gymClass);
                     await _registeredInClassesHistoryRepository.CreateAsync(history);
+
+                    body = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                    title = "Online class registration";
+
+                    var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                    string emailToRemoveWaiting = "";
+
+                    foreach (var inWait in waitlist.ClientEmailsOrderedList)
+                    {
+                        if (inWait.Contains(client.Email))
+                        {
+                            emailToRemoveWaiting = client.Email;
+                        }
+                    }
+
+                    waitlist.ClientEmailsOrderedList.Remove(emailToRemoveWaiting);
                 }
             }
+
+            Response response2 = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
+
             return RedirectToAction(nameof(AvailableClasses));
         }
 
@@ -337,12 +491,35 @@ namespace FitnessHub.Controllers
                 await _registeredInClassesHistoryRepository.UpdateAsync(historyEntry);
             }
 
+            string body = "";
+            string title = "";
+
+            string classesUrl = Url.Action("AvailableClasses", "Classes");
+
             var gymClass = await _classRepository.GetGymClassByIdIncludeTracked(id);
             if (gymClass != null && gymClass.Clients.Contains(client))
             {
                 gymClass.Clients.Remove(client);
                 await _classRepository.UpdateAsync(gymClass);
-                return RedirectToAction(nameof(MyClasses));
+
+                body = _mailHelper.GetEmailTemplate($"Unregistered From {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you unregistered yourself from a <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                title = "Unregistered from class";
+
+                // Waiting list automation
+
+                var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                if (waitlist.ClientEmailsOrderedList.Any())
+                {
+                    string waitingClientEmail = await WaitingListAutomation(gymClass, waitlist);
+
+                    string body2 = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were automatically registered in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, as you were the first in the waiting list.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                    string title2 = "Automatic class registration";
+                    Response response2 = await _mailHelper.SendEmailAsync(waitingClientEmail, $"{title2}", body2, null, null);
+                }
+
+                //
+
             }
 
             var onlineClass = await _classRepository.GetOnlineClassByIdInclude(id);
@@ -350,9 +527,15 @@ namespace FitnessHub.Controllers
             {
                 onlineClass.Clients.Remove(client);
                 await _classRepository.UpdateAsync(onlineClass);
-                return RedirectToAction(nameof(MyClasses));
+
+                body = _mailHelper.GetEmailTemplate($"Unregistered from {onlineClass.ClassType.Name} Online Class", @$"Hey, {client.FirstName}, you unregistered yourself from a <span style=""font-weight: bold"">{onlineClass.ClassType.Name} online class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                title = "Unregistered from online class";
+
             }
-            return View();
+
+            Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
+
+            return RedirectToAction(nameof(MyClasses));
         }
 
         [Authorize(Roles = "Client")]
@@ -421,9 +604,16 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> FindClientByEmail(string email)
         {
+            var employee = await _userHelper.GetUserAsync(this.User) as Employee;
+
+            if (employee == null)
+            {
+                return UserNotFound();
+            }
+
             if (string.IsNullOrWhiteSpace(email))
             {
-                ModelState.AddModelError(string.Empty, "Email is required.");
+                ModelState.AddModelError(string.Empty, "Email is required");
                 var model = new RegisterClientInClassViewModel();
                 return View("FindClientByEmail", model);
             }
@@ -432,12 +622,19 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                ModelState.AddModelError(string.Empty, "Client not found.");
+                ModelState.AddModelError(string.Empty, "Client not found");
                 var model = new RegisterClientInClassViewModel { ClientEmail = email };
                 return View("FindClientByEmail", model);
             }
 
-            if (client.MembershipDetailsId == null )
+            if (employee.GymId != client.GymId)
+            {
+                ModelState.AddModelError(string.Empty, "This client is not assigned to your Gym");
+                var model = new RegisterClientInClassViewModel { ClientEmail = email };
+                return View("FindClientByEmail", model);
+            }
+
+            if (client.MembershipDetailsId == null)
             {
                 ModelState.AddModelError(string.Empty, "Client does not have a membership");
                 var model = new RegisterClientInClassViewModel { ClientEmail = email };
@@ -464,6 +661,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> RegisterClientInClass(string email)
         {
             var client = await _userHelper.GetUserByEmailAsync(email) as Client;
+
             if (client == null)
             {
                 return RedirectToAction("FindClientByEmail");
@@ -473,11 +671,12 @@ namespace FitnessHub.Controllers
 
             var classes = await _classRepository.GetAllGymClassesInclude();
 
-            classes = classes.Where(c => c.Gym.Id == employee.GymId && c.Clients.Count < c.Capacity).OrderBy(c => c.DateStart).ToList();
+            classes = classes.Where(c => c.Gym.Id == employee.GymId && (c.Clients.Count < c.Capacity || c.Clients.Contains(client))).OrderBy(c => c.DateStart).ToList();
 
             var model = new RegisterClientInClassViewModel
             {
                 ClientEmail = email,
+                ClientFullName = client.FullName,
                 IsEmailValid = true,
                 Classes = classes.Select(c => new ClassDetailsViewModel
                 {
@@ -500,6 +699,7 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> RegisterClientInClassConfirm(RegisterClientInClassViewModel model)
         {
             var clientEmail = model.ClientEmail;
+            string classesUrl = Url.Action("AvailableClasses", "Classes");
 
             var client = await _userHelper.GetUserByEmailAsync(model.ClientEmail) as Client;
             if (client == null)
@@ -526,7 +726,7 @@ namespace FitnessHub.Controllers
             var employee = await _userHelper.GetUserAsync(this.User);
 
             var allClasses = await _classRepository.GetAllGymClassesInclude();
-            allClasses = allClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
+            //allClasses = allClasses.Where(c => c.Clients.Count < c.Capacity).ToList();
 
             foreach (var gymClass in allClasses)
             {
@@ -544,6 +744,24 @@ namespace FitnessHub.Controllers
                     {
                         gymClass.Clients.Add(client);
                         await _registeredInClassesHistoryRepository.CreateAsync(history);
+
+                        string body = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were registered by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>!"" in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                        string title = "Class registration";
+                        Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
+
+                        var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                        string emailToRemoveWaiting = "";
+
+                        foreach (var inWait in waitlist.ClientEmailsOrderedList)
+                        {
+                            if (inWait.Contains(client.Email))
+                            {
+                                emailToRemoveWaiting = client.Email;
+                            }
+                        }
+
+                        waitlist.ClientEmailsOrderedList.Remove(emailToRemoveWaiting);
                     }
                 }
                 else
@@ -559,11 +777,32 @@ namespace FitnessHub.Controllers
                             historyEntry.Canceled = true;
                             await _registeredInClassesHistoryRepository.UpdateAsync(historyEntry);
                         }
+
+                        string body = _mailHelper.GetEmailTemplate($"Unregistered From {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were unregistered by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>!"" from the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                        string title = "Unregistered from class";
+                        Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
+
+                        //
+
+                        // Waiting list automation
+
+                        var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                        if (waitlist.ClientEmailsOrderedList.Any())
+                        {
+                            string waitingClientEmail = await WaitingListAutomation(gymClass, waitlist);
+
+                            string body2 = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were automatically registered in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, as you were the first in the waiting list.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                            string title2 = "Automatic class registration";
+                            Response response2 = await _mailHelper.SendEmailAsync(waitingClientEmail, $"{title2}", body2, null, null);
+                        }
+
+                        //
                     }
                 }
                 await _classRepository.UpdateAsync(gymClass);
             }
-            return RedirectToAction("Clients", "Account");
+            return RedirectToAction("FindClientByEmail");
         }
 
         [Authorize(Roles = "Client")]
@@ -642,6 +881,16 @@ namespace FitnessHub.Controllers
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not found", Message = "With so many available, how could you not find one?" });
         }
 
+        public IActionResult ClassWaitlistNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class waitlist not found", Message = "No waitlist here for you! Next time try to register early!" });
+        }
+
+        public IActionResult ClassNotFull()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Class not full", Message = "Are you trying to take up two spaces?" });
+        }
+
         public IActionResult MembershipNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Membership not found", Message = "Maybe its time for another one?" });
@@ -656,7 +905,43 @@ namespace FitnessHub.Controllers
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
         }
+
+        public async Task<string> WaitingListAutomation(GymClass gymClass, ClassWaitlist waitlist)
+        {
+            // Get the list of emails sorted by the number before '@'
+            var sortedEmails = waitlist.ClientEmailsOrderedList
+                .OrderBy(email => int.Parse(email.Split('@')[0])) // Extract number before '@' and sort by it
+                .ToList();
+
+            var firstEmail = sortedEmails.FirstOrDefault();
+
+            // Split the string at the first "@" only (2 parts: before and after the first @)
+            string emailToRegister = firstEmail.Split('@', 2)[1];
+
+            // Automatic client in class registration
+
+            Client waitingClient = await _userHelper.GetUserByEmailAsync(emailToRegister) as Client;
+
+            var history2 = new RegisteredInClassesHistory
+            {
+                UserId = waitingClient.Id,
+                ClassId = gymClass.Id,
+                RegistrationDate = DateTime.UtcNow,
+                Canceled = false,
+            };
+
+            if (!gymClass.Clients.Any(c => c.Id == waitingClient.Id))
+            {
+                gymClass.Clients.Add(waitingClient);
+                await _registeredInClassesHistoryRepository.CreateAsync(history2);
+
+                waitlist.ClientEmailsOrderedList.Remove(firstEmail);
+                await _classWaitlistRepository.UpdateAsync(waitlist);
+            }
+
+            await _classRepository.UpdateAsync(gymClass);
+
+            return waitingClient.Email;
+        }
     }
 }
-
-

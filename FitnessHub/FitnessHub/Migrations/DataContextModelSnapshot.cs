@@ -228,6 +228,20 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClassTypes");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.ClassWaitlist", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClientEmailsOrderedList")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClassWaitlists");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.RegisteredInClassesHistory", b =>
                 {
                     b.Property<int>("Id")

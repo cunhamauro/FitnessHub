@@ -4,6 +4,7 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
+using FitnessHub.Models;
 using FitnessHub.Models.API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -27,6 +28,7 @@ namespace FitnessHub.Controllers.API
         private readonly IImageHelper _imageHelper;
         private readonly IConfiguration _configuration;
         private readonly IClientHistoryRepository _clientHistoryRepository;
+        private readonly IWorkoutRepository _workoutRepository;
         private string _baseUrl = string.Empty;
         private readonly AppSettings _appSettings;
         //private readonly string _baseUrl = "https://localhost:44370/";
@@ -36,13 +38,14 @@ namespace FitnessHub.Controllers.API
             IMailHelper mailHelper,
             IImageHelper imageHelper,
             IConfiguration configuration,
-            IClientHistoryRepository clientHistoryRepository,IOptions<AppSettings> appSettings)
+            IClientHistoryRepository clientHistoryRepository,IOptions<AppSettings> appSettings, IWorkoutRepository workoutRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
             _imageHelper = imageHelper;
             _configuration = configuration;
             _clientHistoryRepository = clientHistoryRepository;
+            _workoutRepository = workoutRepository;
             _baseUrl = _configuration["AppSettings:Url"];
             _appSettings = appSettings.Value;
         }
@@ -390,6 +393,46 @@ namespace FitnessHub.Controllers.API
             }
 
             return BadRequest(new { ErrorMessage = "Couldn't reset password." });
+        }
+
+        [HttpGet("[action]")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetWorkouts()
+        {
+            WorkoutModel model = new WorkoutModel();
+
+            var userEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+
+            Client user = await _userHelper.GetUserByEmailAsync(userEmail) as Client;
+            if (user == null)
+            {
+                return NotFound(new { ErrorMessage = "User not found" });
+            }
+
+            var workouts = await _workoutRepository.GetClientWorkoutsIncludeAsync(user);
+
+            foreach (var wk in workouts)
+            {
+                model.InstructorName = wk.Instructor.FullName;
+                model.InstructorEmail = wk.Instructor.Email;
+
+                foreach (var ex in wk.Exercises)
+                {
+                    model.ExerciseList.Add(new ExerciseModel()
+                    {
+                        ExerciseName = ex.Name,
+                        MachineName = ex.Machine.Name,
+                        Time = ex.Time,
+                        Repetitions = ex.Repetitions,
+                        Sets = ex.Sets,
+                        DayOfWeek = ex.DayOfWeek,
+                        Notes = ex.Notes,
+                    });
+                }
+            }
+
+            return Ok(model);
         }
     }
 }

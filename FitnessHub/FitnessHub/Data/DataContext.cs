@@ -43,6 +43,8 @@ namespace FitnessHub.Data
 
         public DbSet<ClassType> ClassTypes { get; set; }
 
+        public DbSet<ClassWaitlist> ClassWaitlists { get; set; }
+
         // Machines
 
         public DbSet<Machine> Machines { get; set; }
@@ -144,6 +146,10 @@ namespace FitnessHub.Data
                        .ValueGeneratedNever();
                        
             builder.Entity<GymHistory>()
+                       .Property(e => e.Id)
+                       .ValueGeneratedNever();
+
+            builder.Entity<ClassWaitlist>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
 

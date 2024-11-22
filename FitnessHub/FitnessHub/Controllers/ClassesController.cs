@@ -27,8 +27,9 @@ namespace FitnessHub.Controllers
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IMailHelper _mailHelper;
+        private readonly IClassWaitlistRepository _classWaitlistRepository;
 
-        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository, IClientHistoryRepository clientHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IMailHelper mailHelper)
+        public ClassesController(IClassRepository classRepository, IUserHelper userHelper, IGymRepository gymRepository, IClassCategoryRepository classCategoryRepository, IClassHistoryRepository classHistoryRepository, IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository, IClassTypeRepository classTypeRepository, IClientHistoryRepository clientHistoryRepository, IStaffHistoryRepository staffHistoryRepository, IMailHelper mailHelper, IClassWaitlistRepository classWaitlistRepository)
         {
             _classRepository = classRepository;
             _userHelper = userHelper;
@@ -40,6 +41,7 @@ namespace FitnessHub.Controllers
             _clientHistoryRepository = clientHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
             _mailHelper = mailHelper;
+            _classWaitlistRepository = classWaitlistRepository;
         }
 
         // Index not in use
@@ -783,6 +785,13 @@ namespace FitnessHub.Controllers
 
             await _classRepository.CreateAsync(gymClass);
 
+            ClassWaitlist classWaitlist = new()
+            {
+                Id = gymClass.Id,
+            };
+
+            await _classWaitlistRepository.CreateAsync(classWaitlist);
+
             ClassHistory record = new ClassHistory()
             {
                 Id = gymClass.Id,
@@ -1024,6 +1033,14 @@ namespace FitnessHub.Controllers
                 string bodyInst = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, was just cancelled!", @$"Check your other <a href=""{classesUrlInst}"">scheduled classes</a>");
 
                 Response responseInst = await _mailHelper.SendEmailAsync(instructor.Email, "Class canceled", bodyInst, null, null);
+
+                var waitlist = await _classWaitlistRepository.GetByIdAsync(gymClass.Id);
+
+                if (waitlist != null)
+                {
+                    await _classWaitlistRepository.DeleteAsync(waitlist);
+                }
+
             }
 
             return RedirectToAction(nameof(GymClasses));

@@ -1,4 +1,6 @@
-﻿using FitnessHub.Data.Entities.History;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
@@ -17,15 +19,17 @@ namespace FitnessHub.Controllers
         private readonly IMembershipDetailsRepository _membershipDetailsRepository;
         private readonly IUserHelper _userHelper;
         private readonly IClientMembershipHistoryRepository _clientMembershipHistoryRepository;
+        private readonly IMailHelper _mailHelper;
         private readonly AppSettings _settings;
 
-        public StripeController(IOptions<StripeSettings> stripeSettings, IMembershipRepository membershipRepository, IMembershipDetailsRepository membershipDetailsRepository, IUserHelper userHelper, IClientMembershipHistoryRepository clientMembershipHistoryRepository, IOptions<AppSettings> settings)
+        public StripeController(IOptions<StripeSettings> stripeSettings, IMembershipRepository membershipRepository, IMembershipDetailsRepository membershipDetailsRepository, IUserHelper userHelper, IClientMembershipHistoryRepository clientMembershipHistoryRepository, IOptions<AppSettings> settings, IMailHelper mailHelper)
         {
             _stripeSettings = stripeSettings.Value;
             _membershipRepository = membershipRepository;
             _membershipDetailsRepository = membershipDetailsRepository;
             _userHelper = userHelper;
             _clientMembershipHistoryRepository = clientMembershipHistoryRepository;
+            _mailHelper = mailHelper;
             _settings = settings.Value;
         }
 
@@ -155,6 +159,10 @@ namespace FitnessHub.Controllers
                             record.DateRenewal = activeMembership.DateRenewal;
 
                             await _clientMembershipHistoryRepository.UpdateAsync(record);
+
+                            string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
+                            string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have signed up for the membership plan <span style=""font-weight: bold"">{membership.Name}</span>. Enjoy it!", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+                            Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership sign up", body, null, null);
                         }
                         else
                         {

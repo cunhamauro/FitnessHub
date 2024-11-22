@@ -6,7 +6,6 @@
 
 <div class="container mb-4 view-text">
     <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available Classes</h2>
-    <hr style="margin-bottom: 2.2rem" />
 </div>
 
 @if (Model.Classes.Any())
@@ -16,7 +15,7 @@
         {
             <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
                 <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@classItem.ClassType</div>
+                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header"><div>@classItem.ClassType</div><div class="text-muted mb-1" style="font-size:1rem">@classItem.Category</div></div>
                     <div class="card-body">
                         <div class="card-text">
                             <p><strong>Instructor:</strong> @classItem.InstructorName</p>
@@ -24,18 +23,38 @@
                             <p><strong>End Date:</strong> @classItem.DateEnd.ToString("g")</p>
                             <p><strong>Location:</strong> @classItem.Location</p>
                         </div>
-                        <form asp-action="Register" method="post" style="text-align: center">
-                            <input type="hidden" name="classId" value="@classItem.Id" />
-                            <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
-                            <button type="submit" class="btn btn-primary me-2"><i class="fa-solid fa-pen me-2"></i>Register</button>
-                            <a asp-action="ClassDetails" asp-route-id="@classItem.Id" class="btn btn-info">
-                                <i class="fa-solid fa-list me-2 "></i>
+                        <div class="d-flex justify-content-center align-items-center">
+
+                            @if (classItem.Full == false && classItem.Registered == false)
+                            {
+                                <form asp-action="Register" method="post" style="margin-right: 10px;">
+                                    <input type="hidden" name="classId" value="@classItem.Id" />
+                                    <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
+                                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen me-2"></i>Register</button>
+                                </form>
+                            }
+
+                            <a asp-action="ClassDetails" asp-route-id="@classItem.Id" class="btn btn-info me-2">
+                                <i class="fa-solid fa-list me-2"></i>
                                 More
                             </a>
-                        </form>
-                    </div>
-                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
-                        <small>@classItem.Category</small>
+
+                            @if (!classItem.IsOnline && classItem.Full == true && classItem.InWaitlist == false)
+                            {
+                                <form asp-action="JoinWaitlist" method="post" style="margin-right: 10px;">
+                                    <input type="hidden" name="classId" value="@classItem.Id" />
+                                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-list-ol me-2"></i>Join Waitlist</button>
+                                </form>
+                            }
+                            else if (!classItem.IsOnline && classItem.Full == true && classItem.InWaitlist == true)
+                            {
+                                <form asp-action="ExitWaitlist" method="post" style="margin-right: 10px;">
+                                    <input type="hidden" name="classId" value="@classItem.Id" />
+                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-x me-2"></i>Leave Waitlist</button>
+                                </form>
+                            }
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,6 +63,7 @@
 }
 else
 {
+    <hr style="margin-bottom: 2.2rem" />
     <div class="container mb-4 view-text">
         <div class="text-light">
             There aren't any Classes currently available. <br />

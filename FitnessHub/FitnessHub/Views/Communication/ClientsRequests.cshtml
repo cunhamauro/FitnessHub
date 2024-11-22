@@ -6,7 +6,6 @@
 
 <div class="container mb-4 view-text">
     <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Clients Requests</h2>
-    <hr style="margin-bottom: 2.2rem" />
 </div>
 
 @if (Model.Any())
@@ -31,10 +30,7 @@
 }
 else
 {
-    <div class="container mb-4 view-text">
-        <div class="text-light">
-            There aren't any requests at the moment.
-        </div>
-    </div>
+    <hr />
+    <h4 class="no-items-list">There are no Machines on this Gym!</h4>
 }
 
