@@ -41,8 +41,8 @@ namespace FitnessHub.Controllers
         public IActionResult MembershipCheckoutSession(string userId, string userEmail, string membershipName, int membershipId, string membershipDescription, decimal amount)
         {
             var currency = "usd";
-            var successUrl = _settings.Url + @"Memberships/MyMembership";
-            var cancelUrl = _settings.Url + @"Memberships/MyMembership";
+            var successUrl = _settings.Url + $@"Memberships/MyMembership/{userId}";
+            var cancelUrl = _settings.Url + $@"Memberships/MyMembership/{userId}";
             StripeConfiguration.ApiKey = _stripeSettings.SecretKey;
 
             //var customerService = new CustomerService();
