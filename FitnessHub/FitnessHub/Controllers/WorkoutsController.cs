@@ -172,6 +172,7 @@ namespace FitnessHub.Controllers
             {
                 Workout workout = new Workout
                 {
+                    DateModified = DateTime.UtcNow,
                     Client = client,
                     Instructor = instructor,
                     Exercises = new List<Exercise>(),
@@ -392,6 +393,8 @@ namespace FitnessHub.Controllers
                 {
                     await _exerciseRepository.DeleteAsync(exercise);
                 }
+
+                workout.DateModified = DateTime.UtcNow;
 
                 await _workoutRepository.UpdateAsync(workout);
 

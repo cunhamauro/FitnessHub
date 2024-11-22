@@ -134,7 +134,7 @@ namespace FitnessHub.Controllers
             }
 
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
-            gymClasses = gymClasses.Where(c => c.Clients.Count < c.Capacity).OrderBy(c => c.DateStart).ToList();
+            gymClasses = gymClasses/*.Where(c => c.Clients.Count < c.Capacity)*/.OrderBy(c => c.DateStart).ToList();
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
             onlineClasses = onlineClasses.OrderBy(c => c.DateStart).ToList();
 

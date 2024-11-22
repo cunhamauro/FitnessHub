@@ -79,6 +79,8 @@ namespace FitnessHub.Data
 
         public DbSet<MembershipHistory> MembershipHistory {  get; set; }
 
+        public DbSet<WeightProgress> WeightProgress { get; set; }
+
         public DbSet<RegisteredInClassesHistory> ClassesRegistrationHistory { get; set; }
 
         public DataContext(DbContextOptions<DataContext> options) : base(options)

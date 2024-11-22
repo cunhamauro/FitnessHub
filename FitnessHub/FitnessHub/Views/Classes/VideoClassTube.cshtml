@@ -1,0 +1,90 @@
+﻿@using FitnessHub.Helpers
+@model IEnumerable<FitnessHub.Data.Entities.GymClasses.VideoClass>
+
+@inject IConverterHelper converterHelper
+
+@{
+    ViewData["Title"] = "FitnessTube";
+    // converterHelper.YoutubeUrlToEmbed();
+}
+
+<div class="container" style="padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh;">
+    <div class="row align-items-center">
+        <!-- Left Column: Dropdown and Submit Button -->
+        <div class="col-md-4 d-flex align-items-center" style="padding: 10px;">
+            <!-- Form for dropdown and button -->
+            <form asp-action="VideoClassTube" style="display: flex; align-items: center; gap: 20px;">
+                <!-- Dropdown -->
+                <select name="id" id="classesFilter" class="form-control">
+                    @if (ViewBag.SelectedId == "0")
+                    {
+                        <option selected value="0">All Categories</option>
+                    }
+                    else
+                    {
+                        <option value="0">All Categories</option>
+                    }
+                    @foreach (var item in ViewBag.ClassCategories)
+                    {
+                        @if (item.Value == ViewBag.SelectedId)
+                        {
+                            <option selected value="@item.Value">@item.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Value">@item.Text</option>
+                        }
+                    }
+                </select>
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Filter
+                </button>
+            </form>
+        </div>
+        <!-- Center Column: Title -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <h2 class="view-text" style="font-weight: bolder; margin: 0; text-align: center;">
+                FitnessTube
+            </h2>
+        </div>
+        <!-- Right Column: Empty for layout balance -->
+        <div class="col-md-4"></div>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="container">
+        <div class="row row-cols-1 row-cols-md-4 g-5 justify-content-center">
+            @foreach (var videoClass in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@videoClass.ClassType.Name</div>
+                        <!-- Video Thumbnail -->
+                        <div class="ratio ratio-16x9">
+                            <iframe class="embed-responsive-item" src="@converterHelper.YoutubeUrlToEmbed(videoClass.VideoClassUrl)"
+                            title="@videoClass.Title" frameborder="0" allowfullscreen></iframe>
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body" style="padding-bottom: 0">
+                            <div></div>
+                            <h5 style="font-weight: bold" class="card-title">@videoClass.Title</h5>
+                            <p class="card-text">@videoClass.Description</p>
+                        </div>
+                        <!-- Link to Open the Video -->
+                        <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
+                            <small><strong>@videoClass.Category.Name</strong></small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <hr />
+    <h4 class="no-items-list">No video classes were found!</h4>
+}

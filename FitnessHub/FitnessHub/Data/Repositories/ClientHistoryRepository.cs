@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities.History;
+﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.History;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitnessHub.Data.Repositories
@@ -43,5 +44,7 @@ namespace FitnessHub.Data.Repositories
         {
             return await _context.SaveChangesAsync() > 0;
         }
+
+
     }
 }

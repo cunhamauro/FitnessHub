@@ -64,6 +64,7 @@
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="Available">Classes</a>
                                         </li>
+                                        
                                     </ul>
                                 </li>
                             }
@@ -77,6 +78,28 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="VideoClassTube"><span>FitnessTube</span></a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span>Tools</span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateImc">IMC</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateWaterRequirements">Water Intake</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="DailyCaloriesInTake">Daily Calories InTake</a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="RecordWeightIndex">Progress</a>
+                                        </li>
+                                    </ul>
                                 </li>
 
                                 @if (await memberShipDetails.ClientHasMemberShip(this.User))
@@ -97,6 +120,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="VideoClassTube"><span>FitnessTube</span></a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -399,8 +425,9 @@
 
                 <!-- Right: Social Media Links -->
                 <div class="col-md-4 d-flex justify-content-center justify-content-md-end" style="gap: 5%;">
+                    <a class="me-2" href="https://g.page/r/CZK7T2jZ0PD7EBM/review" target="_blank"><img style="max-height: 40px; max-width: 70px" src="~/img/googleBR.png" /></a>
                     <a class="socials" target="_blank" href="https://www.facebook.com/fitnesshub.network/"><i class="fa-brands fa-facebook"></i></a>
-                    <a class="socials" target="_blank" href="https://www.instagram.com/fitnesshub.network/"><i class="fa-brands fa-instagram"></i></a>
+                    <a class="socials" target="_blank" href="https://www.instagram.com/fitnesshub.network/"><i style="font-size: 1.65em" class="fa-brands fa-instagram"></i></a>
                     <a class="socials" target="_blank" href="https://x.com/FitnessHub_87"><i class="fa-brands fa-twitter"></i></a>
                 </div>
 
