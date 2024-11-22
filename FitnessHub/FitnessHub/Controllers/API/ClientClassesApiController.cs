@@ -49,8 +49,11 @@ namespace FitnessHub.Controllers.API
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> RegisterInClass(int classId, bool isOnline)
+        public async Task<IActionResult> RegisterInClass([FromBody] RegisterInClassModel register)
         {
+            var classId = register.ClassId;
+            var isOnline = register.IsOnline;
+
             var clientEmail = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
             var client = await _userHelper.GetUserByEmailAsync(clientEmail) as Client;
