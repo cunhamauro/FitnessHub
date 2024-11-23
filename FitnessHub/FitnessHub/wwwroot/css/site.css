@@ -532,3 +532,22 @@ details .row {
     object-position: center 30%;
     display: block;
 }
+
+/* Ajuste do tamanho do carrossel */
+#mainCarousel {
+    max-height: 60vh; /* Altura máxima para o carrossel */
+    overflow: hidden;
+}
+
+.carousel-image {
+    height: 60vh; /* Define a altura fixa */
+    object-fit: cover; /* Ajusta a imagem para cobrir o espaço sem distorcer */
+}
+
+.recommendedgym-image {
+    width: 100%; /* Garante que a largura se ajuste ao contêiner */
+    height: 200px; /* Define uma altura fixa para todas as imagens */
+    object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espaço */
+    border-top-left-radius: 0.25rem; /* Mantém o design das bordas do card */
+    border-top-right-radius: 0.25rem;
+}

@@ -1,0 +1,355 @@
+﻿@using Syncfusion.EJ2.Inputs
+@{
+    ViewData["Title"] = "ClientHistory";
+
+    List<ClientMembershipHistoryViewModel> memberships = new();
+    List<MyRequestInstructorHistoryViewModel> requests = new();
+    List<RegisteredInClassesHistoryViewModel> classes = new();
+
+    memberships = ViewBag.Membership;
+    requests = ViewBag.Requests;
+    classes = ViewBag.Classes;
+}
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Classes</h2>
+
+@if (!classes.Any())
+{
+    <hr />
+    <h4 class="no-items-list">You have no Class History!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card cardTable">
+            <table class="table table-striped" id="dataTable1">
+                <thead>
+                    <tr>
+                        <th>
+                            Class
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Type
+                        </th>
+                        <th>
+                            Gym
+                        </th>
+                        <th>
+                            Instructor
+                        </th>
+                        <th>
+                            Sign Up
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            By
+                        </th>
+                        <th>
+                            Review
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in classes)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TypeName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CategoryName)
+                            </td>
+                            <td>
+                                @if (item.SubClass == "OnlineClass")
+                                {
+                                    <span>Online</span>
+                                }
+                                else if (item.SubClass == "GymClass")
+                                {
+                                    <span>Gym</span>
+                                }
+                                else
+                                {
+                                    <span>Video</span>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.GymName)
+                            </td>
+                            <td>
+                                @if (item.InstructorEmail != null && item.InstructorEmail.Length > 2)
+                                {
+                                    @item.InstructorFullName <br />
+                                    <span>(@item.InstructorEmail)</span>
+                                }
+                                else
+                                {
+                                    <span>N/A</span>
+                                }
+                            </td>
+                            <td>
+                                @item.RegistrationDate.ToShortDateString()
+                            </td>
+                            <td>
+                                @item.StartDate <br />
+                                @item.EndDate
+                            </td>
+                            <td>
+                                @if (item.EmployeeEmail != null && item.EmployeeEmail.Length > 2)
+                                {
+                                    @item.EmployeeFullName <br />
+                                    <span>(@item.EmployeeEmail)</span>
+                                }
+                                else
+                                {
+                                    <span>You</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Reviewed == false && ViewBag.TypeAvailable == false)
+                                {
+                                    <span>Class no longer available</span>
+                                }
+                                else if (item.Reviewed == true)
+                                {
+                                    @* <span>@(item.Rating % 1 == 0 ? $"{item.Rating:0}" : $"{item.Rating:0.##}")</span>@Html.Raw("/5")
+
+                        <i class="fa-solid fa-star ms-1"></i> *@
+                                    <div class="rating-content">
+                                        <ejs-rating id="rating_@item.Id" value="@(double)item.Rating" readOnly=true></ejs-rating> <br />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form asp-controller="ClientClasses" asp-action="ReviewClassAndInstructor" method="post">
+                                        <input type="hidden" value="@item.Id" name="histId" />
+                                        <ejs-rating id="rating_@item.Id" value="0" change="onRatingChange" name="rating"></ejs-rating>
+                                        <input type="hidden" id="ratingValue_@item.Id" name="rating" />
+                                        @* <input style="width: 35%" type="number" name="rating" min="0" max="5" required />/5<i class="fa-solid fa-star ms-1"></i> *@
+                                        <br />
+                                        <button type="submit" class="btn btn-primary mt-1">
+                                            <i class="fa-solid fa-star me-2" style="color: black !important"></i>Submit
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="row">
+    @* <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Requests</h2> *@
+
+    @if (!requests.Any() && !memberships.Any())
+    {
+        <div class="col-12">
+            <hr />
+            <h4 class="no-items-list text-center">There are no Requests or Membership History!</h4>
+        </div>
+    }
+    else
+    {
+        <div class="col-md-6">
+            <h3 class="view-text text-center mb-4" style="color:#ff6201">Requests</h3>
+            @if (!requests.Any())
+            {
+                <hr />
+                <h4 class="no-items-list">There are no Requests on the history!</h4>
+            }
+            else
+            {
+                <div class="card-container align-items-center">
+                    <div class="card cardTable">
+                        <table class="table table-striped" id="dataTable2">
+                            <thead>
+                                <tr>
+                                    <th>Gym</th>
+                                    <th>Notes</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in requests)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Gym)</td>
+                                        <td>
+                                            <button type="button" 
+                                                    class="btn btn-info video-details-btn"
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#requestNotesModal"
+                                                    data-description="@item.Notes">
+                                                <i class="fa-solid fa-list me-2"></i>Expand
+                                            </button>
+                                        </td>
+                                        <td>@Html.DisplayFor(modelItem => item.RequestDate)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="view-text text-center mb-4" style="color:#ff6201">Membership</h3>
+            @if (!memberships.Any())
+            {
+                <hr />
+                <h4 class="no-items-list">There is no Membership History!</h4>
+            }
+            else
+            {
+                <div class="card-container align-items-center">
+                    <div class="card cardTable">
+                        <table class="table table-striped" id="dataTable3">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Price</th>
+                                    <th>Sign Up</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in memberships)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td>@item.Price.ToString("C2")</td>
+                                        <td>@item.SignUpDate.ToShortDateString()</td>
+                                        <td>
+                                            @if (item.Status == false)
+                                            {
+                                                <span>Canceled</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Active</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+
+<div class="modal fade" id="requestNotesModal" tabindex="-1" aria-labelledby="requestNotesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestNotesModalLabel">Notes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="requestNotesDescription"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dataTable1').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1, 0] }
+                ]
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dataTable2').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1, 0] }
+                ]
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dataTable3').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1, 0] }
+                ]
+            });
+        });
+    </script>
+
+    <script>
+        function onRatingChange(args) {
+            console.log("Rating ID:", args.element.id);
+            console.log("Selected Value:", args.value);
+            const ratingValueInput = document.getElementById(`ratingValue_${args.element.id.split('_')[1]}`);
+            if (ratingValueInput) {
+                ratingValueInput.value = args.value; // Set the selected rating value
+                console.log(`Rating value set to: ${args.value}`); // Debugging
+            } else {
+                console.error("Hidden input field not found for rating!");
+            }
+        }
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('requestNotesModal');
+            const modalDescription = document.getElementById('requestNotesDescription');
+
+            // Add event listener for all buttons with the "video-details-btn" class
+            document.querySelectorAll('.video-details-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const description = this.getAttribute('data-description');
+
+                    // Set the modal content
+                    modalDescription.textContent = description || 'No video description available';
+                });
+            });
+        });
+    </script>
+}

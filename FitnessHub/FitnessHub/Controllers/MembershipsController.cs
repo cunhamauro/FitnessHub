@@ -83,26 +83,26 @@ namespace FitnessHub.Controllers
             return View(models);
         }
 
-        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Available()
-        {
-            Client client = new();
-            try
-            {
-                client = await _userHelper.GetUserAsync(this.User) as Client;
-            }
-            catch (Exception)
-            {
-            }
+        //[Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> Available()
+        //{
+        //    Client client = new();
+        //    try
+        //    {
+        //        client = await _userHelper.GetUserAsync(this.User) as Client;
+        //    }
+        //    catch (Exception)
+        //    {
+        //    }
 
-            if (client != null && await _userHelper.IsUserInRoleAsync(client, "Client") && client.MembershipDetailsId == null)
-            {
-                ViewBag.ShowSignUp = true;
-            }
+        //    if (client != null && await _userHelper.IsUserInRoleAsync(client, "Client") && client.MembershipDetailsId == null)
+        //    {
+        //        ViewBag.ShowSignUp = true;
+        //    }
 
-            return View(_membershipRepository.GetAll().Where(m => m.OnOffer == true));
-        }
+        //    return View(_membershipRepository.GetAll().Where(m => m.OnOffer == true));
+        //}
 
         [HttpPost]
         public async Task<IActionResult> ChangeStatus(int id)
@@ -389,7 +389,7 @@ namespace FitnessHub.Controllers
         }
 
         [Authorize(Roles = "Client")]
-        public async Task<IActionResult> SignUp()
+        public async Task<IActionResult> SignUp(int id)
         {
             List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
 
@@ -419,6 +419,7 @@ namespace FitnessHub.Controllers
             MembershipViewModel model = new();
 
             model.SelectMembership = selectMembership;
+            model.MembershipId = id;
 
             return View(model);
         }

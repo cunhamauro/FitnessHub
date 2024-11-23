@@ -23,8 +23,9 @@
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-     <link rel="stylesheet" href="~/FitnessHub.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/FitnessHub.styles.css" asp-append-version="true" />
     <!-- Syncfusion ASP.NET Core controls styles -->
     <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/fluent.css" />
     <!-- Syncfusion ASP.NET Core controls scripts -->
@@ -353,27 +354,33 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="changeUser">Update Account</a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
-                                    </li>
+                                    @if (await memberShipDetails.ClientHasMemberShip(this.User))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
+                                        </li>
+                                    }
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClasses">My Classes</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts">My Workouts</a>
                                     </li>
-                                    <li>
+                                    @* <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
-                                    </li>
+                                    </li> *@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="RequestInstructor">Request Instructor</a>
                                     </li>
                                     <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ClientHistory">History</a>
+                                    </li>
+                                    @* <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembershipHistory">My Membership History</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
-                                    </li>
+                                    </li> *@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                                     </li>

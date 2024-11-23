@@ -27,25 +27,37 @@ namespace FitnessHub.Data.Repositories
                 return "N/A";
             }
 
-            var classType = classRegistrations.GroupBy(c => c.ClassId)
+            // Associar cada registro em ClassesRegistrationHistory ao seu ClassType no ClassHistory
+            var classHistories = await _context.ClassHistory
+                .Where(ch => classRegistrations.Select(cr => cr.ClassId).Contains(ch.Id))
+                .ToListAsync();
+
+            // Criar uma lista que reflita cada ocorrência no ClassesRegistrationHistory
+            var classTypes = classRegistrations
+                .Join(classHistories,
+                    cr => cr.ClassId,  // Chave em ClassesRegistrationHistory
+                    ch => ch.Id,       // Chave em ClassHistory
+                    (cr, ch) => ch.ClassType) // Selecionar ClassType correspondente
+                .ToList();
+
+            // Agrupar por ClassType e contar as ocorrências
+            var groupedClasses = classTypes
+                .GroupBy(ct => ct)
                 .Select(group => new
                 {
-                    ClassId = group.Key,
-                    ClassCount = group.Count()
+                    ClassType = group.Key,
+                    Count = group.Count()
                 })
                 .ToList();
 
-            var maxClassTypeCount = classType.Max(g => g.ClassCount);
+            // Determinar o maior número de repetições
+            var maxCount = groupedClasses.Max(g => g.Count);
 
-            var mostPopularClassIds = classType
-                                 .Where(g => g.ClassCount == maxClassTypeCount)
-                                 .Select(g => g.ClassId)
-                                 .ToList();
-
-            var mostPopularClassesType = await _context.ClassHistory
-                .Where(c => mostPopularClassIds.Contains(c.Id))
-                .Select(c => c.ClassType)
-                .ToListAsync();
+            // Obter o(s) tipo(s) de classe(s) mais popular(es)
+            var mostPopularClassesType = groupedClasses
+                .Where(g => g.Count == maxCount)
+                .Select(g => g.ClassType)
+                .ToList();
 
             if (mostPopularClassesType.Any())
             {

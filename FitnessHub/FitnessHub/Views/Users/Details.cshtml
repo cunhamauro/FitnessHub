@@ -57,7 +57,7 @@
                         </dd>
                     </dl>
 
-                    @if(this.User.Identity.IsAuthenticated && !this.User.IsInRole("Instructor"))
+                    @if (this.User.Identity.IsAuthenticated && (this.User.IsInRole("MasterAdmin") || this.User.IsInRole("Admin")))
                     {
                         <div class="form-group">
                             <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
