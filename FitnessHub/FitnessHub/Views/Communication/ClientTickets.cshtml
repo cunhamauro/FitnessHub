@@ -1,0 +1,138 @@
+﻿@model IEnumerable<FitnessHub.Data.Entities.Communication.Ticket>
+
+@{
+    ViewData["Title"] = "Open Tickets";
+}
+
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh;">Open Tickets</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <hr />
+    <h4 class="no-items-list">There are no Open Tickets!</h4>
+}
+else
+{
+    <div class="card-container">
+        <div class="card cardTable">
+            <table id="forumTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            Client
+                        </th>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Claimed
+                        </th>
+                        <th>
+                            Status
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.Client.Avatar" alt="Author Image" class="rounded-circle" style="width: 40px; height: 40px;" />
+                            </td>
+                            <td>
+                                @item.Client.FullName
+                            </td>
+                            <td>
+                                @item.DateOpened.ToString("dd-MM-yyyy HH:mm")
+                            </td>
+                            <td>
+                                @item.Title
+                            </td>
+                            <td>
+                                @if (item.Picked)
+                                {
+                                    @item.DatePicked
+                                }
+                                else
+                                {
+                                    <span>Awaiting</span>
+                                }
+                            </td>
+                            <td>
+                                @if (item.Open)
+                                {
+                                    <span style="color: green">Open</span>
+                                }
+                                else
+                                {
+                                    <span style="color: red">Closed</span>
+                                }
+                            </td>
+                            <td>
+                                <div style="display: flex">
+                                    <a asp-action="OpenTicket" asp-route-id="@item.Id" class="btn btn-primary me-2"><i class="fa-solid fa-eye me-2"></i>Open</a>
+                                </div>
+                                @if (item.Open == true)
+                                {
+                                    <form class="mt-2" asp-action="CloseTicket" asp-route-id="@item.Id" method="post">
+                                        <button id="close" type="submit" class="btn btn-danger">
+                                            <i class="fa-solid fa-xmark me-2"></i>Close Ticket
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#forumTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1] }
+                ]
+            });
+        });
+    </script>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('close').addEventListener('click', function (event) {
+            // Prevenir o envio imediato do formulário
+            event.preventDefault();
+
+            var submitButton = event.target;
+
+            // Desabilitar o botão e mudar o texto
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner spin-icon me-2"></i>Closing';
+
+            // Submeter o formulário após a modificação
+            submitButton.closest('form').submit();
+        });
+    });
+</script>

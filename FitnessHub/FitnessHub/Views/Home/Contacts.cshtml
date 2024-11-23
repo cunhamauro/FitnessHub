@@ -14,7 +14,7 @@
 
         <div class="row view-form-style mt-4 mb-2">
             <div class="col-md-6 offset-md-3">
-                <form asp-action="Contacts" id="form">
+                <form asp-action="Contacts">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                     <div class="form-group">
@@ -42,7 +42,7 @@
                     </div>
 
                     <div class="form-group">
-                        <button id="button" type="submit" class="btn btn-primary me-4">
+                        <button id="process" type="submit" class="btn btn-primary me-4">
                             <i class="fa-solid fa-envelope me-2"></i>Send
                         </button>
                     </div>
@@ -72,12 +72,21 @@
 
 </div>
 
+
 <script>
-    document.getElementById('form').addEventListener('submit', function (event) {
-        var button = document.getElementById("button");
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('process').addEventListener('click', function (event) {
+            // Prevenir o envio imediato do formulário
+            event.preventDefault();
 
-        button.disabled = true;
+            var submitButton = event.target;
 
-        button.innerHTML = "<i class='fa-solid fa-envelope me-2'></i>Sending";
+            // Desabilitar o botão e mudar o texto
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner spin-icon me-2"></i>Sending';
+
+            // Submeter o formulário após a modificação
+            submitButton.closest('form').submit();
+        });
     });
 </script>

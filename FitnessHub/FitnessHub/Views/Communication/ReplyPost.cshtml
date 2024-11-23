@@ -1,0 +1,38 @@
+﻿@model FitnessHub.Data.Entities.Communication.ForumReply
+
+@{
+    ViewData["Title"] = "Reply";
+}
+
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Reply</h2>
+<hr />
+
+<div class="row view-form-style">
+    <div class="col-md-6 offset-md-3">
+        <form asp-controller="Forum" asp-action="ReplyThread" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="NavigatePost"/>
+
+            <div class="form-group">
+                <label asp-for="Message" class="control-label">Message</label>
+                <textarea asp-for="Message" class="form-control" rows="5" placeholder="Message"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label"></label>
+                <input asp-for="ImageFile" class="form-control" type="file" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary me-4">
+                    <i class="fa-solid fa-check me-2"></i>Reply
+                </button>
+                <a asp-action="OpenPost" asp-route-id="@Model.NavigatePost" class="btn btn-secondary"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+            </div>
+
+        </form>
+    </div>
+</div>

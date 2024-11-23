@@ -31,6 +31,24 @@
                         <dd class="col-sm-12">
                             @Html.DisplayFor(model => model.Description)
                         </dd>
+                        <dd>
+                            <div class="rating-content">
+                                @{
+                                    if (Model.NumReviews == 0)
+                                    {
+                                        <ejs-rating id="rating_@Model.Id" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("N/A")
+                                        <i class="fa-solid fa-star ms-2"></i>
+                                    }
+                                }
+                            </div>
+                            <div class="text-nowrap">
+                                (@Model.NumReviews reviews)
+                            </div>
+                        </dd>
                     </dl>
 
                     <div class="form-group">
@@ -68,10 +86,13 @@
                 Do you really want to delete this class type?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="deleteForm" asp-action="Delete" method="post" style="display:inline;">
                     <input type="hidden" id="classId" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-trash me-2"></i>
+                        Confirm Delete
+                    </button>
                 </form>
             </div>
         </div>

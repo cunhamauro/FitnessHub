@@ -20,8 +20,8 @@ namespace FitnessHub.Controllers
         private readonly IConfiguration _configuration;
 
         public HomeController(
-            ILogger<HomeController> logger, 
-            IUserHelper userHelper, 
+            ILogger<HomeController> logger,
+            IUserHelper userHelper,
             IMembershipDetailsRepository membershipDetailsRepository,
             IGymRepository gymRepository,
             IClassRepository classRepository,
@@ -48,7 +48,7 @@ namespace FitnessHub.Controllers
                 ClientsWithMembershipCount = await _userHelper.ClientsWithMembershipCountAsync(),
                 AnualMembershipsRevenue = await _membershipDetailsRepository.GetAnualMembershipsRevenueAsync(),
                 GymWithMostMemberShips = await _userHelper.GymWithMostMembershipsAsync(),
-                GymsCount = _gymRepository.GetAll().Count(), 
+                GymsCount = _gymRepository.GetAll().Count(),
                 EmployeesCount = (await _userHelper.GetUsersByTypeAsync<Employee>()).Count,
                 InstructorsCount = (await _userHelper.GetUsersByTypeAsync<Instructor>()).Count,
                 CountriesCount = await _gymRepository.GetCountriesCountAsync(),

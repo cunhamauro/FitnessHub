@@ -233,6 +233,21 @@ namespace FitnessHub.Controllers
                 }
             }
 
+            List<WeightLogModel> logs = new();
+
+            foreach (var item in progress)
+            {
+                logs.Add(new WeightLogModel()
+                {
+                    Date = item.Date,
+                    Weight = item.Weight,
+                });
+            }
+
+            logs = logs.OrderBy(l => l.Date).ToList();
+
+            ViewBag.WeightLog = logs;
+
             return View(progress);
             
         }

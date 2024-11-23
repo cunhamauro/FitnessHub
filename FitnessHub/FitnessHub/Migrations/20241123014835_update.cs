@@ -413,6 +413,30 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ForumThreads",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ForumThreads", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ForumThreads_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ClassTypes",
                 columns: table => new
                 {
@@ -547,6 +571,35 @@ namespace FitnessHub.Migrations
                         name: "FK_MembershipDetails_Memberships_MembershipId",
                         column: x => x.MembershipId,
                         principalTable: "Memberships",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ForumReplies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NavigatePost = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ForumThreadId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ForumReplies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ForumReplies_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ForumReplies_ForumThreads_ForumThreadId",
+                        column: x => x.ForumThreadId,
+                        principalTable: "ForumThreads",
                         principalColumn: "Id");
                 });
 
@@ -753,6 +806,36 @@ namespace FitnessHub.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tickets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClientId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    DateOpened = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Picked = table.Column<bool>(type: "bit", nullable: false),
+                    DatePicked = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StaffId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Open = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tickets", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tickets_AspNetUsers_StaffId",
+                        column: x => x.StaffId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Tickets_Clients_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "Clients",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Workouts",
                 columns: table => new
                 {
@@ -823,6 +906,33 @@ namespace FitnessHub.Migrations
                         principalTable: "OnlineClasses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserRole = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TicketId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TicketMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TicketMessages_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TicketMessages_Tickets_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Tickets",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -955,6 +1065,21 @@ namespace FitnessHub.Migrations
                 column: "WorkoutId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ForumReplies_ForumThreadId",
+                table: "ForumReplies",
+                column: "ForumThreadId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ForumReplies_UserId",
+                table: "ForumReplies",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ForumThreads_UserId",
+                table: "ForumThreads",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_GymClasses_GymId",
                 table: "GymClasses",
                 column: "GymId");
@@ -998,6 +1123,26 @@ namespace FitnessHub.Migrations
                 name: "IX_RequestsIntructor_ClientId",
                 table: "RequestsIntructor",
                 column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMessages_TicketId",
+                table: "TicketMessages",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketMessages_UserId",
+                table: "TicketMessages",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_ClientId",
+                table: "Tickets",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tickets_StaffId",
+                table: "Tickets",
+                column: "StaffId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_ClientId",
@@ -1065,6 +1210,9 @@ namespace FitnessHub.Migrations
                 name: "Exercises");
 
             migrationBuilder.DropTable(
+                name: "ForumReplies");
+
+            migrationBuilder.DropTable(
                 name: "GymsHistory");
 
             migrationBuilder.DropTable(
@@ -1081,6 +1229,9 @@ namespace FitnessHub.Migrations
 
             migrationBuilder.DropTable(
                 name: "StaffHistory");
+
+            migrationBuilder.DropTable(
+                name: "TicketMessages");
 
             migrationBuilder.DropTable(
                 name: "VideoClasses");
@@ -1101,13 +1252,16 @@ namespace FitnessHub.Migrations
                 name: "Workouts");
 
             migrationBuilder.DropTable(
+                name: "ForumThreads");
+
+            migrationBuilder.DropTable(
                 name: "Machines");
 
             migrationBuilder.DropTable(
-                name: "Classes");
+                name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "Clients");
+                name: "Classes");
 
             migrationBuilder.DropTable(
                 name: "Instructors");
@@ -1116,16 +1270,19 @@ namespace FitnessHub.Migrations
                 name: "MachineCategories");
 
             migrationBuilder.DropTable(
-                name: "ClassTypes");
+                name: "Clients");
 
             migrationBuilder.DropTable(
-                name: "MembershipDetails");
+                name: "ClassTypes");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Gyms");
+
+            migrationBuilder.DropTable(
+                name: "MembershipDetails");
 
             migrationBuilder.DropTable(
                 name: "ClassCategories");
