@@ -206,14 +206,17 @@ namespace FitnessHub.Controllers
 
                     if (response.IsSuccess)
                     {
-                        return RedirectToAction(nameof(Login));
+                        ViewBag.EmailSent = true;
+                        return View(model);
                     }
 
                     ModelState.AddModelError(string.Empty, "There was an error sending the email to confirm the account. Try again later!");
+                    return View(model);
                 }
                 else
                 {
                     ModelState.AddModelError("Email", "This email is already registered");
+                    return View(model);
                 }
             }
 
@@ -470,7 +473,10 @@ namespace FitnessHub.Controllers
 
                 if (response.IsSuccess)
                 {
-                    ViewBag.Message = "The instructions to recover your password have been sent to your email";
+                    //ViewBag.Message = "The instructions to recover your password have been sent to your email";
+
+                    ViewBag.EmailSent = true;
+                    return View(model);
                 }
 
                 return View();
@@ -507,8 +513,6 @@ namespace FitnessHub.Controllers
                     {
                         await _userHelper.LogoutAsync();
                     }
-
-                    return RedirectToAction(nameof(Login));
                 }
 
                 ModelState.AddModelError("", "Error while resetting the password");

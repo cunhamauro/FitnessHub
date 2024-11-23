@@ -101,13 +101,13 @@
                                         </li>
                                     </ul>
                                 </li>
-@* 
-                                @if (await memberShipDetails.ClientHasMemberShip(this.User))
-                                { *@
+ 
+                                @* @if (await memberShipDetails.ClientHasMemberShip(this.User))
+                                {  *@
                                     <li class="nav-item">
                                         <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
                                     </li>
-                                @* } *@
+                                @* } *@ 
                             }
                         }
                         else

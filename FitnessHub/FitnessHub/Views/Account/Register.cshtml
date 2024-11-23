@@ -5,6 +5,8 @@
     var maxDate = DateTime.Now;
 }
 
+
+
 <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Register</h2>
 <hr />
 
@@ -82,6 +84,31 @@
     </div>
 </div>
 
+@if (ViewBag.EmailSent == true)
+{
+    <div id="emailSentModal" class="modal fade text-center" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Account!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <span>An email has been sent. Please check your inbox to confirm your account.</span><br />
+                    <div>
+                        <i style="color:green; font-size:3em;" class="fa-solid fa-envelope-circle-check mt-2"></i>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a asp-action="Login" class="btn btn-primary">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>Go to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -100,14 +127,26 @@
         });
     </script>
 
-    <script>
-        function showValueOnly(selectElement) {
-            // Get the selected option
-            const selectedOption = selectElement.options[selectElement.selectedIndex];
 
-            // Set the displayed text to the value of the selected option
-            selectElement.setAttribute("data-original-text", selectedOption.text);
-            selectedOption.text = selectedOption.value;
-        }
+    <script>
+        window.onload = function () {
+            var emailSent = '@ViewBag.EmailSent';
+
+            if (emailSent === "True") {
+                var emailSentModal = new bootstrap.Modal(document.getElementById('emailSentModal'));
+                emailSentModal.show();
+            }
+        };
+    </script>
+
+        <script>
+            function showValueOnly(selectElement) {
+                // Get the selected option
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+                // Set the displayed text to the value of the selected option
+                selectElement.setAttribute("data-original-text", selectedOption.text);
+                selectedOption.text = selectedOption.value;
+            }
     </script>
 }

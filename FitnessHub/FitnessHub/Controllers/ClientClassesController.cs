@@ -243,6 +243,23 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
+            if (client.MembershipDetailsId == null)
+            {
+                return MembershipNotFound();
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (memberShipDetailClient == null)
+            {
+                return MembershipNotFound();
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return MembershipNotFound();
+            }
+
             model.Categories = _categoryRepository.GetAll()
                 .Select(c => new SelectListItem
                 {
