@@ -405,6 +405,7 @@ namespace FitnessHub.Controllers.API
             {
                 model.InstructorName = wk.Instructor.FullName;
                 model.InstructorEmail = wk.Instructor.Email;
+                model.Date = wk.DateModified;
 
                 foreach (var ex in wk.Exercises)
                 {

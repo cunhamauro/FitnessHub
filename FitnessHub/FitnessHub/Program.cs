@@ -128,6 +128,10 @@ namespace FitnessHub
             builder.Services.AddScoped<IStaffHistoryRepository, StaffHistoryRepository>();
             builder.Services.AddScoped<IUserRecordWeight, UserRecordWeight>();
             builder.Services.AddScoped<IClassWaitlistRepository, ClassWaitlistRepository>();
+            builder.Services.AddScoped<IForumRepository, ForumRepository>();
+            builder.Services.AddScoped<IForumReplyRepository, ForumReplyRepository>();
+            builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+            builder.Services.AddScoped<ITicketMessageRepository, TicketMessageRepository>();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -144,6 +148,9 @@ namespace FitnessHub
             builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("StripeSettings"));
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
+            //// Add SignalR
+            //builder.Services.AddSignalR();
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -151,6 +158,9 @@ namespace FitnessHub
                 var seeder = scope.ServiceProvider.GetRequiredService<SeedDb>();
                 seeder.SeedAsync().Wait();
             }
+
+            //// Map SignalR hub
+            //app.MapHub<TicketHub>("/ticketHub");
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

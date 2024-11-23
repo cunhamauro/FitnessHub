@@ -83,10 +83,13 @@
                 Do you really want to delete this class type?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="deleteForm" asp-action="Delete" method="post" style="display:inline;">
                     <input type="hidden" id="classId" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-trash me-2"></i>
+                        Confirm Delete
+                    </button>
                 </form>
             </div>
         </div>

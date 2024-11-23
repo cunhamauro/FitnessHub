@@ -17,17 +17,26 @@
                             @Model.ClassType.Name
                         </dd>
                         <dd class="col-sm-12">
-                            @if (Model.ClassType.NumReviews < 1)
-                            {
-                                <span>N/A</span>
-
-                                <i class="fa-solid fa-star"></i>
-                            }
-                            else
-                            {
-                                <span>@(Model.ClassType.Rating % 1 == 0 ? $"{Model.ClassType.Rating:0}" : $"{Model.ClassType.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
-                            }
-                            (@Model.ClassType.NumReviews)
+                            <small>
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <div class="rating-content">
+                                        @{
+                                            if (Model.ClassType.NumReviews == 0)
+                                            {
+                                                <ejs-rating id="rating_@Model.ClassType.Id" value="(double)@Model.ClassType.Rating" readOnly="true"></ejs-rating>
+                                            }
+                                            else
+                                            {
+                                                @Html.Raw("N/A")
+                                                <i class="fa-solid fa-star ms-2"></i>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="text-nowrap">
+                                        (@Model.ClassType.NumReviews reviews)
+                                    </div>
+                                </div>
+                            </small>
                         </dd>
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Category)
@@ -43,17 +52,22 @@
 
                             <br />
                             <div style="font-size: 0.8em !important">
-                            @if (Model.Instructor.NumReviews < 1)
-                            {
-                                <span>N/A</span>
-
-                                <i class="fa-solid fa-star"></i>
-                            }
-                            else
-                            {
-                                    <span>@(Model.Instructor.Rating % 1 == 0 ? $"{Model.Instructor.Rating:0}" : $"{Model.Instructor.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
-                            }
-                            (@Model.Instructor.NumReviews)
+                                <div class="rating-content">
+                                    @{
+                                        if (Model.Instructor.NumReviews == 0)
+                                        {
+                                            <ejs-rating id="rating_@Model.Instructor.Id" value="(double)@Model.Instructor.Rating" readOnly="true"></ejs-rating>
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("N/A")
+                                            <i class="fa-solid fa-star ms-2"></i>
+                                        }
+                                    }
+                                </div>
+                                <div class="text-nowrap">
+                                    (@Model.Instructor.NumReviews reviews)
+                                </div>
                             </div>
 
                         </dd>
@@ -141,10 +155,13 @@
                 Do you really want to delete this gym class?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="deleteForm" asp-action="DeleteGymClass" method="post" style="display:inline;">
                     <input type="hidden" id="classId" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger">Confirm Delete</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-trash me-2"></i>
+                        Confirm Delete
+                    </button>
                 </form>
             </div>
         </div>

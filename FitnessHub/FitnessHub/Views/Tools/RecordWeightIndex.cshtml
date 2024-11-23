@@ -1,23 +1,24 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.WeightProgress>
+@using Syncfusion.EJ2.Charts
 
 @{
-    ViewData["Title"] = "Weight Progress";
+    ViewData["Title"] = "Progress";
 }
 
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
-    <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="display: flex; flex-direction: column; align-items: center; margin-left: -150px">
         <a style="margin-bottom: 10px;" asp-action="RecordWeight" class="btn btn-primary">
-            <i class="fa-solid fa-bars-progress me-2"></i>New
+            <i class="fa-solid fa-bars-progress me-2"></i>New Entry
         </a>
 
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-            <i class="fa-solid fa-trash-can me-2"></i>Reset
+            <i class="fa-solid fa-trash-can me-2"></i>Reset Record
         </button>
        
     </div>
     <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
-        Register Progress
+        Progress Record
     </h2>
 </div>
 
@@ -26,13 +27,13 @@
 @if (!Model.Any())
 {
     <hr />
-    <h4 class="no-items-list">No weight progress recorded yet.</h4>
+    <h4 class="no-items-list">No weight progress recorded yet!</h4>
 }
 else
 {
     <div class="card-container">
-        <div class="card">
-            <table class="table table-striped">
+        <div class="card mb-3 cardTable">
+            <table id="dataTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>Image</th>
@@ -42,8 +43,12 @@ else
                     </tr>
                 </thead>
                 <tbody>
+                    @{
+                        int idx = 0;
+                    }
                     @foreach (var record in Model)
                     {
+                        idx++;
                         <tr>
                             <td>
                                 <a target="_blank" src=""><img style="height:10vh; width:auto" class="img-fluid" src="@record.ImageDisplay" /></a>
@@ -51,7 +56,11 @@ else
                             <td>@record.Date.ToString("dd-MM-yyyy HH:mm")</td>
                             <td>@record.Weight kg</td>
                             <td>
-                                @if (record.Progress > 0)
+                                @if (idx == Model.Count())
+                                {
+                                   <span>N/A</span>
+                                }
+                                  else if (record.Progress > 0)
                                 {
                                     <span>+@record.Progress (kg)</span>
                                 }
@@ -70,8 +79,33 @@ else
             </table>
         </div>
     </div>
+
+    @if (Model.Count() > 1)
+    {
+        <hr style="margin-bottom: 2em;" />
+
+    <div class="container mt-4 mb-4" style="background-color: white; border-radius:10px">
+        <ejs-chart id="chart-container" title="Weight Progress">
+            <!-- X-Axis Configuration -->
+            <e-chart-primaryxaxis valueType="DateTime" title="Date"></e-chart-primaryxaxis>
+
+            <!-- Y-Axis Configuration -->
+            <e-chart-primaryyaxis title="Weight (kg)"></e-chart-primaryyaxis>
+
+            <!-- Series Collection -->
+            <e-series-collection>
+                <e-series dataSource="@ViewBag.WeightLog"
+                          xName="Date"
+                          yName="Weight"
+                          type="Line"
+                          name="Weight Trend">
+                </e-series>
+            </e-series-collection>
+        </ejs-chart>
+    </div>
+    }
 }
-<hr />
+
 
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -81,12 +115,12 @@ else
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Do you really want to delete all weight progress records?
+                Are you sure you want to reset your Progress Record?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="deleteAllForm" asp-action="DeleteRecordWeight" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">Confirm Reset</button>
+                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-trash-can me-2"></i>Confirm Reset</button>
                 </form>
             </div>
         </div>
@@ -101,4 +135,27 @@ else
     });
 </script>
 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1, 0] }
+                ]
+            });
+        });
+    </script>
+}
 

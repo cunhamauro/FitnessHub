@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessHub.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241121195859_update")]
+    [Migration("20241123014835_update")]
     partial class update
     {
         /// <inheritdoc />
@@ -86,6 +86,85 @@ namespace FitnessHub.Migrations
                     b.ToTable("ClientInstructorAppointments");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.ForumReply", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ForumThreadId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NavigatePost")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ForumThreadId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ForumReplies");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.ForumThread", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Theme")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ForumThreads");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.Communication.RequestInstructor", b =>
                 {
                     b.Property<int>("Id")
@@ -113,6 +192,83 @@ namespace FitnessHub.Migrations
                     b.HasIndex("ClientId");
 
                     b.ToTable("RequestsIntructor");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClientId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("DateOpened")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DatePicked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Open")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Picked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("StaffId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("StaffId");
+
+                    b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.TicketMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserRole")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketMessages");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.Gym", b =>
@@ -1135,6 +1291,28 @@ namespace FitnessHub.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.ForumReply", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.Communication.ForumThread", null)
+                        .WithMany("ForumReplies")
+                        .HasForeignKey("ForumThreadId");
+
+                    b.HasOne("FitnessHub.Data.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.ForumThread", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FitnessHub.Data.Entities.Communication.RequestInstructor", b =>
                 {
                     b.HasOne("FitnessHub.Data.Entities.Users.Client", "Client")
@@ -1144,6 +1322,34 @@ namespace FitnessHub.Migrations
                         .IsRequired();
 
                     b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.Ticket", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.Users.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("FitnessHub.Data.Entities.Users.User", "Staff")
+                        .WithMany()
+                        .HasForeignKey("StaffId");
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.TicketMessage", b =>
+                {
+                    b.HasOne("FitnessHub.Data.Entities.Communication.Ticket", null)
+                        .WithMany("TicketMessages")
+                        .HasForeignKey("TicketId");
+
+                    b.HasOne("FitnessHub.Data.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymClasses.Class", b =>
@@ -1397,6 +1603,16 @@ namespace FitnessHub.Migrations
                         .IsRequired();
 
                     b.Navigation("Gym");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.ForumThread", b =>
+                {
+                    b.Navigation("ForumReplies");
+                });
+
+            modelBuilder.Entity("FitnessHub.Data.Entities.Communication.Ticket", b =>
+                {
+                    b.Navigation("TicketMessages");
                 });
 
             modelBuilder.Entity("FitnessHub.Data.Entities.GymMachines.Workout", b =>

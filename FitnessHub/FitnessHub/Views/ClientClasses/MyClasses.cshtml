@@ -4,19 +4,15 @@
     ViewData["Title"] = "My Classes";
 }
 
-<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
-    <div style="display: inline-flex; align-items: center;">
-        <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
-            My Classes
-        </h2>
-    </div>
+<div class="container mb-4 view-text">
+    <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">My Classes</h2>
 </div>
 
 @if (Model.Classes.Any())
 {
     <div class="card-container">
-        <div class="card">
-            <table class="table table-striped">
+        <div class="card cardTable">
+            <table id="dataTable" class="table table-striped">
                 <thead>
                     <tr>
                         <th>Class</th>
@@ -71,10 +67,10 @@ else
                 Do you really want to unregister from this class?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="unregisterForm" asp-action="Unregister" method="post" style="display:inline;">
                     <input type="hidden" id="classId" name="id" value="" />
-                    <button type="submit" class="btn btn-danger">Confirm Unregister</button>
+                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-check me-2"></i>Confirm Unregister</button>
                 </form>
             </div>
         </div>
@@ -90,4 +86,28 @@ else
         form.querySelector('#classId').value = classId;
     });
 </script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/English.json"
+                },
+                "aLengthMenu": [
+                    [20, 50, 100, 200, -1],
+                    [20, 50, 100, 200, "All"]
+                ],
+                columnDefs: [
+                    { orderable: false, targets: [-1, 0] }
+                ]
+            });
+        });
+    </script>
+}
 
