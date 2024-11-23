@@ -6,40 +6,45 @@
     <div class="row justify-content-center mt-2">
         @foreach (var classItem in Model)
         {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
+            <div class="col-lg-3 col-md-4 col-sm-6 mx-2 mb-3">
                 <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">
+                    <!-- Card Header -->
+                    <div class="card-header text-center" style="font-size: 2em; font-weight: bold">
                         <div>@classItem.Name</div>
                         <div class="text-muted mb-1" style="font-size:1rem">@classItem.ClassCategory.Name</div>
                     </div>
-                    <div class="card-body" style="padding: 0">
-                        <div class="text-center ">
+
+                    <!-- Card Body -->
+                    <div class="card-body p-0">
+                        <div class="text-center">
                             <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid class-image" />
                         </div>
-                        <div class="card-text" style="padding: 1rem">
+                        <div class="card-text p-3">
                             <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
                         </div>
                     </div>
+
+                    <!-- Card Footer -->
                     <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
                         <small>
-                            <span style="float:left">
-                                Rating: @{
-                                    if (classItem.NumReviews > 0)
-                                    {
-                                        <span>@(classItem.Rating % 1 == 0 ? $"{classItem.Rating:0}" : $"{classItem.Rating:0.##}")</span>
-
-                                        @Html.Raw("/5")
-
-                                        <i class="fa-solid fa-star ms-1"></i>
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="rating-content">
+                                    @{
+                                        if (classItem.NumReviews == 0)
+                                        {
+                                            <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("N/A")
+                                            <i class="fa-solid fa-star ms-2"></i>
+                                        }
                                     }
-                                    else
-                                    {
-                                        @Html.Raw("N/A")
-
-                                        <i class="fa-solid fa-star ms-1"></i>
-                                    }
-                                }
-                            </span><span style="float: right">Reviews: @classItem.NumReviews</span>
+                                </div>
+                                <div class="text-nowrap">
+                                    (@classItem.NumReviews reviews)
+                                </div>
+                            </div>
                         </small>
                     </div>
                 </div>

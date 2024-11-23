@@ -17,15 +17,22 @@
                             @Model.ClassType
                         </dd>
                         <dd class="col-sm-12">
-                            @if (Model.NumReviews < 1)
-                            {
-                                <span>N/A</span><i class="fa-solid fa-star"></i>
-                            }
-                            else
-                            {
-                                <span>@(Model.Rating % 1 == 0 ? $"{Model.Rating:0}" : $"{Model.Rating:0.##}")</span>@Html.Raw("/5")<i class="fa-solid fa-star ms-1"></i>
-                            }
-                            (@Model.NumReviews)
+                            <div class="rating-content">
+                                @{
+                                    if (Model.NumReviews == 0)
+                                    {
+                                        <ejs-rating id="rating_@Model.ClassType" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
+                                    }
+                                    else
+                                    {
+                                        @Html.Raw("N/A")
+                                        <i class="fa-solid fa-star ms-2"></i>
+                                    }
+                                }
+                            </div>
+                            <div class="text-nowrap">
+                                (@Model.NumReviews reviews)
+                            </div>
                         </dd>
                         <dt class="col-sm-12">
                             @Html.DisplayNameFor(model => model.Category)
@@ -40,21 +47,22 @@
 
                             <br />
                             <div style="font-size: 0.8em !important">
-                                @if (Model.InstructorReviews < 1)
-                                {
-                                    <span>N/A</span>
-
-                                    <i class="fa-solid fa-star"></i>
-                                }
-                                else
-                                {
-                                    <span>@(Model.InstructorRating % 1 == 0 ? $"{Model.InstructorRating:0}" : $"{Model.InstructorRating:0.##}")</span>
-
-                                    @Html.Raw("/5")
-
-                                    <i class="fa-solid fa-star ms-1"></i>
-                                }
-                                (@Model.InstructorReviews)
+                                <div class="rating-content">
+                                    @{
+                                        if (Model.InstructorReviews == 0)
+                                        {
+                                            <ejs-rating id="rating_@Model.InstructorEmail" value="(double)@Model.InstructorRating" readOnly="true"></ejs-rating>
+                                        }
+                                        else
+                                        {
+                                            @Html.Raw("N/A")
+                                            <i class="fa-solid fa-star ms-2"></i>
+                                        }
+                                    }
+                                </div>
+                                <div class="text-nowrap">
+                                    (@Model.InstructorReviews reviews)
+                                </div>
                             </div>
                         </dd>
 

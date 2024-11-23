@@ -63,6 +63,14 @@ namespace FitnessHub.Data
 
         public DbSet<ClientInstructorAppointment> ClientInstructorAppointments { get; set; }
 
+        public DbSet<ForumThread> ForumThreads { get; set; }
+
+        public DbSet<ForumReply> ForumReplies { get; set; }
+
+        public DbSet<Ticket> Tickets { get; set; }
+
+        public DbSet<TicketMessage> TicketMessages { get; set; }
+
         // History
 
         public DbSet<RequestInstructorHistory> RequestsIntructorHistory { get; set; }
@@ -79,7 +87,7 @@ namespace FitnessHub.Data
 
         public DbSet<StaffHistory> StaffHistory { get; set; }
 
-        public DbSet<MembershipHistory> MembershipHistory {  get; set; }
+        public DbSet<MembershipHistory> MembershipHistory { get; set; }
 
         public DbSet<WeightProgress> WeightProgress { get; set; }
 
@@ -144,7 +152,7 @@ namespace FitnessHub.Data
             builder.Entity<ClientMembershipHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();
-                       
+
             builder.Entity<GymHistory>()
                        .Property(e => e.Id)
                        .ValueGeneratedNever();

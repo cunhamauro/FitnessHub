@@ -1,0 +1,168 @@
+﻿@model FitnessHub.Data.Entities.Communication.ForumThread
+
+@{
+    ViewData["Title"] = "Thread";
+}
+
+<div class="container mt-5">
+    <!-- Main Post Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Left section: Image and Name -->
+                <div class="d-flex align-items-center">
+                    <img src="@Model.User.Avatar" alt="Author Image" class="rounded-circle" style="width: 40px; height: 40px;" />
+                    @{
+                        string color = "";
+                        if (Model.UserRole == "MasterAdmin")
+                        {
+                            color = "red";
+                        }
+                        else if (Model.UserRole == "Admin")
+                        {
+                            color = "orange";
+                        }
+                        else if (Model.UserRole == "Instructor")
+                        {
+                            color = "yellow";
+                        }
+                        else if (Model.UserRole == "Employee")
+                        {
+                            color = "blue";
+                        }
+                        else
+                        {
+                            color = "green";
+                        }
+                    }
+                    <span style="color:whitesmoke" class="ms-3">@Model.User.FullName <span class="ms-2" style="color: @color;font-weight: bold !important">[@Model.UserRole]</span></span>
+                </div>
+
+                <!-- Right section: Date -->
+                <div>
+                    <span style="color:whitesmoke">@Html.Raw("@") @Model.Date.ToString("dd-MM-yyyy HH:mm")</span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h3 style="font-weight: 600" class="card-title">@Model.Title</h3>
+            <h5 style="color: gray">@Model.Theme</h5>
+            <hr style="margin-bottom: 0.6em"/>
+            <p class="card-text">@Model.Message</p>
+        </div>
+        @if (!string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <div class="card-footer text-center mt-2">
+                <img style="max-width: 50%; max-height: 50%" src="@Model.ImageDisplay" class="img-fluid rounded shadow" alt="Post Image" />
+            </div>
+        }
+    </div>
+
+    @if (@Model.ForumReplies.Count < 1)
+    {
+        <div class="card card-header mb-4 mt-1" style="text-align: center;">
+            <span style="font-size: 1rem"> There are no replies to this Thread </span>
+        </div>
+    }
+    else
+    {
+        <div class="card card-header mb-4 mt-1" style="text-align: center; cursor:pointer" onclick="ToggleReplies()">
+            @{
+                var txt = "replies";
+                if (@Model.ForumReplies.Count == 1)
+                {
+                    txt = "reply";
+                }
+            }
+            <span style="font-size: 1rem"><span id="showHideTxt">Show</span> @Model.ForumReplies.Count @txt</span>
+        </div>
+
+        <div id="replies" style="display:none">
+            <!-- Forum Messages -->
+            @foreach (var message in Model.ForumReplies)
+            {
+                <div class="card mb-4 mt-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Left section: Image and Name -->
+                            <div class="d-flex align-items-center">
+                                <img src="@message.User.Avatar" alt="Author Image" class="rounded-circle" style="width: 40px; height: 40px;" />
+                                @{
+                                    string colorMsg = "";
+                                    if (message.UserRole == "MasterAdmin")
+                                    {
+                                        colorMsg = "red";
+                                    }
+                                    else if (message.UserRole == "Admin")
+                                    {
+                                        colorMsg = "orange";
+                                    }
+                                    else if (message.UserRole == "Instructor")
+                                    {
+                                        colorMsg = "yellow";
+                                    }
+                                    else if (message.UserRole == "Employee")
+                                    {
+                                        colorMsg = "blue";
+                                    }
+                                    else
+                                    {
+                                        colorMsg = "green";
+                                    }
+                                }
+                                <span style="color:whitesmoke" class="ms-3">@message.User.FullName <span class="ms-2" style="color: @colorMsg;font-weight: bold !important">[@message.UserRole]</span></span>
+                            </div>
+
+                            <!-- Right section: Date -->
+                            <div>
+                                <span style="color:whitesmoke">@Html.Raw("@") @message.Date.ToString("dd-MM-yyyy HH:mm")</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@message.Message</p>
+                    </div>
+                    @if (!string.IsNullOrEmpty(@message.ImagePath))
+                    {
+                        <div class="card-footer text-center mt-2">
+                            <img style="max-width: 50%; max-height: 50%" src="@message.ImageDisplay" class="img-fluid rounded shadow" alt="Message Image" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+    }
+
+    <div style="float:right; margin-bottom: 90px">
+
+        <div class="d-flex">
+            <a asp-action="Posts" class="btn btn-secondary me-4"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+
+            <a asp-route-id="@Model.Id" asp-action="ReplyPost" class="btn btn-primary">
+                <i class="fa-solid fa-pen me-2"></i>Reply
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function ToggleReplies() {
+        var replies = document.getElementById('replies');
+        var txt = document.getElementById('showHideTxt');
+
+        if (replies.style.display === 'none' || replies.style.display === ' ') {
+            replies.style.display = 'block';
+            txt.innerText = 'Hide';
+        }
+        else {
+            replies.style.display = 'none';
+            txt.innerText = 'Show';
+        }
+    }
+
+</script>

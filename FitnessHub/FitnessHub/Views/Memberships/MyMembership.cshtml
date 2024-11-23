@@ -93,9 +93,12 @@ else
                 Do you really want to cancel the membership ?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-x me-2"></i>Cancel</button>
                 <form id="deleteForm" asp-action="CancelMembership" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger">Cancel Membership</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-trash me-2"></i>
+                        Cancel Membership
+                    </button>
                 </form>
             </div>
         </div>

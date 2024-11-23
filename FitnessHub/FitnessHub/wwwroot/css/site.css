@@ -13,6 +13,39 @@ html {
     padding-left: 0;
 }
 
+.modal .modal-dialog .modal-content {
+    background-color: white;
+}
+
+.modal .modal-dialog .modal-content .modal-header {
+    background-color: #000000cc;
+}
+
+.modal .modal-dialog .modal-content .modal-header .modal-title {
+    font-weight: bold;
+}
+
+/*    .modal .modal-dialog .modal-content .modal-footer {
+background-color: #0000003d;
+}*/
+
+.spin-icon {
+    animation: spin 1s linear infinite; /* 1s duration, linear timing, infinite repetition */
+}
+
+/* Define the keyframes for spinning */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+</style >
+
 .checkbox-fixed {
     width: 1.25rem;
     height: 1.25rem;
@@ -358,8 +391,8 @@ btn-info .btn-check:checked + .btn-info:focus, .btn-check:active + .btn-info:foc
     text-align: center;
     margin: 0;
     color: #ff620142;
-    margin-top: 23%;
-    font-size: 2rem;
+    margin-top: 15%;
+    font-size: 1.5rem;
 }
 
 hr {
@@ -377,6 +410,10 @@ hr {
     color: #656565;
 }
 
+.cardTable {
+    border-radius: 0;
+}
+
 .card-container {
     display: flex;
     justify-content: center;
@@ -385,7 +422,7 @@ hr {
 }
 
 .card-container .card .table th, td {
-/*    text-align: center*/
+    text-align: center
 }
 
 .card-container .card .table tr {
@@ -535,19 +572,75 @@ details .row {
 
 /* Ajuste do tamanho do carrossel */
 #mainCarousel {
-    max-height: 60vh; /* Altura m�xima para o carrossel */
+    max-height: 60vh; /* Altura máxima para o carrossel */
     overflow: hidden;
 }
 
 .carousel-image {
     height: 60vh; /* Define a altura fixa */
-    object-fit: cover; /* Ajusta a imagem para cobrir o espa�o sem distorcer */
+    object-fit: cover; /* Ajusta a imagem para cobrir o espaço sem distorcer */
 }
 
 .recommendedgym-image {
-    width: 100%; /* Garante que a largura se ajuste ao cont�iner */
+    width: 100%; /* Garante que a largura se ajuste ao contêiner */
     height: 200px; /* Define uma altura fixa para todas as imagens */
-    object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espa�o */
-    border-top-left-radius: 0.25rem; /* Mant�m o design das bordas do card */
+    object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espaço */
+    border-top-left-radius: 0.25rem; /* Mantém o design das bordas do card */
     border-top-right-radius: 0.25rem;
+
+/* Adjust the size of pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 3px 10px; /* Reduce padding */
+    font-size: 12px; /* Smaller text */
+    margin: 1px; /* Add some spacing */
+}
+
+/* Style active button */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        color: black !important; /* Text color */
+        border-radius: 5px; /* Rounded corners */
+    }
+
+/* Hover effect for buttons */
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        border-radius: 5px;
+    }
+
+/* Texto da barra de pesquisa */
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_filter input {
+    font-size: 12px;
+}
+
+/* Texto da lista de exibição por página */
+.dataTables_wrapper .dataTables_length label {
+    font-size: 12px;
+}
+
+/* Texto de informações da tabela */
+.dataTables_wrapper .dataTables_info {
+    font-size: 12px;
+}
+
+/* Texto da paginação */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    font-size: 12px;
+}
+
+    /* Texto da página selecionada na paginação */
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        font-size: 12px;
+    }
+
+.e-rating-container .e-rating-item-container.e-rating-selected .e-rating-icon, .e-rating-container .e-rating-item-container.e-rating-intermediate .e-rating-icon {
+    background: linear-gradient(to right, gold var(--rating-value), transparent var(--rating-value)) !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-stroke: 1px #00000000 !important;
+}
+
+.e-rating-container .e-rating-item-container .e-rating-icon {
+    -webkit-text-fill-color: rgb(145 145 145 / 34%) !important;
+    -webkit-text-stroke: 1px #6e6e6e !important;
+    background: none !important;
 }
