@@ -1,11 +1,9 @@
 ﻿@model FitnessHub.Models.WeightProgressViewModel
 @{
-    ViewData["Title"] = "Record Weight";
+    ViewData["Title"] = "Record Progress";
 }
 
-<h2>Record Your Weight</h2>
-
-<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Record Weight</h2>
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Record Progress</h2>
 <hr />
 <div class="row view-form-style">
     <div class="col-md-4 offset-md-4">
@@ -26,7 +24,7 @@
 
             <div class="form-group">
                 <button type="submit" class="btn btn-primary me-4">
-                    <i class="fa-solid fa-check me-2"></i>Record Weight
+                    <i class="fa-solid fa-check me-2"></i>Save
                 </button>
                 <a asp-action="RecordWeightIndex" class="btn btn-secondary">
                     <i class="fa-solid fa-chevron-left me-2"></i>Back

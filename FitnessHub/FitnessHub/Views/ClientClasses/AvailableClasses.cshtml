@@ -71,7 +71,7 @@
                                 <form asp-action="Register" method="post" style="margin-right: 10px;">
                                     <input type="hidden" name="classId" value="@classItem.Id" />
                                     <input type="hidden" name="isOnline" value="@classItem.IsOnline.ToString()" />
-                                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen me-2"></i>Register</button>
+                                    <button id="register" type="submit" class="btn btn-primary"><i class="fa-solid fa-pen me-2"></i>Register</button>
                                 </form>
                             }
 
@@ -84,14 +84,14 @@
                             {
                                 <form asp-action="JoinWaitlist" method="post" style="margin-right: 10px;">
                                     <input type="hidden" name="classId" value="@classItem.Id" />
-                                    <button type="submit" class="btn btn-success"><i class="fa-solid fa-list-ol me-2"></i>Join Waitlist</button>
+                                    <button id="process" type="submit" class="btn btn-success"><i class="fa-solid fa-list-ol me-2"></i>Join Waitlist</button>
                                 </form>
                             }
                             else if (!classItem.IsOnline && classItem.Full == true && classItem.InWaitlist == true)
                             {
                                 <form asp-action="ExitWaitlist" method="post" style="margin-right: 10px;">
                                     <input type="hidden" name="classId" value="@classItem.Id" />
-                                    <button type="submit" class="btn btn-danger"><i class="fa-solid fa-x me-2"></i>Leave Waitlist</button>
+                                    <button id="process" type="submit" class="btn btn-danger"><i class="fa-solid fa-x me-2"></i>Leave Waitlist</button>
                                 </form>
                             }
 
@@ -105,5 +105,47 @@
 else
 {
     <hr />
-    <h4 class="no-items-list">No classes were found!</h4>
+
+    <h4 class="no-items-list">No Classes were found!</h4>
+
 }
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('process').addEventListener('click', function (event) {
+            // Prevenir o envio imediato do formulário
+            event.preventDefault();
+
+            var submitButton = event.target;
+
+            // Desabilitar o botão e mudar o texto
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner spin-icon me-2"></i>Processing';
+
+            // Submeter o formulário após a modificação
+            submitButton.closest('form').submit();
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('register').addEventListener('click', function (event) {
+            // Prevenir o envio imediato do formulário
+            event.preventDefault();
+
+            var submitButton = event.target;
+
+            // Desabilitar o botão e mudar o texto
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner spin-icon me-2"></i>Registering';
+
+            // Submeter o formulário após a modificação
+            submitButton.closest('form').submit();
+        });
+    });
+</script>
+
+
+

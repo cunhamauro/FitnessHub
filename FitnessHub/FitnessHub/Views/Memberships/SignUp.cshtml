@@ -14,28 +14,50 @@
 
             <div class="form-group">
                 <label asp-for="MembershipId" class="control-label"></label>
-                <select id="membershipId" asp-for="MembershipId" asp-items="@Model.SelectMembership" class="form-control" onchange="showDetails()">
+                <select id="membershipId" asp-for="MembershipId" asp-items="@Model.SelectMembership" class="form-control" >
                     <option value="0">Select a Membership</option>
                 </select>
                 <span asp-validation-for="MembershipId" class="text-danger"></span>
             </div>
 
-            <div id="membershipDetails" style="display: none">
-            <div class="form-group">
-                <label class="control-label">Monthly fee</label>
-                <input readonly id="monthFee" class="form-control" />
-            </div>
+            @if(Model.MembershipId > 0)
+            {
+                <div id="membershipDetails" onload="GetMembership(@Model.MembershipId)">
+                    <div class="form-group">
+                        <label class="control-label">Monthly fee</label>
+                        <input readonly id="monthFee" class="form-control" />
+                    </div>
 
-            <div class="form-group">
-                <label class="control-label">Total amount</label>
-                <input readonly id="annualFee" class="form-control" />
-            </div>
+                    <div class="form-group">
+                        <label class="control-label">Total amount</label>
+                        <input readonly id="annualFee" class="form-control" />
+                    </div>
 
-            <div class="form-group">
-                <label class="control-label">Description</label>
-                <textarea readonly id="description" class="form-control" rows="5"></textarea>
-            </div>
-            </div>
+                    <div class="form-group">
+                        <label class="control-label">Description</label>
+                        <textarea readonly id="description" class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div id="membershipDetails" style="display: none">
+                    <div class="form-group">
+                        <label class="control-label">Monthly fee</label>
+                        <input readonly id="monthFee" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Total amount</label>
+                        <input readonly id="annualFee" class="form-control" />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label">Description</label>
+                        <textarea readonly id="description" class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+            }
 
             <div class="form-check mt-3 mb-3  view-text" style="display: flex; align-items: center;">
                 <!-- Checkbox for accepting terms -->
@@ -56,7 +78,7 @@
                 <button id="submit" type="submit" class="btn btn-primary me-4 mt-2" disabled>
                     <i class="fa-solid fa-check me-2"></i>Sign Up
                 </button>
-                <a asp-action="MyMembership" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-secondary mt-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
             </div>
         </form>
     </div>
@@ -64,41 +86,113 @@
 
 <!-- AJAX Script to Fetch Membership Details -->
 @section Scripts {
+    
     <script>
+        // function GetMembership (int membershipId) {
+        //     $.ajax({
+        //         url: '/Memberships/GetMembershipDetails', // Ensure this route matches your controller action
+        //         type: 'GET',
+        //         data: { id: membershipId },
+        //         success: function (data) {
+        //             if (data.error) {
+        //                 alert(data.error);
+        //                 return;
+        //             }
+        //             // Populate fields with fetched data
+        //             $('#monthFee').val(data.monthFee);
+        //             $('#annualFee').val(data.annualFee);
+        //             $('#description').val(data.description);
+        //         },
+        //         error: function () {
+        //             alert('Failed to retrieve membership details.');
+        //         }
+        //     });
+        // }
+
+        // $(document).ready(function () {
+        //     // Event listener for dropdown change
+        //     $('#membershipId').change(function () {
+        //         var membershipId = $(this).val();
+
+        //         // Clear the fields if no membership is selected
+        //         if (membershipId == 0) {
+        //             $('#monthFee').val('');
+        //             $('#annualFee').val('');
+        //             $('#description').val('');
+        //             return;
+        //         }
+
+        //         // AJAX request to fetch membership details
+        //         $.ajax({
+        //             url: '/Memberships/GetMembershipDetails', // Ensure this route matches your controller action
+        //             type: 'GET',
+        //             data: { id: membershipId },
+        //             success: function (data) {
+        //                 if (data.error) {
+        //                     alert(data.error);
+        //                     return;
+        //                 }
+        //                 // Populate fields with fetched data
+        //                 $('#monthFee').val(data.monthFee);
+        //                 $('#annualFee').val(data.annualFee);
+        //                 $('#description').val(data.description);
+        //             },
+        //             error: function () {
+        //                 alert('Failed to retrieve membership details.');
+        //             }
+        //         });
+        //     });
+        // });
+
         $(document).ready(function () {
-            // Event listener for dropdown change
+            var selectedMembershipId = $('#membershipId').val();
+
+            // Se houver uma MembershipId selecionada, busque os detalhes
+            if (selectedMembershipId && selectedMembershipId > 0) {
+                fetchMembershipDetails(selectedMembershipId);
+                showDetails(); // Mostra os detalhes automaticamente
+            }
+
+            // Event listener para dropdown change
             $('#membershipId').change(function () {
                 var membershipId = $(this).val();
 
-                // Clear the fields if no membership is selected
+                // Limpa os campos se nenhuma membership for selecionada
                 if (membershipId == 0) {
                     $('#monthFee').val('');
                     $('#annualFee').val('');
                     $('#description').val('');
+                    $('#membershipDetails').hide();
                     return;
                 }
 
-                // AJAX request to fetch membership details
-                $.ajax({
-                    url: '/Memberships/GetMembershipDetails', // Ensure this route matches your controller action
-                    type: 'GET',
-                    data: { id: membershipId },
-                    success: function (data) {
-                        if (data.error) {
-                            alert(data.error);
-                            return;
-                        }
-                        // Populate fields with fetched data
-                        $('#monthFee').val(data.monthFee);
-                        $('#annualFee').val(data.annualFee);
-                        $('#description').val(data.description);
-                    },
-                    error: function () {
-                        alert('Failed to retrieve membership details.');
-                    }
-                });
+                // Busca os detalhes da membership selecionada
+                fetchMembershipDetails(membershipId);
+                showDetails(); // Atualiza a exibição dos detalhes
             });
         });
+
+        function fetchMembershipDetails(membershipId) {
+            $.ajax({
+                url: '/Memberships/GetMembershipDetails', // Certifique-se de que essa rota está correta
+                type: 'GET',
+                data: { id: membershipId },
+                success: function (data) {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Popula os campos com os dados retornados
+                    $('#monthFee').val(data.monthFee);
+                    $('#annualFee').val(data.annualFee);
+                    $('#description').val(data.description);
+                },
+                error: function () {
+                    alert('Failed to retrieve membership details.');
+                }
+            });
+        }
     </script>
 
     <script>

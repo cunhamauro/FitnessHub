@@ -10,7 +10,7 @@
 
         public string? Callingcode { get; set; }
 
-        public string? Data => $"({Callingcode}) {Name}";
+        public string? Data => $"{Name} ({Callingcode})";
 
         //private string CountryCodeToEmoji(string countryCode)
         //{

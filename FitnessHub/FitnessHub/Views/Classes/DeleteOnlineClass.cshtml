@@ -40,7 +40,7 @@
 
                     <form asp-action="DeleteOnlineClass">
                         <input type="hidden" asp-for="Id" />
-                        <button type="submit" class="btn btn-danger me-2">
+                        <button id="process" type="submit" class="btn btn-danger me-2">
                             <i class="fa-solid fa-trash-can me-2"></i>Delete
                         </button>
                         <a asp-action="OnlineClasses" class="btn btn-secondary">
@@ -52,3 +52,22 @@
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('process').addEventListener('click', function (event) {
+            // Prevenir o envio imediato do formulário
+            event.preventDefault();
+
+            var submitButton = event.target;
+
+            // Desabilitar o botão e mudar o texto
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fa-solid fa-spinner spin-icon me-2"></i>Processing';
+
+            // Submeter o formulário após a modificação
+            submitButton.closest('form').submit();
+        });
+    });
+</script>

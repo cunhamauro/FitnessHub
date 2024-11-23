@@ -1,9 +1,11 @@
-﻿using FitnessHub.Data.Entities.Users;
+﻿using FitnessHub.Data.Entities;
+using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
 using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace FitnessHub.Controllers
@@ -18,16 +20,22 @@ namespace FitnessHub.Controllers
         private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
         private readonly IMailHelper _mailHelper;
         private readonly IConfiguration _configuration;
+        private readonly IClassHistoryRepository _classHistoryRepository;
+        private readonly IClassTypeRepository _classTypeRepository;
+        private readonly IMembershipRepository _membershipRepository;
 
         public HomeController(
-            ILogger<HomeController> logger, 
-            IUserHelper userHelper, 
+            ILogger<HomeController> logger,
+            IUserHelper userHelper,
             IMembershipDetailsRepository membershipDetailsRepository,
             IGymRepository gymRepository,
             IClassRepository classRepository,
             IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository,
             IMailHelper mailHelper,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IClassHistoryRepository classHistoryRepository,
+            IClassTypeRepository classTypeRepository,
+            IMembershipRepository membershipRepository)
         {
             _logger = logger;
             _userHelper = userHelper;
@@ -37,6 +45,9 @@ namespace FitnessHub.Controllers
             _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
             _mailHelper = mailHelper;
             _configuration = configuration;
+            _classHistoryRepository = classHistoryRepository;
+            _classTypeRepository = classTypeRepository;
+            _membershipRepository = membershipRepository;
         }
 
         [Authorize(Roles = "MasterAdmin")]
@@ -48,7 +59,7 @@ namespace FitnessHub.Controllers
                 ClientsWithMembershipCount = await _userHelper.ClientsWithMembershipCountAsync(),
                 AnualMembershipsRevenue = await _membershipDetailsRepository.GetAnualMembershipsRevenueAsync(),
                 GymWithMostMemberShips = await _userHelper.GymWithMostMembershipsAsync(),
-                GymsCount = _gymRepository.GetAll().Count(), 
+                GymsCount = _gymRepository.GetAll().Count(),
                 EmployeesCount = (await _userHelper.GetUsersByTypeAsync<Employee>()).Count,
                 InstructorsCount = (await _userHelper.GetUsersByTypeAsync<Instructor>()).Count,
                 CountriesCount = await _gymRepository.GetCountriesCountAsync(),
@@ -61,9 +72,109 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var gym = new Gym();
+
+            if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Client"))
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name) as Client;
+                if (user == null)
+                {
+                    return UserNotFound();
+                }
+
+                if(user.MembershipDetailsId == null)
+                {
+                    ViewBag.ShowSignUp = true;
+                }
+
+                gym = await _gymRepository.GetGymByUserAsync(user);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                ViewBag.Gym = gym;
+
+                var users = await _userHelper.GetInstructorsByGymAsync(gym.Id);
+
+                List<Instructor> instructors = new List<Instructor>();
+                foreach (var userr in users)
+                {
+                    instructors.Add(userr as Instructor);
+                }
+                var instructorBestRating = instructors.OrderByDescending(i => i.Rating).FirstOrDefault();
+
+                if (instructorBestRating != null)
+                {
+                    ViewBag.Instructor = instructorBestRating;
+                }
+                else
+                {
+                    var instructor = instructors.OrderBy(i => Guid.NewGuid()).FirstOrDefault();
+                    ViewBag.Instructor = instructor;
+                }
+
+                var historyClasses = _registeredInClassesHistoryRepository.GetAll().Where(h => h.UserId == user.Id).ToList();
+
+                // Obter todos os ClassHistories para os ClassIds do histórico
+                var classIds = historyClasses.Select(h => h.ClassId).Distinct().ToList();
+                var classHistories = _classHistoryRepository.GetAll()
+                    .Where(ch => classIds.Contains(ch.Id))
+                    .ToList();
+
+                // Obter todos os ClassTypes correspondentes aos ClassHistories
+                var classTypeNames = classHistories
+                    .Where(ch => ch.ClassType != null)
+                    .Select(ch => ch.ClassType)
+                    .Distinct()
+                    .ToList();
+
+                // Obter os objetos ClassType correspondentes
+                var classTypes = _classTypeRepository.GetAll()
+                    .Where(ct => classTypeNames.Contains(ct.Name))
+                    .ToList();
+
+                // Determinar o ClassType mais frequente baseado nos nomes no histórico
+                var mostFrequentClassType = classHistories
+                    .Where(ch => ch.ClassType != null)
+                    .GroupBy(ch => classTypes.FirstOrDefault(ct => ct.Name == ch.ClassType))
+                    .Where(g => g.Key != null) // Excluir nulos
+                    .OrderByDescending(g => g.Count())
+                    .Select(g => g.Key)
+                    .FirstOrDefault();
+
+                if (mostFrequentClassType != null)
+                {
+                    ViewBag.Class = mostFrequentClassType;
+                }
+                else
+                {
+                    var recommendedClass = await _classTypeRepository.GetAll().OrderBy(c => Guid.NewGuid()).FirstOrDefaultAsync();
+                    ViewBag.Class = recommendedClass;
+                }
+            }
+            else
+            {
+                gym = await _gymRepository.GetAll().OrderBy(g => Guid.NewGuid()).FirstOrDefaultAsync();
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                ViewBag.Gym = gym;
+
+                var recommendedClass = await _classTypeRepository.GetAll().OrderBy(c => Guid.NewGuid()).FirstOrDefaultAsync();
+                ViewBag.Class = recommendedClass;
+
+                var instructors = await _userHelper.GetInstructorsByGymAsync(gym.Id);
+                var instructor = instructors.OrderBy(i => Guid.NewGuid()).FirstOrDefault() as Instructor;
+
+                ViewBag.Instructor = instructor;
+            }
+
+            return View(_membershipRepository.GetAll().Where(m => m.OnOffer == true));
         }
 
         public IActionResult Privacy()
@@ -187,6 +298,16 @@ namespace FitnessHub.Controllers
         public IActionResult PageNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Page not found", Message = $"Take a sip of whey and look for it again!" });
+        }
+
+        public IActionResult GymNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Gym not found", Message = "With so many worldwide, how did you miss this one?" });
+        }
+
+        public IActionResult UserNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
         }
     }
 }
