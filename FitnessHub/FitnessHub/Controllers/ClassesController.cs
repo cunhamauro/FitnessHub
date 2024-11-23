@@ -9,9 +9,7 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
-using Syncfusion.EJ2.Spreadsheet;
 
 namespace FitnessHub.Controllers
 {
@@ -160,7 +158,7 @@ namespace FitnessHub.Controllers
             }
 
             var gym = await _gymRepository.GetGymByUserAsync(user);
-            if(gym == null)
+            if (gym == null)
             {
                 return GymNotFound();
             }
@@ -357,6 +355,7 @@ namespace FitnessHub.Controllers
                     DateEnd = model.DateEnd,
                     Platform = model.Platform,
                     InstructorId = instructor.Id,
+                    GymId = instructor.GymId,
                 };
 
                 await _classHistoryRepository.CreateAsync(record);
@@ -408,9 +407,17 @@ namespace FitnessHub.Controllers
             }
 
             List<Instructor> instructorsList = await _userHelper.GetUsersByTypeAsync<Instructor>();
+
+            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
+
+            ViewBag.GymId = admin.GymId;
+
+            // Admin can only assign the online class to an instructor of his gym
+            var gymInstructors = instructorsList.Where(i => i.GymId == admin.GymId);
+
             List<SelectListItem> selectInstructorList = new List<SelectListItem>();
 
-            foreach (Instructor instructor in instructorsList)
+            foreach (Instructor instructor in gymInstructors)
             {
                 selectInstructorList.Add(new SelectListItem
                 {
@@ -431,9 +438,7 @@ namespace FitnessHub.Controllers
                 ClassType = onlineClass.ClassType,
             };
 
-            Admin admin = await _userHelper.GetUserAsync(this.User) as Admin;
-
-            ViewBag.GymId = admin.GymId;
+            
 
             return View(model);
         }
@@ -1262,7 +1267,7 @@ namespace FitnessHub.Controllers
         {
             if (id == null)
             {
-                return ClassNotFound(); 
+                return ClassNotFound();
             }
 
             VideoClass? videoClass = await _classRepository.GetVideoClassByIdInclude(id.Value);

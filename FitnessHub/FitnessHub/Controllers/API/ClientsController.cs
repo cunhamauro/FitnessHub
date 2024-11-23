@@ -411,6 +411,7 @@ namespace FitnessHub.Controllers.API
             }
 
             var workouts = await _workoutRepository.GetClientWorkoutsIncludeAsync(user);
+            var workoutsModel = new List<WorkoutModel>();
 
             foreach (var wk in workouts)
             {
@@ -431,9 +432,11 @@ namespace FitnessHub.Controllers.API
                         Notes = ex.Notes,
                     });
                 }
+
+                workoutsModel.Add(model);
             }
 
-            return Ok(model);
+            return Ok(workoutsModel);
         }
     }
 }

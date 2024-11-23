@@ -34,6 +34,7 @@ namespace FitnessHub.Controllers.API
                     Instructor = c.Instructor.FullName,
                     DateEnd = c.DateEnd,
                     DateStart = c.DateStart,
+                    IsOnline = false
                 });
 
                 if (gymClassesModel == null || gymClassesModel.Count() == 0)
@@ -69,6 +70,7 @@ namespace FitnessHub.Controllers.API
                     DateEnd = c.DateEnd,
                     DateStart = c.DateStart,
                     Location = c.Platform,
+                    IsOnline = true
                 });
 
                 if (onlineClassesModel == null || onlineClassesModel.Count() == 0)

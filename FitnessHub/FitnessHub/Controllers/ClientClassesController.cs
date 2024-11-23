@@ -9,10 +9,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FitnessHub.Controllers
 {
@@ -45,6 +41,7 @@ namespace FitnessHub.Controllers
             _mailHelper = mailHelper;
         }
 
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> MyClassHistory()
         {
             var client = await _userHelper.GetUserAsync(this.User) as Client;
@@ -67,11 +64,10 @@ namespace FitnessHub.Controllers
                 StaffHistory? employee = null;
                 StaffHistory? instructor = null;
 
-                var gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
-
-                if (gym == null)
+                GymHistory gym = null;
+                if (gClass.GymId.HasValue)
                 {
-                    return GymNotFound();
+                    gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
                 }
 
                 if (!string.IsNullOrEmpty(r.EmployeeId))
@@ -469,7 +465,7 @@ namespace FitnessHub.Controllers
                     });
                 }
             }
-            viewModel.Classes = viewModel.Classes.OrderBy(c => c.DateStart).ToList();
+            viewModel.Classes = viewModel.Classes.Where(c => c.DateStart >= DateTime.UtcNow).OrderBy(c => c.DateStart).ToList();
             return View(viewModel);
         }
 
@@ -859,7 +855,7 @@ namespace FitnessHub.Controllers
 
             await _registeredInClassesHistoryRepository.UpdateAsync(clientClassHistory);
 
-            return RedirectToAction(nameof(MyClassHistory));
+            return RedirectToAction("ClientHistory", "Account");
         }
 
         private async Task<List<ClassDetailsViewModel>> LoadClassDetails()

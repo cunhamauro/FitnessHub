@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
@@ -7,7 +8,6 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -24,6 +24,14 @@ namespace FitnessHub.Controllers
         private readonly IConfiguration _configuration;
         private readonly IGymRepository _gymRepository;
         private readonly IClientHistoryRepository _clientHistoryRepository;
+        private readonly IStaffHistoryRepository _staffHistoryRepository;
+        private readonly IClientMembershipHistoryRepository _clientMembershipHistoryRepository;
+        private readonly IMembershipHistoryRepository _membershipHistoryRepository;
+        private readonly IRequestInstructorHistoryRepository _requestInstructorHistoryRepository;
+        private readonly IClassHistoryRepository _classHistoryRepository;
+        private readonly IRegisteredInClassesHistoryRepository _registeredInClassesHistoryRepository;
+        private readonly IGymHistoryRepository _gymHistoryRepository;
+        private readonly IClassTypeRepository _classTypeRepository;
 
         public AccountController(
             IUserHelper userHelper,
@@ -32,7 +40,15 @@ namespace FitnessHub.Controllers
             ILoadHelper loadHelper,
             IConfiguration configuration,
             IGymRepository gymRepository,
-            IClientHistoryRepository clientHistoryRepository)
+            IClientHistoryRepository clientHistoryRepository,
+            IStaffHistoryRepository staffHistoryRepository, 
+            IClientMembershipHistoryRepository clientMembershipHistoryRepository,
+            IMembershipHistoryRepository membershipHistoryRepository, 
+            IRequestInstructorHistoryRepository requestInstructorHistoryRepository,
+            IClassHistoryRepository classHistoryRepository,
+            IRegisteredInClassesHistoryRepository registeredInClassesHistoryRepository,
+            IGymHistoryRepository gymHistoryRepository,
+            IClassTypeRepository classTypeRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
@@ -41,6 +57,14 @@ namespace FitnessHub.Controllers
             _configuration = configuration;
             _gymRepository = gymRepository;
             _clientHistoryRepository = clientHistoryRepository;
+            _staffHistoryRepository = staffHistoryRepository;
+            _clientMembershipHistoryRepository = clientMembershipHistoryRepository;
+            _membershipHistoryRepository = membershipHistoryRepository;
+            _requestInstructorHistoryRepository = requestInstructorHistoryRepository;
+            _classHistoryRepository = classHistoryRepository;
+            _registeredInClassesHistoryRepository = registeredInClassesHistoryRepository;
+            _gymHistoryRepository = gymHistoryRepository;
+            _classTypeRepository = classTypeRepository;
         }
 
         public IActionResult Login()
@@ -229,15 +253,15 @@ namespace FitnessHub.Controllers
                 return UserNotFound();
             }
 
-            var countries = await _loadHelper.LoadCountriesAsync();
+            //var countries = await _loadHelper.LoadCountriesAsync();
 
             var model = new ChangeUserViewModel()
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 BirthDate = user.BirthDate,
-                PhoneNumber = user.PhoneNumber,
-                Countries = new SelectList(countries, "Callingcode", "Data"),
+                //PhoneNumber = user.PhoneNumber,
+                //Countries = new SelectList(countries, "Callingcode", "Data"),
             };
 
             return View(model);
@@ -246,12 +270,12 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangeUser(ChangeUserViewModel model)
         {
-            var countries = await _loadHelper.LoadCountriesAsync();
+            //var countries = await _loadHelper.LoadCountriesAsync();
 
-            if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
-            {
-                ModelState.AddModelError("PhoneNumber", "Please select a country.");
-            }
+            //if (model.CountryCallingcode == null || model.CountryCallingcode == "undefined")
+            //{
+            //    ModelState.AddModelError("PhoneNumber", "Please select a country.");
+            //}
 
             if (ModelState.IsValid)
             {
@@ -261,7 +285,7 @@ namespace FitnessHub.Controllers
                     user.FirstName = model.FirstName;
                     user.LastName = model.LastName;
                     user.BirthDate = model.BirthDate;
-                    user.PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}";
+                    //user.PhoneNumber = $"{model.CountryCallingcode}{model.PhoneNumber}";
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
@@ -269,31 +293,83 @@ namespace FitnessHub.Controllers
                         user.ImagePath = path;
                     }
 
-                    if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
-                    {
-                        ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
+                    //if (_userHelper.CheckIfPhoneNumberExists(user.PhoneNumber))
+                    //{
+                    //    ModelState.AddModelError("PhoneNumber", "Phone number already exists.");
 
-                        model.Countries = new SelectList(countries, "Callingcode", "Data");
+                    //    model.Countries = new SelectList(countries, "Callingcode", "Data");
 
-                        return View(model);
-                    }
+                    //    return View(model);
+                    //}
 
                     var response = await _userHelper.UpdateUserAsync(user);
 
                     if (response.Succeeded)
                     {
-                        var clientHistory = await _clientHistoryRepository.GetByIdTrackAsync(user.Id);
-                        if (clientHistory == null)
+                        if (await _userHelper.IsUserInRoleAsync(user, "Client"))
                         {
-                            return ClientHistoryNotFound();
+                            var clientHistory = await _clientHistoryRepository.GetByIdTrackAsync(user.Id);
+                            if (clientHistory == null)
+                            {
+                                return ClientHistoryNotFound();
+                            }
+
+                            clientHistory.FirstName = user.FirstName;
+                            clientHistory.LastName = user.LastName;
+                            clientHistory.BirthDate = user.BirthDate;
+                            //clientHistory.PhoneNumber = user.PhoneNumber;
+
+                            await _clientHistoryRepository.UpdateAsync(clientHistory);
                         }
+                        else if (user is Instructor instructor)
+                        {
+                            var staffHistory = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(user.Id, instructor.GymId.Value);
+                            if (staffHistory == null)
+                            {
+                                return StaffHistoryNotFound();
+                            }
 
-                        clientHistory.FirstName = user.FirstName;
-                        clientHistory.LastName = user.LastName;
-                        clientHistory.BirthDate = user.BirthDate;
-                        clientHistory.PhoneNumber = user.PhoneNumber;
+                            staffHistory.FirstName = user.FirstName;
+                            staffHistory.LastName = user.LastName;
+                            staffHistory.BirthDate = user.BirthDate;
+                            //staffHistory.PhoneNumber = user.PhoneNumber;
 
-                        await _clientHistoryRepository.UpdateAsync(clientHistory);
+                            await _staffHistoryRepository.UpdateAsync(staffHistory);
+                        }
+                        else if (user is Employee employee)
+                        {
+                            var staffHistory = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(user.Id, employee.GymId.Value);
+                            if (staffHistory == null)
+                            {
+                                return StaffHistoryNotFound();
+                            }
+
+                            staffHistory.FirstName = user.FirstName;
+                            staffHistory.LastName = user.LastName;
+                            staffHistory.BirthDate = user.BirthDate;
+                            //staffHistory.PhoneNumber = user.PhoneNumber;
+
+                            await _staffHistoryRepository.UpdateAsync(staffHistory);
+                        }
+                        else if (user is Admin admin)
+                        {
+                            var staffHistory = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(user.Id, admin.GymId.Value);
+                            if (staffHistory == null)
+                            {
+                                return StaffHistoryNotFound();
+                            }
+
+                            staffHistory.FirstName = user.FirstName;
+                            staffHistory.LastName = user.LastName;
+                            staffHistory.BirthDate = user.BirthDate;
+                            //staffHistory.PhoneNumber = user.PhoneNumber;
+
+                            await _staffHistoryRepository.UpdateAsync(staffHistory);
+                        }
+                        else
+                        {
+                            return UserNotFound(); // Usuário não corresponde a nenhum papel esperado
+                        }
 
                         ViewBag.UserMessage = "Successfully updated!";
                     }
@@ -308,7 +384,7 @@ namespace FitnessHub.Controllers
                 }
             }
 
-            model.Countries = new SelectList(countries, "Callingcode", "Data");
+            //model.Countries = new SelectList(countries, "Callingcode", "Data");
 
             return View(model);
         }
@@ -736,6 +812,132 @@ namespace FitnessHub.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Client")]
+        public async Task<IActionResult> ClientHistory()
+        {
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            List<ClientMembershipHistory> memberships = _clientMembershipHistoryRepository.GetAll().Where(m => m.UserId == client.Id).ToList();
+            List<ClientMembershipHistoryViewModel> membershipModels = new();
+
+            foreach (var m in memberships)
+            {
+                var membership = await _membershipHistoryRepository.GetByIdAsync(m.MembershipHistoryId);
+
+                membershipModels.Add(
+                    new ClientMembershipHistoryViewModel
+                    {
+                        MembershipHistoryId = m.MembershipHistoryId,
+                        DateRenewal = m.DateRenewal,
+                        Id = m.Id,
+                        Name = membership.Name,
+                        Price = membership.Price,
+                        Status = m.Status,
+                        SignUpDate = m.SignUpDate,
+                    }
+                );
+            }
+
+            ViewBag.Membership = membershipModels;
+
+            var requests = _requestInstructorHistoryRepository.GetAllByClient(client.Id);
+
+            List<MyRequestInstructorHistoryViewModel> requestsModel = new List<MyRequestInstructorHistoryViewModel>();
+
+            foreach (var request in requests)
+            {
+                var gym = await _gymRepository.GetByIdAsync(request.GymId);
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                string status = string.Empty;
+
+                if (request.IsResolved)
+                    status = "Resolved";
+                else
+                    status = "Pending";
+
+                requestsModel.Add(new MyRequestInstructorHistoryViewModel()
+                {
+                    Gym = gym.Name,
+                    Notes = request.Notes,
+                    RequestDate = request.RequestDate,
+                    Status = status,
+                });
+            }
+
+            ViewBag.Requests = requestsModel;
+
+            List<RegisteredInClassesHistory> records = _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToList();
+
+            List<RegisteredInClassesHistoryViewModel> classes = new();
+
+            foreach (var r in records)
+            {
+
+                ClassHistory gClass = await _classHistoryRepository.GetByIdAsync(r.ClassId);
+
+                // Fetch employee and instructor if available
+                StaffHistory? employee = null;
+                StaffHistory? instructor = null;
+
+                var gym = await _gymHistoryRepository.GetByIdAsync(gClass.GymId.Value);
+
+                if (gym == null)
+                {
+                    return GymNotFound();
+                }
+
+                if (!string.IsNullOrEmpty(r.EmployeeId))
+                {
+                    employee = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(r.EmployeeId, gym.Id);
+                }
+
+                if (!string.IsNullOrEmpty(gClass.InstructorId))
+                {
+                    instructor = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(gClass.InstructorId, gym.Id);
+                }
+
+                classes.Add(new RegisteredInClassesHistoryViewModel
+                {
+                    Id = r.Id,
+                    GymName = gClass.GymName,
+                    CategoryName = gClass.Category,
+                    TypeName = gClass.ClassType,
+                    EmployeeEmail = employee?.Email ?? string.Empty,
+                    EmployeeFullName = employee != null ? $"{employee.FirstName} {employee.LastName}" : string.Empty,
+                    SubClass = gClass.SubClass,
+                    RegistrationDate = r.RegistrationDate,
+                    InstructorEmail = instructor?.Email ?? string.Empty,
+                    InstructorFullName = instructor != null ? $"{instructor.FirstName} {instructor.LastName}" : string.Empty,
+                    Reviewed = r.Reviewed,
+                    Rating = r.Rating,
+                    StartDate = gClass.DateStart.Value,
+                    EndDate = gClass.DateEnd.Value,
+                });
+
+                ClassType? type = _classTypeRepository.GetAll().Where(t => t.Name == gClass.ClassType).FirstOrDefault();
+
+                if (type == null)
+                {
+                    ViewBag.TypeAvailable = false;
+                }
+            }
+
+            classes = classes.Where(r => r.EndDate < DateTime.UtcNow).ToList();
+
+            ViewBag.Classes = classes;
+
+            return View();
+        }
+
         public IActionResult UserNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
@@ -749,6 +951,11 @@ namespace FitnessHub.Controllers
         public IActionResult ClientHistoryNotFound()
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "Client history not found", Message = "No history found for that client." });
+        }
+
+        public IActionResult StaffHistoryNotFound()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Staff history not found", Message = "No history found for that staff." });
         }
 
         public IActionResult NotAuthorized()

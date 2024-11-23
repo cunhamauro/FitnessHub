@@ -570,6 +570,24 @@ details .row {
     display: block;
 }
 
+/* Ajuste do tamanho do carrossel */
+#mainCarousel {
+    max-height: 60vh; /* Altura m√°xima para o carrossel */
+    overflow: hidden;
+}
+
+.carousel-image {
+    height: 60vh; /* Define a altura fixa */
+    object-fit: cover; /* Ajusta a imagem para cobrir o espa√ßo sem distorcer */
+}
+
+.recommendedgym-image {
+    width: 100%; /* Garante que a largura se ajuste ao cont√™iner */
+    height: 200px; /* Define uma altura fixa para todas as imagens */
+    object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espa√ßo */
+    border-top-left-radius: 0.25rem; /* Mant√©m o design das bordas do card */
+    border-top-right-radius: 0.25rem;
+
 /* Adjust the size of pagination buttons */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 3px 10px; /* Reduce padding */
@@ -594,22 +612,22 @@ details .row {
     font-size: 12px;
 }
 
-/* Texto da lista de exibiÁ„o por p·gina */
+/* Texto da lista de exibi√ß√£o por p√°gina */
 .dataTables_wrapper .dataTables_length label {
     font-size: 12px;
 }
 
-/* Texto de informaÁıes da tabela */
+/* Texto de informa√ß√µes da tabela */
 .dataTables_wrapper .dataTables_info {
     font-size: 12px;
 }
 
-/* Texto da paginaÁ„o */
+/* Texto da pagina√ß√£o */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     font-size: 12px;
 }
 
-    /* Texto da p·gina selecionada na paginaÁ„o */
+    /* Texto da p√°gina selecionada na pagina√ß√£o */
     .dataTables_wrapper .dataTables_paginate .paginate_button.current {
         font-size: 12px;
     }

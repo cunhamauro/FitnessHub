@@ -16,52 +16,45 @@
 
 
 <div class="container detailsdelete-text">
-    <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh;">@Model.Name Details</h2>
+    <h2 class="view-text text-center" style="margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh;">@Model.Name Details</h2>
     <hr />
-    <div class="row">
-
-        <div class="col-md-3 mb-4">
-            <div class="card">
-                <div class="card-body">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-md-4 mb-4">
                     <dl class="row" style="color: black">
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Name)
-                        </dt>
+                        <dt class="col-sm-12">@Html.DisplayNameFor(model => model.Name)</dt>
+                        <dd class="col-sm-12">@Html.DisplayFor(model => model.Name)</dd>
+                        <dt class="col-sm-12">@Html.DisplayNameFor(model => model.Country)</dt>
                         <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.Name)
+                            <img class="me-2" src="@Model.FlagUrl" alt="@Model.Country Flag" style="width:auto; height:1.5em; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3)" />
+                            @Html.DisplayFor(model => model.Country)
                         </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Country)
-                        </dt>
-                        <dd class="col-sm-12">
-                            <img class="me-2" src="@Model.FlagUrl" alt="@Model.Country Flag" style="width:auto; height:1.5em; box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3)" />@Html.DisplayFor(model => model.Country)
-                        </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.City)
-                        </dt>
-                        <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.City)
-                        </dd>
-                        <dt class="col-sm-12">
-                            @Html.DisplayNameFor(model => model.Address)
-                        </dt>
-                        <dd class="col-sm-12">
-                            @Html.DisplayFor(model => model.Address)
-                        </dd>
+                        <dt class="col-sm-12">@Html.DisplayNameFor(model => model.City)</dt>
+                        <dd class="col-sm-12">@Html.DisplayFor(model => model.City)</dd>
+                        <dt class="col-sm-12">@Html.DisplayNameFor(model => model.Address)</dt>
+                        <dd class="col-sm-12">@Html.DisplayFor(model => model.Address)</dd>
                     </dl>
 
                     <div class="form-group">
                         @if (available)
                         {
-                            <a asp-controller="Gyms" asp-action="Available" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                            <a asp-controller="Gyms" asp-action="Available" class="btn btn-secondary me-2">
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back
+                            </a>
                         }
                         else if (classDetails)
                         {
-                            <a asp-controller="ClientClasses" asp-action="AvailableClasses" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                            <a asp-controller="ClientClasses" asp-action="AvailableClasses" class="btn btn-secondary me-2">
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back
+                            </a>
                         }
                         else
                         {
-                            <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back</a>
+                            <a asp-action="Index" class="btn btn-secondary me-2">
+                                <i class="fa-solid fa-chevron-left me-2"></i>Back
+                            </a>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
@@ -69,35 +62,34 @@
                             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
                                 <i class="fa-solid fa-trash-can me-2"></i>Delete
                             </button>
-
                             <div asp-validation-summary="ModelOnly" class="text-danger mt-4"></div>
                         }
                     </div>
+                </div>
 
+                <!-- Center Column -->
+                <div class="col-md-4 mb-4 d-flex flex-column">
+                    <dl class="row flex-grow-1">
+                        <dd class="col-sm-12 flex-grow-1">
+                            <iframe src="https://www.google.com/maps/embed/v1/place?key=@googleMapsKey&q=@Model?.Address,@Model?.City+@Model?.Country"
+                                    alt="Gym map location"
+                                    style="width: 100%; height: 100%; border: 0;"
+                                    title="Gym Location">
+                            </iframe>
+                        </dd>
+                    </dl>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-md-4 mb-4">
+                    <dl class="row">
+                        <dd class="col-sm-12">
+                            <img src="@Model.ImageDisplay" alt="Gym image" style="max-width: 100%; max-height: 34vh" />
+                        </dd>
+                    </dl>
                 </div>
             </div>
         </div>
-
-        <div class="col-md-4 mb-4 d-flex flex-column">
-            <dl class="row flex-grow-1">
-                <dd class="col-sm-12 flex-grow-1">
-                    <iframe src="https://www.google.com/maps/embed/v1/place?key=@googleMapsKey&q=@Model?.Address,@Model?.City+@Model?.Country"
-                            alt="Gym map location"
-                            style="width: 100%; height: 100%; border: 0;"
-                            title="Gym Location">
-                    </iframe>
-                </dd>
-            </dl>
-        </div>
-
-        <div class="col-md-5 mb-4">
-            <dl class="row">
-                <dd class="col-sm-12">
-                    <img src="@Model.ImageDisplay" alt="Gym image" style="max-width: 100%; max-height: 34vh" />
-                </dd>
-            </dl>
-        </div>
-
     </div>
 </div>
 
