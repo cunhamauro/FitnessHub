@@ -8,12 +8,53 @@
     <h2 style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Available Classes</h2>
 </div>
 
+
+<form method="get" asp-action="AvailableClasses" asp-controller="ClientClasses">
+    <div class="row mb-4 view-form-style">
+        <div class="col-md-2 offset-3">
+            <div class="form-group">
+                <label asp-for="LocationId" class="control-label">Select Location</label>
+                <select asp-for="LocationId" asp-items="Model.LocationList" class="form-control" name="LocationId">
+                    <option value="0">All</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Select Category</label>
+                <select asp-for="CategoryId" asp-items="Model.Categories" class="form-control" name="CategoryId">
+                    <option value="0">All</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <label asp-for="DateFilter" class="control-label">Date</label>
+                <input id="dateStart" asp-for="DateFilter" type="date" class="form-control"
+                       value="@Model.DateFilter?.ToString("yyyy-MM-dd")"
+                       min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                @* <span asp-validation-for="DateFilter" class="text-danger"></span> *@
+            </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-2"></i>Filter
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+
 @if (Model.Classes.Any())
 {
-    <div class="row justify-content-center mt-2">
+    <div class="row justify-content-center mt-5 mb-2">
         @foreach (var classItem in Model.Classes)
         {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="margin-bottom: 2.3rem">
+            <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-0">
                 <div class="card">
                     <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header"><div>@classItem.ClassType</div><div class="text-muted mb-1" style="font-size:1rem">@classItem.Category</div></div>
                     <div class="card-body">
@@ -64,7 +105,9 @@
 else
 {
     <hr />
+
     <h4 class="no-items-list">No Classes were found!</h4>
+
 }
 
 
