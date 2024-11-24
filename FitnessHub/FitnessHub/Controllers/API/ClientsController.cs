@@ -29,9 +29,7 @@ namespace FitnessHub.Controllers.API
         private readonly IConfiguration _configuration;
         private readonly IClientHistoryRepository _clientHistoryRepository;
         private readonly IWorkoutRepository _workoutRepository;
-        private string _baseUrl = string.Empty;
         private readonly AppSettings _appSettings;
-        //private readonly string _baseUrl = "https://localhost:44370/";
 
         public ClientsController(
             IUserHelper userHelper,
@@ -46,7 +44,6 @@ namespace FitnessHub.Controllers.API
             _configuration = configuration;
             _clientHistoryRepository = clientHistoryRepository;
             _workoutRepository = workoutRepository;
-            _baseUrl = _configuration["AppSettings:Url"];
             _appSettings = appSettings.Value;
         }
 
