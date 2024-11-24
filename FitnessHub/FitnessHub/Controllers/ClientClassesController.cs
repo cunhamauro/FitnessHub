@@ -1,5 +1,4 @@
 ﻿using FitnessHub.Data.Classes;
-using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
@@ -716,7 +715,6 @@ namespace FitnessHub.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> FindClientByEmail(string email)
         {
@@ -774,6 +772,7 @@ namespace FitnessHub.Controllers
             return RedirectToAction(nameof(RegisterClientInClass), new { email });
         }
 
+        [Authorize(Roles = "Employee")]
         public async Task<IActionResult> RegisterClientInClass(string email)
         {
             var client = await _userHelper.GetUserByEmailAsync(email) as Client;
@@ -810,7 +809,6 @@ namespace FitnessHub.Controllers
             return View("RegisterClientInClass", model);
         }
 
-        [Authorize(Roles = "Employee")]
         [HttpPost]
         public async Task<IActionResult> RegisterClientInClassConfirm(RegisterClientInClassViewModel model)
         {

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FitnessHub.Data.Entities.Users.Membership>
+﻿@model IEnumerable<FitnessHub.Models.MembershipWithClientsViewModel>
 
 @{
     ViewData["Title"] = "Memberships";
@@ -34,7 +34,10 @@ else
                             @Html.DisplayNameFor(model => model.Name)
                         </th>
                         <th>
-                            @Html.DisplayNameFor(model => model.MonthlyFee)
+                            @Html.DisplayNameFor(model => model.AnnualFee)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Clients)
                         </th>
                         <th>
                             Status
@@ -50,7 +53,10 @@ else
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => item.MonthlyFee)
+                                @(item.AnnualFee.ToString("F2") + " €")
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Clients)
                             </td>
                             <td>
                                 @if(item.OnOffer == true)

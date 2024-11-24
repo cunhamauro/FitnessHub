@@ -22,6 +22,8 @@ namespace FitnessHub.Controllers
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly CountryService _countryService;
+        private readonly IClassRepository _classRepository;
+        private readonly IWorkoutRepository _workoutRepository;
         private readonly IMembershipRepository _membershipRepository;
 
         public UsersController(
@@ -33,7 +35,9 @@ namespace FitnessHub.Controllers
             IStaffHistoryRepository staffHistoryRepository,
             IMembershipRepository membershipRepository,
             IGymHistoryRepository gymHistoryRepository,
-            CountryService countryService)
+            CountryService countryService,
+            IClassRepository classRepository,
+            IWorkoutRepository workoutRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
@@ -43,6 +47,8 @@ namespace FitnessHub.Controllers
             _staffHistoryRepository = staffHistoryRepository;
             _gymHistoryRepository = gymHistoryRepository;
             _countryService = countryService;
+            _classRepository = classRepository;
+            _workoutRepository = workoutRepository;
             _membershipRepository = membershipRepository;
         }
 
@@ -648,7 +654,6 @@ namespace FitnessHub.Controllers
                 PhoneNumber = user.PhoneNumber,
             };
 
-           
             return View(model);
         }
 
@@ -657,14 +662,22 @@ namespace FitnessHub.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var user = await _userHelper.GetClientIncludeAsync(id);
+            var user = await _userHelper.GetUserByIdAsync(id);
+            if (user == null)
+            {
+                return UserNotFound();
+            }
+
+            var userGym = await _gymRepository.GetGymByUserAsync(user);
+            if (userGym == null)
+            {
+                return GymNotFound();
+            }
 
             var roles = await _userHelper.GetUserRolesAsync(user);
 
-            var userGym = await _gymRepository.GetGymByUserAsync(user);
-
             var role = roles.FirstOrDefault();
-
+            
             var model = new UserDetailsViewModel
             {
                 Id = user.Id,
@@ -678,28 +691,92 @@ namespace FitnessHub.Controllers
                 Avatar = user.Avatar,
             };
 
-            if (user != null)
+            if (user is Client client)
             {
-                if (user.MembershipDetails != null)
+                if (client.MembershipDetails != null)
                 {
-                    ModelState.AddModelError(string.Empty, "Cannot delete this user because he has an active membership.");
+                    ModelState.AddModelError(string.Empty, "Cannot delete this client because he has an active membership.");
                     return View("Details", model);
                 }
 
-                if ((user.OnlineClass != null && user.OnlineClass.Any()) ||
-                    (user.GymClass != null && user.GymClass.Any()))
+                if ((client.OnlineClass != null && client.OnlineClass.Any()) ||
+                    (client.GymClass != null && client.GymClass.Any()))
                 {
-                    ModelState.AddModelError(string.Empty, "Cannot delete this user because he is enrolled in classes.");
+                    ModelState.AddModelError(string.Empty, "Cannot delete this client because he is enrolled in classes.");
                     return View("Details", model);
                 }
 
-                var result = await _userHelper.DeleteUser(user);
+                var result = await _userHelper.DeleteUser(client);
                 if (result.Succeeded)
                 {
                     return RedirectToAction(nameof(Index));
                 }
             }
-            return View(model);
+
+            if(user is Instructor instructor)
+            {
+                var gymClasses = await _classRepository.GetAllGymClassesInclude();
+                if (gymClasses.Any())
+                {
+                    var instructorGymClasses = gymClasses.Where(c => c.Instructor.Id == instructor.Id).ToList();
+
+                    if (instructorGymClasses.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "Cannot delete this instructor because he is assigned to classes.");
+                        return View("Details", model);
+                    }
+                }
+
+                var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
+                if (onlineClasses.Any())
+                {
+                    var instructorOnlineClasses = onlineClasses.Where(c => c.Instructor.Id == instructor.Id).ToList();
+
+                    if (instructorOnlineClasses.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "Cannot delete this instructor because he is assigned to classes.");
+                        return View("Details", model);
+                    }
+                }
+
+                var workouts = await _workoutRepository.GetAllWorkoutsIncludeAsync();
+                if(workouts.Any())
+                {
+                    var instructorWorkouts = workouts.Where(w => w.Instructor.Id == instructor.Id);
+                    if (instructorWorkouts.Any())
+                    {
+                        ModelState.AddModelError(string.Empty, "Cannot delete this instructor because he has assigned workouts.");
+                        return View("Details", model);
+                    }
+                }
+
+                var result = await _userHelper.DeleteUser(instructor);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            if(user is Employee employee)
+            {
+                var result = await _userHelper.DeleteUser(employee);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            if (user is Admin admin)
+            {
+                var result = await _userHelper.DeleteUser(admin);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
+            ModelState.AddModelError(string.Empty, "Couldn't delete the user.");
+            return View("Details", model);
         }
 
         [Authorize(Roles = "MasterAdmin, Admin")]
