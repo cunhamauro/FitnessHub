@@ -285,7 +285,7 @@ namespace FitnessHub.Controllers
                 ModelState.AddModelError("ClientEmail", "User not found");
             }
 
-            if (client.MembershipDetails != null)
+            if (client.MembershipDetailsId != 0 && client.MembershipDetailsId != null && await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value) != null)
             {
                 ModelState.AddModelError("ClientEmail", "This User already has an active Membership");
             }
@@ -453,12 +453,12 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return UserNotFound();
+                return RedirectToAction("Login", "Account");
             }
 
-            if (client.MembershipDetails != null)
+            if (client.MembershipDetailsId != 0 && client.MembershipDetailsId != null && await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value) != null)
             {
-                ModelState.AddModelError("MembershipId", "You already have an active Membership");
+                ModelState.AddModelError("MembershipId", "This User already has an active Membership");
             }
 
             if (ModelState.IsValid)
@@ -519,7 +519,8 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return UserNotFound();
+                return RedirectToAction("Login", "Account");
+
             }
 
             if (client.MembershipDetailsId == null)
@@ -557,7 +558,8 @@ namespace FitnessHub.Controllers
 
             if (client == null)
             {
-                return UserNotFound();
+                return RedirectToAction("Login", "Account");
+
             }
 
             if (client.MembershipDetailsId == null)

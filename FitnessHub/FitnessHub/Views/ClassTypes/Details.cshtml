@@ -33,17 +33,7 @@
                         </dd>
                         <dd>
                             <div class="rating-content">
-                                @{
-                                    if (Model.NumReviews == 0)
-                                    {
-                                        <ejs-rating id="rating_@Model.Id" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
-                                    }
-                                    else
-                                    {
-                                        @Html.Raw("N/A")
-                                        <i class="fa-solid fa-star ms-2"></i>
-                                    }
-                                }
+                                <ejs-rating id="rating_@Model.Id" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
                             </div>
                             <div class="text-nowrap">
                                 (@Model.NumReviews reviews)
@@ -52,8 +42,9 @@
                     </dl>
 
                     <div class="form-group">
-                        <a asp-action="Index" class="btn btn-secondary me-2"><i class="fa-solid fa-chevron-left me-2"></i>Back
-                            </a>
+                        <a asp-action="Index" class="btn btn-secondary me-2">
+                            <i class="fa-solid fa-chevron-left me-2"></i>Back
+                        </a>
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-class-id="@Model.Id">
                             <i class="fa-solid fa-trash-can me-2"></i>Delete
                         </button>

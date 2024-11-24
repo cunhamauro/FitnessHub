@@ -121,6 +121,7 @@ body {
 .nav-item span {
     color: whitesmoke;
     transition: color 0.5s ease;
+    font-size: 1rem;
 }
 
 .nav-item span:hover {
@@ -588,23 +589,25 @@ details .row {
     object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espaço */
     border-top-left-radius: 0.25rem; /* Mantém o design das bordas do card */
     border-top-right-radius: 0.25rem;
+}
+
     /* Adjust the size of pagination buttons */
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
+.dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 3px 10px; /* Reduce padding */
     font-size: 12px; /* Smaller text */
     margin: 1px; /* Add some spacing */
 }
 
 /* Style active button */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        color: black !important; /* Text color */
-        border-radius: 5px; /* Rounded corners */
-    }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    color: black !important; /* Text color */
+    border-radius: 5px !important; /* Rounded corners */
+}
 
 /* Hover effect for buttons */
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        border-radius: 5px;
-    }
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    border-radius: 5px !important;
+}
 
 /* Texto da barra de pesquisa */
 .dataTables_wrapper .dataTables_filter label,
@@ -634,4 +637,8 @@ details .row {
 
 .rating-content {
     overflow: auto;
+}
+
+.fa-bell {
+    font-size: 0.9rem;
 }

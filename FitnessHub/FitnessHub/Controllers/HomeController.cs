@@ -79,6 +79,8 @@ namespace FitnessHub.Controllers
             if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Client"))
             {
                 var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name) as Client;
+
+                //Nao sei se fica bem estes not founds
                 if (user == null)
                 {
                     return UserNotFound();
@@ -93,6 +95,37 @@ namespace FitnessHub.Controllers
                 if (gym == null)
                 {
                     return GymNotFound();
+                }
+
+                // Meti um codigo aqui so para verificar se tem membership para customizar a mensagem das memberships
+
+                bool hasMembership = true;
+
+                if (user.MembershipDetailsId == null)
+                {
+                    hasMembership = false;
+                }
+
+                var memberShipDetailClient = new MembershipDetails();
+
+                if (hasMembership)
+                {
+                    memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(user.MembershipDetailsId.Value);
+                }
+
+                if (memberShipDetailClient == null)
+                {
+                    hasMembership = false;
+                }
+
+                if (memberShipDetailClient.Status == false)
+                {
+                    hasMembership = false;
+                }
+
+                if (hasMembership)
+                {
+                    ViewBag.HasMembership = true;
                 }
 
                 ViewBag.Gym = gym;
@@ -145,18 +178,33 @@ namespace FitnessHub.Controllers
                     .Select(g => g.Key)
                     .FirstOrDefault();
 
+                ViewBag.RecommendClient = true;
+                ViewBag.ClientFirstName = user.FirstName;
+
                 if (mostFrequentClassType != null)
                 {
                     ViewBag.Class = mostFrequentClassType;
+                    ViewBag.HasClasses = true;
                 }
                 else
                 {
                     var recommendedClass = await _classTypeRepository.GetAll().OrderBy(c => Guid.NewGuid()).FirstOrDefaultAsync();
                     ViewBag.Class = recommendedClass;
                 }
+
+                ViewBag.Welcome = $"Welcome, {user.FirstName}";
+            }
+            else if(this.User.Identity.IsAuthenticated && !this.User.IsInRole("Client"))
+            {
+                var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+                ViewBag.Welcome = $"Welcome, {user.FirstName}";
+                ViewBag.IsStaff = true;
             }
             else
             {
+                ViewBag.Welcome = "Welcome";
+
                 gym = await _gymRepository.GetAll().OrderBy(g => Guid.NewGuid()).FirstOrDefaultAsync();
 
                 ViewBag.Gym = gym;
