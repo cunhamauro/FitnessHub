@@ -25,6 +25,10 @@ namespace FitnessHub.Data.Entities.Communication
 
         public List<TicketMessage>? TicketMessages { get; set; }
 
+        public bool HasStaffReply { get; set; } = false;
+
+        public bool HasClientReply { get; set; } = false;
+
         public bool Open { get; set; } = true;
     }
 }

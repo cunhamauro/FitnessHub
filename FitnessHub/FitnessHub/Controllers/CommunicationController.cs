@@ -88,7 +88,7 @@ namespace FitnessHub.Controllers
             var ticketsList = await _ticketRepository.GetTicketsByUserTrackIncludeAsync(client.Id);
 
             var tickets = await _ticketRepository.GetAll().Where(t => t.Client.Id == client.Id && t.Open == true).ToListAsync();
-
+            
             if (tickets.Any())
             {
                 ViewBag.AllowNew = false;
@@ -218,11 +218,23 @@ namespace FitnessHub.Controllers
                     return View(ticket);
                 }
 
-                if (await _userHelper.IsUserInRoleAsync(user, "Employee") || await _userHelper.IsUserInRoleAsync(user, "Admin"))
+                if (ticket.Picked == false && (await _userHelper.IsUserInRoleAsync(user, "Employee") || await _userHelper.IsUserInRoleAsync(user, "Admin")))
                 {
                     ticket.DatePicked = DateTime.UtcNow;
                     ticket.Staff = user;
                     ticket.Picked = true;
+                }
+
+                if(this.User.IsInRole("Admin") || this.User.IsInRole("Employee"))
+                {
+                    ticket.HasStaffReply = true;
+                    ticket.HasClientReply = false;
+                }
+
+                if (this.User.IsInRole("Client"))
+                {
+                    ticket.HasStaffReply = false;
+                    ticket.HasClientReply = true;
                 }
 
                 var role = User.Claims

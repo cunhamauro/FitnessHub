@@ -592,7 +592,35 @@ namespace FitnessHub.Controllers
         [Authorize(Roles = "MasterAdmin")]
         public IActionResult Index()
         {
-            return View(_membershipRepository.GetAll());
+            var memberships = _membershipRepository.GetAll();
+
+            var membershipDetails = _membershipDetailsRepository.GetAll().Include(m => m.Membership).ToList();
+
+            List<MembershipWithClientsViewModel> membershipsWithClients = new List<MembershipWithClientsViewModel>();
+
+            foreach(var m in memberships)
+            {
+                var filteredDetails = membershipDetails.Where(md => md.Membership.Id == m.Id);
+
+                var clients = filteredDetails.Count();
+                //var clients = 0;
+                //if(membershipDetails != null)
+                //{
+                //    clients = membershipDetails.Count();
+                //}
+
+                membershipsWithClients.Add(new MembershipWithClientsViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    MonthlyFee = m.MonthlyFee,
+                    Description = m.Description,
+                    OnOffer = m.OnOffer,
+                    Clients = clients
+                });
+            }
+
+            return View(membershipsWithClients);
         }
 
         // GET: Memberships/Details/5

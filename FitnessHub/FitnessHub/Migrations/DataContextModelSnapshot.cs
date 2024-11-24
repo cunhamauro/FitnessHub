@@ -208,6 +208,12 @@ namespace FitnessHub.Migrations
                     b.Property<DateTime>("DatePicked")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("HasClientReply")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("HasStaffReply")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

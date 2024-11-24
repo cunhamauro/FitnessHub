@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FitnessHub.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class AddTicketRepliesBool : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -818,6 +818,8 @@ namespace FitnessHub.Migrations
                     Picked = table.Column<bool>(type: "bit", nullable: false),
                     DatePicked = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StaffId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    HasStaffReply = table.Column<bool>(type: "bit", nullable: false),
+                    HasClientReply = table.Column<bool>(type: "bit", nullable: false),
                     Open = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>

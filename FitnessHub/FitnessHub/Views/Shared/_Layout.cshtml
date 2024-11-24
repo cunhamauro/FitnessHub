@@ -4,6 +4,7 @@
 
 @inject IMembershipDetailsRepository memberShipDetails
 @inject IUserHelper UserHelper
+@inject ITicketRepository ticketRepository
 
 @{
     var currentUser = new User();
@@ -30,8 +31,22 @@
     <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/fluent.css" />
     <!-- Syncfusion ASP.NET Core controls scripts -->
     <script src="https://cdn.syncfusion.com/ej2/27.1.48/dist/ej2.min.js"></script>
-@*     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.6/signalr.min.js"></script>
- *@
+
+    <style>
+        .e-rating-container .e-rating-item-container.e-rating-selected .e-rating-icon, .e-rating-container .e-rating-item-container.e-rating-intermediate .e-rating-icon {
+            background: linear-gradient(to right, gold var(--rating-value), transparent var(--rating-value)) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-stroke: 1px #00000000 !important;
+        }
+
+        .e-rating-container .e-rating-item-container .e-rating-icon {
+            -webkit-text-fill-color: rgb(145 145 145 / 34%) !important;
+            -webkit-text-stroke: 1px #6e6e6e !important;
+            background: none !important;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -40,15 +55,15 @@
         <nav class="navbar navbar-expand-lg navbar-toggleable-sm box-shadow mb-3">
             <div class="container">
                 <a class="navbar-brand" style="margin-right: 0" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img class="img-fluid" src="~/img/logo.png" style="width: 30vh"/>
+                    <img class="img-fluid" src="~/img/logo.png" style="width: 30vh" />
                 </a>
-                <button class="navbar-toggler toggleBtn" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" 
+                <button class="navbar-toggler toggleBtn" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span style="margin-top: 1.2px" class="fa-solid fa-bars toggleIcon" id="toggleIcon"></span>
                 </button>
 
                 <div class="navbar-collapse collapse d-lg-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 d-flex" style="gap: 3%; margin-right:auto !important; margin-left: 3% !important">
+                    <ul class="navbar-nav flex-grow-1 d-flex" style="gap:0.3%; margin-right:auto !important; margin-left: 3% !important">
 
                         @if (this.User.Identity.IsAuthenticated)
                         {
@@ -62,13 +77,13 @@
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="Gyms" asp-action="Available">Gyms</a>
                                         </li>
-                                        <li>
-                                            <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="Available">Memberships</a>
-                                        </li>
+                                        @*                                         <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="Available">Memberships</a>
+                                </li> *@
                                         <li>
                                             <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="Available">Classes</a>
                                         </li>
-                                        
+
                                     </ul>
                                 </li>
                             }
@@ -77,18 +92,37 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Available"><span>Gyms</span></a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
+                                @*                                 <li class="nav-item">
+                        <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
+                        </li> *@
+
+                                // DROPDOWN COM TODAS AS CLASSES PARA O CLIENTE
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span>Classes</span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="Available">Classes</a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses">Available Classes</a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="VideoClassTube">FitnessTube</a>
+                                        </li>
+                                    </ul>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="VideoClassTube"><span>FitnessTube</span></a>
-                                </li>
+
+                                //
+
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Communication" asp-action="Posts"><span>Forum</span></a>
                                 </li>
+
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <span>Tools</span>
@@ -108,13 +142,6 @@
                                         </li>
                                     </ul>
                                 </li>
- 
-                                @* @if (await memberShipDetails.ClientHasMemberShip(this.User))
-                                {  *@
-                                    <li class="nav-item">
-                                        <a class="nav-link text-light" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses"><span>Available Classes</span></a>
-                                    </li>
-                                @* } *@ 
                             }
                         }
                         else
@@ -122,15 +149,29 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Available"><span>Gyms</span></a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
+                            @*                             <li class="nav-item">
+                        <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
+                        </li> *@
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span>Classes</span>
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="Available">Classes</a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="AvailableClasses">Available Classes</a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="VideoClassTube">FitnessTube</a>
+                                    </li>
+                                </ul>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="VideoClassTube"><span>FitnessTube</span></a>
-                            </li>
+
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <span>Tools</span>
@@ -143,12 +184,12 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="CalculateWaterRequirements">Water Intake</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="DailyCaloriesInTake">Daily Calories InTake</a>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Tools" asp-action="DailyCaloriesInTake">Caloric InTake</a>
                                     </li>
                                 </ul>
                             </li>
                         }
-                        
+
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("MasterAdmin"))
                         {
                             <li class="nav-item dropdown">
@@ -201,13 +242,23 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Communication" asp-action="Posts"><span>Forum</span></a>
+                            </li>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span>Manage</span>
+                                    @if (await ticketRepository.GetTicketByStaffAndClientReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <span>Manage<i style="color:red" id="bell-icon" class="fa-solid fa-bell ms-2"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span>Manage</span>
+                                    }
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
@@ -219,13 +270,6 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="ActiveClientMemberships">Client Memberships</a>
                                     </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span>Classes</span>
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="OnlineClasses">Online Classes</a>
                                     </li>
@@ -235,6 +279,18 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="VideoClasses">Video Classes</a>
                                     </li>
+                                    @if (await ticketRepository.GetTicketByStaffAndClientReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientTickets">Client Support<i style="color:red" class="fa-solid fa-bell ms-2"></i></a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientTickets">Client Support</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
@@ -259,13 +315,16 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Communication" asp-action="Posts"><span>Forum</span></a>
+                            </li>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Instructor"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span>Instructor</span>
+                                    <span>Manage</span>
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
@@ -279,13 +338,23 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Communication" asp-action="Posts"><span>Forum</span></a>
+                            </li>
                         }
 
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Employee"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span>Employee</span>
+                                    @if (await ticketRepository.GetTicketByStaffAndClientReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <span>Manage<i style="color:red" id="bell-icon" class="fa-solid fa-bell ms-2"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span>Manage</span>
+                                    }
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
@@ -309,6 +378,18 @@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="SignUpClient">Sign Up Client</a>
                                     </li>
+                                    @if (await ticketRepository.GetTicketByStaffAndClientReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientTickets">Client Support<i style="color:red" class="fa-solid fa-bell ms-2"></i></a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="ClientTickets">Client Support</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
@@ -326,6 +407,9 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Classes" asp-action="ClassesHistory">Classes</a>
                                     </li>
                                 </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Communication" asp-action="Posts"><span>Forum</span></a>
                             </li>
                         }
                     </ul>
@@ -354,7 +438,15 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span>@this.User.Identity.Name</span>
+                                    @if (await ticketRepository.GetTicketsByClientAndStaffReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <span>@this.User.Identity.Name<i style="color:red" id="bell-icon" class="fa-solid fa-bell ms-2"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span>@this.User.Identity.Name</span>
+
+                                    }
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
@@ -373,8 +465,8 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Workouts" asp-action="MyWorkouts">My Workouts</a>
                                     </li>
                                     @* <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
-                                    </li> *@
+                                <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="MyRequests">My Requests</a>
+                                </li> *@
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="RequestInstructor">Request Instructor</a>
                                     </li>
@@ -382,11 +474,23 @@
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="ClientHistory">History</a>
                                     </li>
                                     @* <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembershipHistory">My Membership History</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
-                                    </li> *@
+                                <a class="dropdown-item" asp-area="" asp-controller="Memberships" asp-action="MyMembershipHistory">My Membership History</a>
+                                </li>
+                                <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="ClientClasses" asp-action="MyClassHistory">My Class History</a>
+                                </li> *@
+                                    @if (await ticketRepository.GetTicketsByClientAndStaffReplyTrueTrackIncludeAsync(currentUser.Id) != null)
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="Tickets">Support Tickets<i style="color:red" class="fa-solid fa-bell ms-2"></i></a>
+                                        </li>
+                                    }
+                                    else
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-area="" asp-controller="Communication" asp-action="Tickets">Support</a>
+                                        </li>
+                                    }
                                     <li>
                                         <a class="dropdown-item" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                                     </li>
@@ -465,21 +569,21 @@
 
     <script>
 
-    // JS function to set the main content container's bottom margin according to the footer's height
-    function adjustContainerMargin() {
-    var footer = document.querySelector('.footer');
-    var container = document.querySelector('.container-m-ft-md');
+        // JS function to set the main content container's bottom margin according to the footer's height
+        function adjustContainerMargin() {
+            var footer = document.querySelector('.footer');
+            var container = document.querySelector('.container-m-ft-md');
 
-    // Get the footer's height
-     var footerHeight = footer.offsetHeight;
+            // Get the footer's height
+            var footerHeight = footer.offsetHeight;
 
-    // Set the container's margin-bottom to match the footer's height
-    container.style.marginBottom = footerHeight + 'px';
-    }
+            // Set the container's margin-bottom to match the footer's height
+            container.style.marginBottom = footerHeight + 'px';
+        }
 
-    // Call the function on browser window load and resize
-    window.addEventListener('load', adjustContainerMargin);
-    window.addEventListener('resize', adjustContainerMargin);
+        // Call the function on browser window load and resize
+        window.addEventListener('load', adjustContainerMargin);
+        window.addEventListener('resize', adjustContainerMargin);
 
         // Listen for Bootstrap collapse events
         var navbarCollapse = document.querySelector('.navbar-collapse');
@@ -494,10 +598,8 @@
         navbarCollapse.addEventListener('hide.bs.collapse', function () {
             toggleIcon.className = 'fa-solid fa-bars toggleIcon'; // Change to bars
         });
-
     </script>
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
 </body>
 </html>
-

@@ -7,5 +7,9 @@ namespace FitnessHub.Data.Repositories
         Task<List<Ticket>> GetTicketsByUserTrackIncludeAsync(string id);
 
         Task<Ticket> GetTicketByIdTrackIncludeAsync(int id);
+
+        Task<Ticket> GetTicketByStaffAndClientReplyTrueTrackIncludeAsync(string id);
+
+        Task<Ticket> GetTicketsByClientAndStaffReplyTrueTrackIncludeAsync(string id);
     }
 }
