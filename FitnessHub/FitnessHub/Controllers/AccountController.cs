@@ -1,4 +1,5 @@
 ﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities;
 using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.History;
 using FitnessHub.Data.Entities.Users;
@@ -8,6 +9,7 @@ using FitnessHub.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
