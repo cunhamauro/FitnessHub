@@ -121,6 +121,7 @@ body {
 .nav-item span {
     color: whitesmoke;
     transition: color 0.5s ease;
+    font-size: 1rem;
 }
 
 .nav-item span:hover {
@@ -583,12 +584,14 @@ details .row {
 
 .recommendedgym-image {
     width: 100%; /* Garante que a largura se ajuste ao contêiner */
-    height: 200px; /* Define uma altura fixa para todas as imagens */
+    /*height: 200%;*/ /* Define uma altura fixa para todas as imagens VVV */
+    height: 300px; /* Define uma altura fixa para todas as imagens */
     object-fit: cover; /* Garante que a imagem seja cortada proporcionalmente para caber no espaço */
     border-top-left-radius: 0.25rem; /* Mantém o design das bordas do card */
     border-top-right-radius: 0.25rem;
+}
 
-/* Adjust the size of pagination buttons */
+    /* Adjust the size of pagination buttons */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     padding: 3px 10px; /* Reduce padding */
     font-size: 12px; /* Smaller text */
@@ -596,15 +599,15 @@ details .row {
 }
 
 /* Style active button */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        color: black !important; /* Text color */
-        border-radius: 5px; /* Rounded corners */
-    }
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    color: black !important; /* Text color */
+    border-radius: 5px !important; /* Rounded corners */
+}
 
 /* Hover effect for buttons */
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        border-radius: 5px;
-    }
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    border-radius: 5px !important;
+}
 
 /* Texto da barra de pesquisa */
 .dataTables_wrapper .dataTables_filter label,
@@ -627,20 +630,15 @@ details .row {
     font-size: 12px;
 }
 
-    /* Texto da página selecionada na paginação */
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        font-size: 12px;
-    }
-
-.e-rating-container .e-rating-item-container.e-rating-selected .e-rating-icon, .e-rating-container .e-rating-item-container.e-rating-intermediate .e-rating-icon {
-    background: linear-gradient(to right, gold var(--rating-value), transparent var(--rating-value)) !important;
-    background-clip: text !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-stroke: 1px #00000000 !important;
+/* Texto da página selecionada na paginação */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    font-size: 12px;
 }
 
-.e-rating-container .e-rating-item-container .e-rating-icon {
-    -webkit-text-fill-color: rgb(145 145 145 / 34%) !important;
-    -webkit-text-stroke: 1px #6e6e6e !important;
-    background: none !important;
+.rating-content {
+    overflow: auto;
+}
+
+.fa-bell {
+    font-size: 0.9rem;
 }

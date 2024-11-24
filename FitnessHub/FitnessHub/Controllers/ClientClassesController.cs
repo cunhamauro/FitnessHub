@@ -128,6 +128,35 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> JoinWaitlist(int classId)
         {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (client.MembershipDetailsId == null)
+            {
+                return RedirectToAction("SignUp", "Memberships");
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (memberShipDetailClient == null)
+            {
+                return RedirectToAction("SignUp", "Memberships");
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return RedirectToAction("MyMembership", "Memberships");
+            }
+
             var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
 
             if (gymClass == null)
@@ -138,13 +167,6 @@ namespace FitnessHub.Controllers
             if (gymClass.Capacity < gymClass.Clients.Count)
             {
                 return ClassNotFull();
-            }
-
-            Client client = await _userHelper.GetUserAsync(this.User) as Client;
-
-            if (client == null)
-            {
-                return UserNotFound();
             }
 
             if (gymClass.Clients.Contains(client))
@@ -177,18 +199,40 @@ namespace FitnessHub.Controllers
         [HttpPost]
         public async Task<IActionResult> ExitWaitlist(int classId)
         {
-            var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
-
-            if (gymClass == null)
+            if (!this.User.Identity.IsAuthenticated)
             {
-                return ClassNotFound();
+                return RedirectToAction("Login", "Account");
             }
 
             Client client = await _userHelper.GetUserAsync(this.User) as Client;
 
             if (client == null)
             {
-                return UserNotFound();
+                return RedirectToAction("Login", "Account");
+            }
+
+            if (client.MembershipDetailsId == null)
+            {
+                return RedirectToAction("SignUp", "Memberships");
+            }
+
+            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+
+            if (memberShipDetailClient == null)
+            {
+                return RedirectToAction("SignUp", "Memberships");
+            }
+
+            if (memberShipDetailClient.Status == false)
+            {
+                return RedirectToAction("MyMembership", "Memberships");
+            }
+
+            var gymClass = await _classRepository.GetGymClassByIdInclude(classId);
+
+            if (gymClass == null)
+            {
+                return ClassNotFound();
             }
 
             if (gymClass.Clients.Contains(client))
@@ -226,34 +270,31 @@ namespace FitnessHub.Controllers
             return RedirectToAction(nameof(AvailableClasses));
         }
 
-        // User side actions
-        [Authorize(Roles = "Client")]
-
         public async Task<IActionResult> AvailableClasses(AvailableClassesViewModel model, int LocationId = 0, int CategoryId = 0)
         {
             var client = await _userHelper.GetUserAsync(this.User) as Client;
 
-            if (client == null)
-            {
-                return UserNotFound();
-            }
+            //if (client == null)
+            //{
+            //    return UserNotFound();
+            //}
 
-            if (client.MembershipDetailsId == null)
-            {
-                return MembershipNotFound();
-            }
+            //if (client.MembershipDetailsId == null)
+            //{
+            //    return MembershipNotFound();
+            //}
 
-            var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
+            //var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
-            if (memberShipDetailClient == null)
-            {
-                return MembershipNotFound();
-            }
+            //if (memberShipDetailClient == null)
+            //{
+            //    return MembershipNotFound();
+            //}
 
-            if (memberShipDetailClient.Status == false)
-            {
-                return MembershipNotFound();
-            }
+            //if (memberShipDetailClient.Status == false)
+            //{
+            //    return MembershipNotFound();
+            //}
 
             model.Categories = _categoryRepository.GetAll()
                 .Select(c => new SelectListItem
@@ -303,7 +344,24 @@ namespace FitnessHub.Controllers
 
             foreach (var onlineClass in onlineClasses)
             {
-                if (!onlineClass.Clients.Any(c => c.Id == client.Id))
+                if (client != null && !onlineClass.Clients.Any(c => c.Id == client.Id))
+                {
+                    availableClasses.Add(new ClassViewModel
+                    {
+                        InstructorName = onlineClass.Instructor.FullName,
+                        DateStart = onlineClass.DateStart,
+                        DateEnd = onlineClass.DateEnd,
+                        Location = "Online",
+                        IsOnline = true,
+                        Id = onlineClass.Id,
+                        Category = onlineClass.Category.Name,
+                        ClassType = onlineClass.ClassType.Name,
+                        Full = false,
+                        InWaitlist = false,
+                        Registered = false,
+                    });
+                }
+                else if (client == null)
                 {
                     availableClasses.Add(new ClassViewModel
                     {
@@ -323,7 +381,24 @@ namespace FitnessHub.Controllers
             }
             foreach (var gymClass in gymClasses)
             {
-                if (!gymClass.Clients.Any(c => c.Id == client.Id))
+                if (client != null && !gymClass.Clients.Any(c => c.Id == client.Id))
+                {
+                    availableClasses.Add(new ClassViewModel
+                    {
+                        InstructorName = gymClass.Instructor.FullName,
+                        DateStart = gymClass.DateStart,
+                        DateEnd = gymClass.DateEnd,
+                        Location = gymClass.Gym.Name,
+                        IsOnline = false,
+                        Id = gymClass.Id,
+                        Category = gymClass.Category.Name,
+                        ClassType = gymClass.ClassType.Name,
+                        Full = gymClass.Capacity == gymClass.Clients.Count(),
+                        InWaitlist = false,
+                        Registered = false,
+                    });
+                }
+                else if (client == null)
                 {
                     availableClasses.Add(new ClassViewModel
                     {
@@ -341,37 +416,42 @@ namespace FitnessHub.Controllers
                     });
                 }
             }
+
             model.Classes = availableClasses.OrderBy(c => c.DateStart).ToList();
             return View(model);
         }
 
 
-        [Authorize(Roles = "Client")]
         [HttpPost]
         public async Task<IActionResult> Register(int classId, bool isOnline)
         {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             Client client = await _userHelper.GetUserAsync(this.User) as Client;
 
             if (client == null)
             {
-                return UserNotFound();
+                return RedirectToAction("Login", "Account");
             }
 
             if (client.MembershipDetailsId == null)
             {
-                return RedirectToAction("Available", "Memberships");
+                return RedirectToAction("SignUp", "Memberships");
             }
 
             var memberShipDetailClient = await _membershipDetailsRepository.GetByIdAsync(client.MembershipDetailsId.Value);
 
             if (memberShipDetailClient == null)
             {
-                return RedirectToAction("Available", "Memberships");
+                return RedirectToAction("SignUp", "Memberships");
             }
 
             if (memberShipDetailClient.Status == false)
             {
-                return RedirectToAction("Available", "Memberships");
+                return RedirectToAction("MyMembership", "Memberships");
             }
 
             var history = new RegisteredInClassesHistory
@@ -574,7 +654,6 @@ namespace FitnessHub.Controllers
             return RedirectToAction(nameof(MyClasses));
         }
 
-        [Authorize(Roles = "Client")]
         public async Task<IActionResult> ClassDetails(int id)
         {
             var gymClass = await _classRepository.GetGymClassByIdInclude(id);

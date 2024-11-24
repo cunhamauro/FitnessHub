@@ -10,11 +10,16 @@
     requests = ViewBag.Requests;
     classes = ViewBag.Classes;
 }
-<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Classes</h2>
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">My History</h2>
 
+<div class="card card-header mb-4 mt-1" style="text-align: center; cursor:pointer" onclick="ToggleClassHistory()">
+    <span style="font-size: 1rem"><span id="showHideClassHistoryTxt">Show</span> Class History</span>
+</div>
+
+
+<div id="classHistory" style="display:none">
 @if (!classes.Any())
 {
-    <hr />
     <h4 class="no-items-list">You have no Class History!</h4>
 }
 else
@@ -145,9 +150,9 @@ else
         </div>
     </div>
 }
+</div>
 
 <div class="row">
-    @* <h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Requests</h2> *@
 
     @if (!requests.Any() && !memberships.Any())
     {
@@ -159,11 +164,16 @@ else
     else
     {
         <div class="col-md-6">
-            <h3 class="view-text text-center mb-4" style="color:#ff6201">Requests</h3>
+            <div class="card card-header mb-4 mt-1" style="text-align: center; cursor:pointer" onclick="ToggleRequestHistory()">
+                <span style="font-size: 1rem"><span id="showHideRequestHistoryTxt">Show</span> Request History</span>
+            </div>
+
+
+            <div id="requestHistory" style="display:none">
             @if (!requests.Any())
             {
                 <hr />
-                <h4 class="no-items-list">There are no Requests on the history!</h4>
+                <h4 class="no-items-list">You have no Requests History!</h4>
             }
             else
             {
@@ -201,14 +211,21 @@ else
                     </div>
                 </div>
             }
+            </div>
         </div>
 
         <div class="col-md-6">
-            <h3 class="view-text text-center mb-4" style="color:#ff6201">Membership</h3>
+
+            <div class="card card-header mb-4 mt-1" style="text-align: center; cursor:pointer" onclick="ToggleMembershipHistory()">
+                <span style="font-size: 1rem"><span id="showHideMembershipHistoryTxt">Show</span> Membership History</span>
+            </div>
+
+
+            <div id="membershipHistory" style="display:none">
+
             @if (!memberships.Any())
             {
-                <hr />
-                <h4 class="no-items-list">There is no Membership History!</h4>
+                <h4 class="no-items-list">You have no Membership History!</h4>
             }
             else
             {
@@ -247,6 +264,7 @@ else
                     </div>
                 </div>
             }
+            </div>
         </div>
     }
 </div>
@@ -282,9 +300,6 @@ else
                 "aLengthMenu": [
                     [20, 50, 100, 200, -1],
                     [20, 50, 100, 200, "All"]
-                ],
-                columnDefs: [
-                    { orderable: false, targets: [-1, 0] }
                 ]
             });
         });
@@ -300,7 +315,7 @@ else
                     [20, 50, 100, 200, "All"]
                 ],
                 columnDefs: [
-                    { orderable: false, targets: [-1, 0] }
+                    { orderable: false, targets: [1] }
                 ]
             });
         });
@@ -314,9 +329,6 @@ else
                 "aLengthMenu": [
                     [20, 50, 100, 200, -1],
                     [20, 50, 100, 200, "All"]
-                ],
-                columnDefs: [
-                    { orderable: false, targets: [-1, 0] }
                 ]
             });
         });
@@ -351,5 +363,59 @@ else
                 });
             });
         });
+    </script>
+
+    <script>
+
+        function ToggleClassHistory() {
+            var classes = document.getElementById('classHistory');
+            var txt = document.getElementById('showHideClassHistoryTxt');
+
+            if (classes.style.display === 'none' || classes.style.display === ' ') {
+                classes.style.display = 'block';
+                txt.innerText = 'Hide';
+            }
+            else {
+                classes.style.display = 'none';
+                txt.innerText = 'Show';
+            }
+        }
+
+    </script>
+
+    <script>
+
+        function ToggleRequestHistory() {
+            var requests = document.getElementById('requestHistory');
+            var txt = document.getElementById('showHideRequestHistoryTxt');
+
+            if (requests.style.display === 'none' || requests.style.display === ' ') {
+                requests.style.display = 'block';
+                txt.innerText = 'Hide';
+            }
+            else {
+                requests.style.display = 'none';
+                txt.innerText = 'Show';
+            }
+        }
+
+    </script>
+
+    <script>
+
+        function ToggleMembershipHistory() {
+            var mships = document.getElementById('membershipHistory');
+            var txt = document.getElementById('showHideMembershipHistoryTxt');
+
+            if (mships.style.display === 'none' || mships.style.display === ' ') {
+                mships.style.display = 'block';
+                txt.innerText = 'Hide';
+            }
+            else {
+                mships.style.display = 'none';
+                txt.innerText = 'Show';
+            }
+        }
+
     </script>
 }

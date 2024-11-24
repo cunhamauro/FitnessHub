@@ -4,34 +4,42 @@
 @model IEnumerable<FitnessHub.Data.Entities.Users.Membership>
 
 @{
-    ViewData["Title"] = "Join us";
+    ViewData["Title"] = "Home";
+
     Gym recommendedGym = ViewBag.Gym;
     ClassType recommendedClass = ViewBag.Class;
     Instructor instructor = ViewBag.Instructor;
 }
 
-<div id="mainCarousel" class="carousel slide shadow" data-bs-ride="carousel" style="border-radius:15px" >
+<style>
+    .welcome-text {
+        font-size: 3rem; /* Aumenta o tamanho do texto */
+        font-weight: 700; /* Deixa o texto mais destacado */
+        text-shadow: 4px 4px 10px rgba(0, 0, 0, 0.9); /* Sombra mais forte e mais larga */
+        color: #ff6201; /* Garante que o texto seja branco */
+        text-align: center; /* Centraliza o texto */
+    }
+</style>
+
+<div id="mainCarousel" class="carousel slide shadow mt-5" data-bs-ride="carousel" style="border-radius:15px">
     <div class="carousel-inner">
         <div class="carousel-item active">
             <img src="~/images/gym1.jpg" class="d-block w-100 carousel-image" alt="Gym Image 1">
-            @* <div class="carousel-caption d-none d-md-block">
-                <h5>Welcome to FitnessHub</h5>
-                <p>Explore the best gyms near you!</p>
-            </div> *@
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+                <h1 class="welcome-text">@ViewBag.Welcome</h1>
+            </div>
         </div>
         <div class="carousel-item">
             <img src="~/images/gym2.jpg" class="d-block w-100 carousel-image" alt="Gym Image 2">
-            @* <div class="carousel-caption d-none d-md-block">
-                <h5>Stay Fit</h5>
-                <p>Discover new ways to stay active.</p>
-            </div> *@
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+                <h1 class="welcome-text">@ViewBag.Welcome</h1>
+            </div>
         </div>
         <div class="carousel-item">
             <img src="~/images/gym3.jpg" class="d-block w-100 carousel-image" alt="Gym Image 3">
-            @* <div class="carousel-caption d-none d-md-block">
-                <h5>Join Now</h5>
-                <p>Your journey to fitness starts here!</p>
-            </div> *@
+            <div class="carousel-caption d-flex flex-column justify-content-center align-items-center" style="height: 100%;">
+                <h1 class="welcome-text">@ViewBag.Welcome</h1>
+            </div>
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
@@ -44,11 +52,25 @@
     </button>
 </div>
 
-<div class="row mt-4">
-    <div class="col-12 text-center">
-        <h2 class="mt-2" style="font-weight: bolder;">@ViewData["Title"]</h2>
+@if (ViewBag.IsStaff != true)
+{
+
+@if (ViewBag.HasMembership == true)
+{
+    <div class="row mt-4">
+        <div class="col-12 text-center view-text mt-2 mb-3">
+            <h2 style="font-weight: bolder;">Check our other Memberships:</h2>
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="row mt-4">
+        <div class="col-12 text-center view-text mt-2 mb-3">
+            <h2 style="font-weight: bolder;">Your journey starts here! Join us:</h2>
+        </div>
+    </div>
+}
 
 @if (Model.Any())
 {
@@ -74,17 +96,11 @@
 else
 {
     <hr />
-    <div class="container mb-4 view-text">
-        <div class="text-light">
-            There aren't any memberships currently available. <br />
-            But don't give up! <br />
-            Come back later or contact us for more information!
-        </div>
-    </div>
+    <h4 class="no-items-list">There are no available Gyms!</h4>
 }
 
 <div class="container mb-4 view-text">
-    <hr style="margin-bottom: 2.2rem; margin-top: 0" />
+    <hr style="margin-bottom: 2.4rem; margin-top: 0.5rem" />
 
     <div class="text-light">
         At FitnessHub, we believe that fitness should be accessible to everyone, even if you're not ready for a membership just yet. That’s why we offer a wide range of free resources to support your fitness goals:<br /><br />
@@ -101,42 +117,71 @@ else
     </div>
 </div>
 
+<hr style="margin-bottom: 2.3rem; margin-top: 2.4rem">
+
 <!-- Recommended Section -->
-<div class="container mt-5">
-    <h3 class="mb-4" style="color:#ff6201;">Recommended for You</h3>
+<div class="container mt-4 text-center">
+    <div class="view-text">
+        @if(ViewBag.RecommendClient == true)
+        {
+            <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Our recommendations just for you:</h3>
+        }
+        else
+        {
+            <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Here's what awaits you:</h3>
+        }
+    </div>
     <div class="row">
         <div class="col-md-4">
             <div class="card">
                 @if (recommendedGym != null)
                 {
-                    <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym">
+                    <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym" >
                 }
                 else
                 {
                     <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                 }
                 <div class="card-body">
-                    <h5 class="card-title">Premium Gym</h5>
-                    <p class="card-text">Get the ultimate fitness experience with our premium gym facilities.</p>
+                    <h5 class="card-title" style="font-weight: 600">Premium Locations</h5>
+                    <p class="card-text">Enjoy the most spacious and modern facilities <span style="font-style: italic; font-weight: bold">EVERYWHERE, ALL OVER THE WORLD!</span></p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card">
-                @if (recommendedClass != null)
+                @if (ViewBag.RecommendClient == true && ViewBag.HasClasses == true)
                 {
-                    <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                    @if (recommendedClass != null)
+                    {
+                        <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                    }
+                    else
+                    {
+                        <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-weight: 600">@recommendedClass.Name</h5>
+                        <p class="card-text">Hey, @ViewBag.ClientFirstName, we know you really enjoy @recommendedClass.Name's Classes, so why not register for one more?</p>
+                    </div>
                 }
                 else
                 {
-                    <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
+                    @if (recommendedClass != null)
+                    {
+                        <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                    }
+                    else
+                    {
+                        <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title" style="font-weight: 600">Amazing Classes</h5>
+                        <p class="card-text">From high-energy, to calming and relaxing, we offer something for every fitness level and interest.</p>
+                    </div>
                 }
-                <div class="card-body">
-                    <h5 class="card-title">Fitness Classes</h5>
-                    <p class="card-text">Join our fitness classes for a fun and engaging workout.</p>
-                </div>
             </div>
-        </div>
+        </div> 
         <div class="col-md-4">
             <div class="card">
                 @if (instructor != null)
@@ -148,10 +193,12 @@ else
                     <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                 }
                 <div class="card-body">
-                    <h5 class="card-title">Personal Training</h5>
-                    <p class="card-text">Achieve your goals with personalized training sessions.</p>
+                    <h5 class="card-title" style="font-weight: 600">Expert Instructors</h5>
+                    <p class="card-text">Our certified trainers are here to motivate, guide and help you reach your goals. This is a team fight!</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+}

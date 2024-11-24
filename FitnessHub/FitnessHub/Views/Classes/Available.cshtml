@@ -1,5 +1,10 @@
 ﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
+@{
+    ViewData["Title"] = "Classes";
+}
+
+
 <div class="row">
     <div class="col-3" style="margin-top: -4px">
         <div style="margin-top: 2.4vh">
@@ -19,44 +24,57 @@
     </div>
 </div>
 
-<div id="classTypesContainer" class="row justify-content-center mt-2">
-    @foreach (var classItem in Model)
-    {
-        <div class="col-lg-3 col-md-4 col-sm-6 mx-2 mb-3 class-item" data-category="@classItem.ClassCategory.Id">
-            <div class="card">
-                <!-- Card Header -->
-                <div class="card-header text-center" style="font-size: 2em; font-weight: bold">
-                    <div>@classItem.Name</div>
-                    <div class="text-muted mb-1" style="font-size:1rem">@classItem.ClassCategory.Name</div>
-                </div>
+@if (Model.Any())
+{
+    <div id="classTypesContainer">
+        <div class="row justify-content-center mt-2">
+            @foreach (var classItem in Model)
+            {
 
-                <!-- Card Body -->
-                <div class="card-body p-0">
-                    <div class="text-center">
-                        <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid class-image" />
-                    </div>
-                    <div class="card-text p-3">
-                        <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
-                    </div>
-                </div>
+                <div class="col-lg-3 col-md-4 col-sm-6 mx-2 mb-3 class-item" data-category="@classItem.ClassCategory.Id">
+                    <div class="card">
+                        <!-- Card Header -->
+                        <div class="card-header text-center" style="font-size: 2em; font-weight: bold">
+                            <div>@classItem.Name</div>
+                            <div class="text-muted mb-1" style="font-size:1rem">@classItem.ClassCategory.Name</div>
+                        </div>
 
-                <!-- Card Footer -->
-                <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
-                    <small>
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
-                            <div class="rating-content">
-                                <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
+                        <!-- Card Body -->
+                        <div class="card-body p-0">
+                            <div class="text-center">
+                                <img src="@classItem.ImageDisplay" alt="@classItem.Name" class="img-fluid class-image" />
                             </div>
-                            <div class="text-nowrap">
-                                (@classItem.NumReviews reviews)
+                            <div class="card-text p-3">
+                                <p style="margin-bottom: 0; margin-top: 0">@classItem.Description</p>
                             </div>
                         </div>
-                    </small>
+
+                        <!-- Card Footer -->
+                        <div class="card-footer" style="color: whitesmoke; font-size: 1em">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <div class="rating-content">
+                                        <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
+                                    </div>
+                                    <div class="text-nowrap">
+                                        (@classItem.NumReviews reviews)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+
+            }
         </div>
-    }
-</div>
+    </div>
+}
+else
+{
+    <hr />
+    <h4 class="no-items-list">No Classes were found!</h4>
+}
+
 
 @section Scripts {
     <script>
@@ -78,3 +96,10 @@
         });
     </script>
 }
+
+
+
+
+
+
+
