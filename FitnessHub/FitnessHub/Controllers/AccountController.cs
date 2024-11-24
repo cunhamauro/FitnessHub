@@ -309,6 +309,13 @@ namespace FitnessHub.Controllers
 
                     var response = await _userHelper.UpdateUserAsync(user);
 
+                    if (this.User.IsInRole("MasterAdmin"))
+                    {
+                        ViewBag.UserMessage = "Successfully updated!";
+                        return View(model);
+
+                    }
+
                     if (response.Succeeded)
                     {
                         if (await _userHelper.IsUserInRoleAsync(user, "Client"))
@@ -359,6 +366,7 @@ namespace FitnessHub.Controllers
                         else if (user is Admin admin)
                         {
                             var staffHistory = await _staffHistoryRepository.GetByStaffIdAndGymIdTrackAsync(user.Id, admin.GymId.Value);
+
                             if (staffHistory == null)
                             {
                                 return StaffHistoryNotFound();

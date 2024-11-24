@@ -4,7 +4,6 @@ using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.HelperClasses;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
-using FitnessHub.Models;
 using FitnessHub.Models.API;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -36,7 +35,7 @@ namespace FitnessHub.Controllers.API
             IMailHelper mailHelper,
             IImageHelper imageHelper,
             IConfiguration configuration,
-            IClientHistoryRepository clientHistoryRepository,IOptions<AppSettings> appSettings, IWorkoutRepository workoutRepository)
+            IClientHistoryRepository clientHistoryRepository, IOptions<AppSettings> appSettings, IWorkoutRepository workoutRepository)
         {
             _userHelper = userHelper;
             _mailHelper = mailHelper;
@@ -361,8 +360,24 @@ namespace FitnessHub.Controllers.API
                 return BadRequest(new { ErrorMessage = "Couldn't generate token." });
             }
 
-            Response response = await _mailHelper.SendEmailAsync(model.Email, "FitnessHub Password Reset", $"<h1>FitnessHub Password Reset</h1>" +
-                    $"To reset your password use this token:</br></br> {myToken}", null, null);
+            string message = @$"
+                        <table role=""presentation"" style=""width: 100%; border: 0; cellpadding: 0; cellspacing: 0;"">
+                            <tr>
+                                <td style=""padding: 10px 0; font-size: 15px"">
+                                    Please copy and paste the following token into your FitnessHub APP to recover your account:
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=""padding: 10px 0;"">
+                                    <p>{myToken}</p>
+                                </td>
+                            </tr>
+                        </table>";
+
+            string body = _mailHelper.GetEmailTemplate("Recover Account", message, $"Don't forget your password again, {user.FirstName}");
+
+            Response response = await _mailHelper.SendEmailAsync(model.Email, "Account recovery", body, null, null);
+
             if (response.IsSuccess)
             {
                 return Ok(new { Message = "The token to recover your password has been sent to your email." });

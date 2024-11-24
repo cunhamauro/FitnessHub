@@ -18,7 +18,7 @@ namespace FitnessHub.Helpers
                         <table width=""100%"" style=""background-color:#000000;"">
                             <tr>
                                 <td align=""center"" style=""padding: 10px;"">
-                                    <img src=""https://i.ibb.co/Kq6QmPP/fitnesshublogo.png"" alt=""Header Image"" style=""max-width:40%; height:auto;"">
+                                    <img src=""https://i.imgur.com/Lnp2Y7x.png"" alt=""Header Image"" style=""max-width:40%; height:auto;"">
                                 </td>
                             </tr>
                         </table>

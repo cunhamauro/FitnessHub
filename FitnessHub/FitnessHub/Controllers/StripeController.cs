@@ -97,6 +97,8 @@ namespace FitnessHub.Controllers
             var service = new SessionService();
             var session = service.Create(options);
 
+            Task.Delay(3000);
+
             return Redirect(session.Url);
         }
 
