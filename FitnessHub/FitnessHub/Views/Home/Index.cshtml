@@ -55,150 +55,190 @@
 @if (ViewBag.IsStaff != true)
 {
 
-@if (ViewBag.HasMembership == true)
-{
-    <div class="row mt-4">
-        <div class="col-12 text-center view-text mt-2 mb-3">
-            <h2 style="font-weight: bolder;">Check our other Memberships:</h2>
+    @if (ViewBag.HasMembership == true)
+    {
+        <div class="row mt-4">
+            <div class="col-12 text-center view-text mt-2 mb-3">
+                <h2 style="font-weight: bolder;">Check our other Memberships:</h2>
+            </div>
         </div>
-    </div>
-}
-else
-{
-    <div class="row mt-4">
-        <div class="col-12 text-center view-text mt-2 mb-3">
-            <h2 style="font-weight: bolder;">Your journey starts here! Join us:</h2>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-12 text-center view-text mt-2 mb-3">
+                <h2 style="font-weight: bolder;">Your journey starts here! Join us:</h2>
+            </div>
         </div>
-    </div>
-}
+    }
 
-@if (Model.Any())
-{
-    <div class="row justify-content-center mt-2">
-        @foreach (var membership in Model)
-        {
-            <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="cursor:pointer" onclick="window.location.href='@Url.Action("SignUp", "Memberships", new { id = membership.Id })'">
-                <div class="card">
-                    <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@membership.Name</div>
-                    <div class="card-body">
-                        <div class="card-text">
-                            <p style="margin-bottom: 0; margin-top: 0">@membership.Description</p>
+    @if (Model.Any())
+    {
+        <div class="row justify-content-center mt-2">
+            @foreach (var membership in Model)
+            {
+                <div class="col-lg-3 col-md-3 col-sm-8 mx-2" style="cursor:pointer" onclick="window.location.href='@Url.Action("SignUp", "Memberships", new { id = membership.Id })'">
+                    <div class="card">
+                        <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">@membership.Name</div>
+                        <div class="card-body">
+                            <div class="card-text">
+                                <p style="margin-bottom: 0; margin-top: 0">@membership.Description</p>
+                            </div>
+                        </div>
+                        <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
+                            <small><strong>@membership.MonthlyFee.ToString("C2") / Month</strong></small>
                         </div>
                     </div>
-                    <div class="card-footer" style="color: whitesmoke; font-size: 1.3em;">
-                        <small><strong>@membership.MonthlyFee.ToString("C2") / Month</strong></small>
-                    </div>
                 </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <hr />
-    <h4 class="no-items-list">No Memberships were found!</h4>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <hr />
+        <h4 class="no-items-list">No Memberships were found!</h4>
+    }
 
-<div class="container mb-4 view-text">
-    <hr style="margin-bottom: 2.4rem; margin-top: 0.5rem" />
+    <div class="container mb-4 view-text">
+        <hr style="margin-bottom: 2.4rem; margin-top: 0.5rem" />
 
-    <div class="text-light">
-        At FitnessHub, we believe that fitness should be accessible to everyone, even if you're not ready for a membership just yet. That’s why we offer a wide range of free resources to support your fitness goals:<br /><br />
-        <ul>
-            <li><strong>Free Fitness Videos:</strong> Our platform provides access to a library of workout videos, expert tips, and training guides that can help you stay active, even from the comfort of your home. These videos cover everything, making it easy to follow along and stay fit on your own schedule.</li>
+        <div class="text-light">
+            At FitnessHub, we believe that fitness should be accessible to everyone, even if you're not ready for a membership just yet. That’s why we offer a wide range of free resources to support your fitness goals:<br /><br />
+            <ul>
+                <li><strong>Free Fitness Videos:</strong> Our platform provides access to a library of workout videos, expert tips, and training guides that can help you stay active, even from the comfort of your home. These videos cover everything, making it easy to follow along and stay fit on your own schedule.</li>
+                <br />
+                <li><strong>Community Support:</strong> Even without a membership, you can join our FitnessHub online community. Connect with fitness enthusiasts from around the globe, participate in challenges, and stay motivated with the latest content and fitness trends.</li>
+            </ul>
             <br />
-            <li><strong>Community Support:</strong> Even without a membership, you can join our FitnessHub online community. Connect with fitness enthusiasts from around the globe, participate in challenges, and stay motivated with the latest content and fitness trends.</li>
-        </ul>
-        <br />
-        <h5>Join the FitnessHub Family</h5>
-        Whether you're working out in one of our gyms, following our free video tutorials, or joining a class across the world, you’re part of the FitnessHub community. Our mission is to provide the tools, spaces, and support you need to lead a healthy, active lifestyle — anywhere in the world.
+            <h5>Join the FitnessHub Family</h5>
+            Whether you're working out in one of our gyms, following our free video tutorials, or joining a class across the world, you’re part of the FitnessHub community. Our mission is to provide the tools, spaces, and support you need to lead a healthy, active lifestyle — anywhere in the world.
 
-        <span style="font-weight: bolder">We look forward to welcoming you to FitnessHub and helping you stay on your journey toward a healthier, stronger you, no matter where you are.</span>
-    </div>
-</div>
-
-<hr style="margin-bottom: 2.3rem; margin-top: 2.4rem">
-
-<!-- Recommended Section -->
-<div class="container mt-4 text-center">
-    <div class="view-text">
-        @if(ViewBag.RecommendClient == true)
-        {
-            <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Our recommendations just for you:</h3>
-        }
-        else
-        {
-            <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Here's what awaits you:</h3>
-        }
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                @if (recommendedGym != null)
-                {
-                    <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym" >
-                }
-                else
-                {
-                    <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
-                }
-                <div class="card-body">
-                    <h5 class="card-title" style="font-weight: 600">Premium Locations</h5>
-                    <p class="card-text">Enjoy the most spacious and modern facilities <span style="font-style: italic; font-weight: bold">EVERYWHERE, ALL OVER THE WORLD!</span></p>
-                </div>
-            </div>
+            <span style="font-weight: bolder">We look forward to welcoming you to FitnessHub and helping you stay on your journey toward a healthier, stronger you, no matter where you are.</span>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                @if (ViewBag.RecommendClient == true && ViewBag.HasClasses == true)
-                {
-                    @if (recommendedClass != null)
+    </div>
+
+    <hr style="margin-bottom: 2.3rem; margin-top: 2.4rem">
+
+    <!-- Recommended Section -->
+    <div class="container mt-4 text-center">
+        <div class="view-text">
+            @if (ViewBag.RecommendClient == true)
+            {
+                <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Our recommendations just for you:</h3>
+            }
+            else
+            {
+                <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Here's what awaits you:</h3>
+            }
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    @if (recommendedGym != null)
                     {
-                        <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                        <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym">
                     }
                     else
                     {
                         <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                     }
                     <div class="card-body">
-                        <h5 class="card-title" style="font-weight: 600">@recommendedClass.Name</h5>
-                        <p class="card-text">Hey, @ViewBag.ClientFirstName, we know you really enjoy @recommendedClass.Name's Classes, so why not register for one more?</p>
+                        <h5 class="card-title" style="font-weight: 600">Premium Locations</h5>
+                        <p class="card-text">Enjoy the most spacious and modern facilities <span style="font-style: italic; font-weight: bold">EVERYWHERE, ALL OVER THE WORLD!</span></p>
                     </div>
-                }
-                else
-                {
-                    @if (recommendedClass != null)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    @if (ViewBag.RecommendClient == true && ViewBag.HasClasses == true)
                     {
-                        <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                        @if (recommendedClass != null)
+                        {
+                            <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                        }
+                        else
+                        {
+                            <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-weight: 600">@recommendedClass.Name</h5>
+                            <p class="card-text">Hey, @ViewBag.ClientFirstName, we know you really enjoy @recommendedClass.Name's Classes, so why not register for one more?</p>
+                        </div>
+                    }
+                    else
+                    {
+                        @if (recommendedClass != null)
+                        {
+                            <img src="@recommendedClass.ImageDisplay" class="recommendedgym-image" alt="Recommended Class">
+                        }
+                        else
+                        {
+                            <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-weight: 600">Amazing Classes</h5>
+                            <p class="card-text">From high-energy, to calming and relaxing, we offer something for every fitness level and interest.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    @if (instructor != null)
+                    {
+                        <img src="@instructor.Avatar" class="recommendedgym-image" alt="Recommended Instructor">
                     }
                     else
                     {
                         <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                     }
                     <div class="card-body">
-                        <h5 class="card-title" style="font-weight: 600">Amazing Classes</h5>
-                        <p class="card-text">From high-energy, to calming and relaxing, we offer something for every fitness level and interest.</p>
+                        <h5 class="card-title" style="font-weight: 600">Expert Instructors</h5>
+                        <p class="card-text">Our certified trainers are here to motivate, guide and help you reach your goals. This is a team fight!</p>
                     </div>
-                }
-            </div>
-        </div> 
-        <div class="col-md-4">
-            <div class="card">
-                @if (instructor != null)
-                {
-                    <img src="@instructor.Avatar" class="recommendedgym-image" alt="Recommended Instructor">
-                }
-                else
-                {
-                    <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
-                }
-                <div class="card-body">
-                    <h5 class="card-title" style="font-weight: 600">Expert Instructors</h5>
-                    <p class="card-text">Our certified trainers are here to motivate, guide and help you reach your goals. This is a team fight!</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+
+
+    // APP
+    <hr style="margin-bottom: 3.4%" />
+
+    <div class="col-12 text-center view-text mt-5">
+        <h2 style="font-weight: bolder;">Check our App:</h2>
+    </div>
+
+
+    <div class="container mt-3 mb-3">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="view-text" style="color: whitesmoke; padding-top: 60px">
+                    <p>
+                        Take your fitness journey to the next level with the FitnessHub app! Whether you're hitting the gym or working out at home, our app is here to make your workouts even better. 💪✨
+                    </p>
+
+                    <p>
+                        ✅ Access personalized workout plans
+                    </p>
+                    <p>
+                        ✅ Explore class schedules and book sessions on the go
+                    </p>
+
+                    <p>
+                        And the best part? It's FREE and available on Google Play and the App Store! 📲
+                        Download now and let FitnessHub help you crush your goals—one rep at a time. 🏋️‍♂️🔥
+                    </p>
+                </div>
+                <div class="container">
+                    <img src="~/img/appstores.png" style="width: 35%; margin-top: 20px"/>
+                </div>
+            </div>
+            <div class="col-md-5" style="align-items: center">
+                <img src="~/img/iphone-app.png" style="width: 60%; margin-left: 12%"  />
+            </div>
+        </div>
+    </div>
 
 }
