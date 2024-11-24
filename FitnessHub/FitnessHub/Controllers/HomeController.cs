@@ -212,8 +212,13 @@ namespace FitnessHub.Controllers
                 var recommendedClass = await _classTypeRepository.GetAll().OrderBy(c => Guid.NewGuid()).FirstOrDefaultAsync();
                 ViewBag.Class = recommendedClass;
 
-                var instructors = await _userHelper.GetInstructorsByGymAsync(gym.Id);
-                var instructor = instructors.OrderBy(i => Guid.NewGuid()).FirstOrDefault() as Instructor;
+                Instructor instructor = null;
+
+                if (gym != null)
+                {
+                    var instructors = await _userHelper.GetInstructorsByGymAsync(gym.Id);
+                    instructor = instructors.OrderBy(i => Guid.NewGuid()).FirstOrDefault() as Instructor;
+                }
 
                 ViewBag.Instructor = instructor;
             }
