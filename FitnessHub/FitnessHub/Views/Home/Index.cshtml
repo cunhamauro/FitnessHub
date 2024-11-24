@@ -4,13 +4,14 @@
 @model IEnumerable<FitnessHub.Data.Entities.Users.Membership>
 
 @{
-    ViewData["Title"] = "Join us";
+    ViewData["Title"] = "Home";
+
     Gym recommendedGym = ViewBag.Gym;
     ClassType recommendedClass = ViewBag.Class;
     Instructor instructor = ViewBag.Instructor;
 }
 
-<div id="mainCarousel" class="carousel slide shadow" data-bs-ride="carousel" style="border-radius:15px" >
+<div id="mainCarousel" class="carousel slide shadow mt-5" data-bs-ride="carousel" style="border-radius:15px" >
     <div class="carousel-inner">
         <div class="carousel-item active">
             <img src="~/images/gym1.jpg" class="d-block w-100 carousel-image" alt="Gym Image 1">
@@ -45,8 +46,8 @@
 </div>
 
 <div class="row mt-4">
-    <div class="col-12 text-center">
-        <h2 class="mt-2" style="font-weight: bolder;">@ViewData["Title"]</h2>
+    <div class="col-12 text-center view-text mt-2 mb-3">
+        <h2 style="font-weight: bolder;">Your journey starts here! Join us:</h2>
     </div>
 </div>
 
@@ -74,17 +75,11 @@
 else
 {
     <hr />
-    <div class="container mb-4 view-text">
-        <div class="text-light">
-            There aren't any memberships currently available. <br />
-            But don't give up! <br />
-            Come back later or contact us for more information!
-        </div>
-    </div>
+    <h4 class="no-items-list">There are no available Gyms!</h4>
 }
 
 <div class="container mb-4 view-text">
-    <hr style="margin-bottom: 2.2rem; margin-top: 0" />
+    <hr style="margin-bottom: 2.4rem; margin-top: 0.5rem" />
 
     <div class="text-light">
         At FitnessHub, we believe that fitness should be accessible to everyone, even if you're not ready for a membership just yet. That’s why we offer a wide range of free resources to support your fitness goals:<br /><br />
@@ -101,23 +96,27 @@ else
     </div>
 </div>
 
+<hr style="margin-bottom: 2.3rem; margin-top: 2.4rem">
+
 <!-- Recommended Section -->
-<div class="container mt-5">
-    <h3 class="mb-4" style="color:#ff6201;">Recommended for You</h3>
+<div class="container mt-4 text-center">
+    <div class="view-text">
+    <h3 style="color:#ff6201; margin-bottom: 2.7rem; font-weight: 600">Here's what awaits you:</h3>
+    </div>
     <div class="row">
         <div class="col-md-4">
             <div class="card">
                 @if (recommendedGym != null)
                 {
-                    <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym">
+                    <img src="@recommendedGym.ImageDisplay" class="recommendedgym-image" alt="Recommended Gym" >
                 }
                 else
                 {
                     <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                 }
                 <div class="card-body">
-                    <h5 class="card-title">Premium Gym</h5>
-                    <p class="card-text">Get the ultimate fitness experience with our premium gym facilities.</p>
+                    <h5 class="card-title" style="font-weight: 600">Premium Locations</h5>
+                    <p class="card-text">Enjoy the most spacious and modern facilities <span style="font-style: italic; font-weight: bold">EVERYWHERE ALL OVER THE WORLD!</span></p>
                 </div>
             </div>
         </div>
@@ -132,11 +131,11 @@ else
                     <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                 }
                 <div class="card-body">
-                    <h5 class="card-title">Fitness Classes</h5>
-                    <p class="card-text">Join our fitness classes for a fun and engaging workout.</p>
+                    <h5 class="card-title" style="font-weight: 600">Amazing Classes</h5>
+                    <p class="card-text">From high-energy, to calming and relaxing, we offer something for every fitness level and interest.</p>
                 </div>
             </div>
-        </div>
+        </div> 
         <div class="col-md-4">
             <div class="card">
                 @if (instructor != null)
@@ -148,8 +147,8 @@ else
                     <img src="~/images/noimage.png" class="recommendedgym-image" alt="Recommended Gym">
                 }
                 <div class="card-body">
-                    <h5 class="card-title">Personal Training</h5>
-                    <p class="card-text">Achieve your goals with personalized training sessions.</p>
+                    <h5 class="card-title" style="font-weight: 600">Expert Instructors</h5>
+                    <p class="card-text">Our certified trainers are here to motivate, guide and help you reach your goals. This is a team fight!</p>
                 </div>
             </div>
         </div>

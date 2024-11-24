@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
+﻿@* @model IEnumerable<FitnessHub.Data.Entities.GymClasses.ClassType>
 
 
 @if (Model.Any())
@@ -26,26 +26,16 @@
 
                     <!-- Card Footer -->
                     <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
-                        <small>
+                        <div>
                             <div class="d-flex justify-content-between align-items-center flex-wrap">
                                 <div class="rating-content">
-                                    @{
-                                        if (classItem.NumReviews == 0)
-                                        {
-                                            <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
-                                        }
-                                        else
-                                        {
-                                            @Html.Raw("N/A")
-                                            <i class="fa-solid fa-star ms-2"></i>
-                                        }
-                                    }
+                                    <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
                                 </div>
                                 <div class="text-nowrap">
                                     (@classItem.NumReviews reviews)
                                 </div>
                             </div>
-                        </small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,5 +44,5 @@
 }
 else
 {
-        <h4 class="no-items-list" style="margin-top:20.5%">No Classes were found!</h4>
-}
+    <h4 class="no-items-list" style="margin-top:20.5%">No Classes were found!</h4>
+} *@

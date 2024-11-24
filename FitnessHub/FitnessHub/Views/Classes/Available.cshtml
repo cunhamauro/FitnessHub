@@ -4,6 +4,7 @@
     ViewData["Title"] = "Classes";
 }
 
+
 <div class="row">
     <div class="col-3" style="margin-top: -4px">
         <div style="margin-top: 2.4vh">
@@ -29,7 +30,8 @@
         <div class="row justify-content-center mt-2">
             @foreach (var classItem in Model)
             {
-                <div class="col-lg-3 col-md-4 col-sm-6 mx-2 mb-3">
+
+                <div class="col-lg-3 col-md-4 col-sm-6 mx-2 mb-3 class-item" data-category="@classItem.ClassCategory.Id">
                     <div class="card">
                         <!-- Card Header -->
                         <div class="card-header text-center" style="font-size: 2em; font-weight: bold">
@@ -48,30 +50,21 @@
                         </div>
 
                         <!-- Card Footer -->
-                        <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
-                            <small>
+                        <div class="card-footer" style="color: whitesmoke; font-size: 1em">
+                            <div>
                                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                                     <div class="rating-content">
-                                        @{
-                                            if (classItem.NumReviews == 0)
-                                            {
-                                                <ejs-rating id="rating_@classItem.Id" value="3.2" readOnly="true"></ejs-rating>
-                                            }
-                                            else
-                                            {
-                                                @Html.Raw("N/A")
-                                                <i class="fa-solid fa-star ms-2"></i>
-                                            }
-                                        }
+                                        <ejs-rating id="rating_@classItem.Id" value="(double)@classItem.Rating" readOnly="true"></ejs-rating>
                                     </div>
                                     <div class="text-nowrap">
                                         (@classItem.NumReviews reviews)
                                     </div>
                                 </div>
-                            </small>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             }
         </div>
     </div>
@@ -82,20 +75,31 @@ else
     <h4 class="no-items-list">No Classes were found!</h4>
 }
 
+
 @section Scripts {
     <script>
         $(document).ready(function () {
             $("#categoryFilter").change(function () {
-                var categoryId = $(this).val();
-                $.ajax({
-                    url: '@Url.Action("GetClassesByCategory", "Classes")',
-                    type: 'GET',
-                    data: { categoryId: categoryId },
-                    success: function (data) {
-                        $('#classTypesContainer').html(data);
+                var selectedCategory = $(this).val();
+
+                // Show/Hide based on category
+                $(".class-item").each(function () {
+                    var itemCategory = $(this).data("category");
+
+                    if (selectedCategory == "0" || itemCategory == selectedCategory) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
                     }
                 });
             });
         });
     </script>
 }
+
+
+
+
+
+
+

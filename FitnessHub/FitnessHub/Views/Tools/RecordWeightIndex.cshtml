@@ -5,29 +5,12 @@
     ViewData["Title"] = "Progress";
 }
 
-
-<div style="display: flex; justify-content: center; align-items: center; width: 100%; padding: 0 1rem; margin-bottom: 4vh; margin-top: 3.5vh">
-    <div style="display: flex; flex-direction: column; align-items: center; margin-left: -150px">
-        <a style="margin-bottom: 10px;" asp-action="RecordWeight" class="btn btn-primary">
-            <i class="fa-solid fa-bars-progress me-2"></i>New Entry
-        </a>
-
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
-            <i class="fa-solid fa-trash-can me-2"></i>Reset Record
-        </button>
-       
-    </div>
-    <h2 class="view-text" style="font-weight: bolder; margin: 0; margin-left: 40px">
-        Progress Record
-    </h2>
-</div>
-
-
+<h2 class="view-text" style="text-align: center; margin-bottom: 4vh; font-weight: bolder; margin-top: 3.5vh">Weight Progress</h2>
 
 @if (!Model.Any())
 {
     <hr />
-    <h4 class="no-items-list">No weight progress recorded yet!</h4>
+    <h4 class="no-items-list">No weight progress records yet!</h4>
 }
 else
 {
@@ -58,9 +41,9 @@ else
                             <td>
                                 @if (idx == Model.Count())
                                 {
-                                   <span>N/A</span>
+                                    <span>N/A</span>
                                 }
-                                  else if (record.Progress > 0)
+                                else if (record.Progress > 0)
                                 {
                                     <span>+@record.Progress (kg)</span>
                                 }
@@ -80,29 +63,40 @@ else
         </div>
     </div>
 
+    <div class="d-flex justify-content-center mt-2 mb-4">
+        <a style="margin-right: 10px;" asp-action="RecordWeight" class="btn btn-primary me-4">
+            <i class="fa-solid fa-bars-progress me-2"></i>New Entry
+        </a>
+
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+            <i class="fa-solid fa-trash-can me-2"></i>Reset Record
+        </button>
+    </div>
+
+
     @if (Model.Count() > 1)
     {
         <hr style="margin-bottom: 2em;" />
 
-    <div class="container mt-4 mb-4" style="background-color: white; border-radius:10px">
-        <ejs-chart id="chart-container" title="Weight Progress">
-            <!-- X-Axis Configuration -->
-            <e-chart-primaryxaxis valueType="DateTime" title="Date"></e-chart-primaryxaxis>
+        <div class="container mt-4 mb-4" style="background-color: white; border-radius:10px">
+            <ejs-chart id="chart-container" title="Weight Progress">
+                <!-- X-Axis Configuration -->
+                <e-chart-primaryxaxis valueType="DateTime" title="Date"></e-chart-primaryxaxis>
 
-            <!-- Y-Axis Configuration -->
-            <e-chart-primaryyaxis title="Weight (kg)"></e-chart-primaryyaxis>
+                <!-- Y-Axis Configuration -->
+                <e-chart-primaryyaxis title="Weight (kg)"></e-chart-primaryyaxis>
 
-            <!-- Series Collection -->
-            <e-series-collection>
-                <e-series dataSource="@ViewBag.WeightLog"
-                          xName="Date"
-                          yName="Weight"
-                          type="Line"
-                          name="Weight Trend">
-                </e-series>
-            </e-series-collection>
-        </ejs-chart>
-    </div>
+                <!-- Series Collection -->
+                <e-series-collection>
+                    <e-series dataSource="@ViewBag.WeightLog"
+                              xName="Date"
+                              yName="Weight"
+                              type="Line"
+                              name="Weight Trend">
+                    </e-series>
+                </e-series-collection>
+            </ejs-chart>
+        </div>
     }
 }
 
@@ -128,10 +122,10 @@ else
 </div>
 
 <script>
-    
+
     var confirmDeleteModal = document.getElementById('confirmDeleteModal');
     confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
-        
+
     });
 </script>
 
@@ -152,7 +146,7 @@ else
                     [20, 50, 100, 200, "All"]
                 ],
                 columnDefs: [
-                    { orderable: false, targets: [-1, 0] }
+                    { orderable: false, targets: [0] }
                 ]
             });
         });

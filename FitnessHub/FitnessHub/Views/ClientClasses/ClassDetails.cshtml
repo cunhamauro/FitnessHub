@@ -18,17 +18,7 @@
                         </dd>
                         <dd class="col-sm-12">
                             <div class="rating-content">
-                                @{
-                                    if (Model.NumReviews == 0)
-                                    {
-                                        <ejs-rating id="rating_@Model.ClassType" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
-                                    }
-                                    else
-                                    {
-                                        @Html.Raw("N/A")
-                                        <i class="fa-solid fa-star ms-2"></i>
-                                    }
-                                }
+                                <ejs-rating id="rating_@Model.ClassType" value="(double)@Model.Rating" readOnly="true"></ejs-rating>
                             </div>
                             <div class="text-nowrap">
                                 (@Model.NumReviews reviews)
@@ -48,17 +38,7 @@
                             <br />
                             <div style="font-size: 0.8em !important">
                                 <div class="rating-content">
-                                    @{
-                                        if (Model.InstructorReviews == 0)
-                                        {
-                                            <ejs-rating id="rating_@Model.InstructorEmail" value="(double)@Model.InstructorRating" readOnly="true"></ejs-rating>
-                                        }
-                                        else
-                                        {
-                                            @Html.Raw("N/A")
-                                            <i class="fa-solid fa-star ms-2"></i>
-                                        }
-                                    }
+                                    <ejs-rating id="rating_@Model.InstructorEmail" value="(double)@Model.InstructorRating" readOnly="true"></ejs-rating>
                                 </div>
                                 <div class="text-nowrap">
                                     (@Model.InstructorReviews reviews)

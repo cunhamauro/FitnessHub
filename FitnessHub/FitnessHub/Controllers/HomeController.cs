@@ -158,10 +158,6 @@ namespace FitnessHub.Controllers
             else
             {
                 gym = await _gymRepository.GetAll().OrderBy(g => Guid.NewGuid()).FirstOrDefaultAsync();
-                if (gym == null)
-                {
-                    return GymNotFound();
-                }
 
                 ViewBag.Gym = gym;
 

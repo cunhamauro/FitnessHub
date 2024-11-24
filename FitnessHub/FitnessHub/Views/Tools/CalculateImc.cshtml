@@ -1,96 +1,85 @@
-﻿
-@{
-    ViewData["Title"] = "Calculate Imc";
+﻿@{
+    ViewData["Title"] = "Calculate IMC";
 }
+<div class="container d-flex justify-content-center mt-5">
+    <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
+        <div class="card">
+            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">
+                Calculate Your IMC
+                <div class="text-muted mb-1" style="font-size: 1rem">Enter your height and weight</div>
+            </div>
+            <div class="card-body" style="padding: 0">
+                <form method="post">
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black" for="height">Height (cm):</label>
+                        <input style="color:black" type="number" name="height" id="height" placeholder="Enter height in centimeters" required class="form-control" />
+                    </div>
 
-<h2>Calculate IMC</h2>
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black" for="weight">Weight (kg):</label>
+                        <input style="color:black" type="number" name="weight" id="weight" placeholder="Enter weight in kilograms" required class="form-control" />
+                    </div>
 
-<form method="post">
-    <label style="color:white" for="height">Height (cm):</label>
-    <input style="color:black" type="number" name="height" id="height" placeholder="Enter height in centimeters" required />
+                    <button type="submit" class="btn btn-primary" style="margin: 1rem"><i class="fa-solid fa-calculator me-2"></i>Calculate</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <label style="color:white" for="weight">Weight (kg):</label>
-    <input style="color:black" type="number" name="weight" id="weight" placeholder="Enter weight in kilograms" required />
+<style>
 
-    <button type="submit">Calculate</button>
-</form>
+    .text-yellow {
+        color: #FFFF00 !important;
+    }
+
+    .text-red {
+        color: #FF0000 !important;
+    }
+
+    .text-orange {
+        color: #ff6201 !important;
+    }
+
+</style>
 
 @if (ViewBag.Imc != null)
 {
-    <p>Your IMC is: @ViewBag.Imc</p>
+    <div class="card-footer mb-3" style="font-size: 1.3em; font-weight: bold; background-color: #ffffffc4">
+        <p style="margin-bottom: 0em" class="@ViewBag.ImcColor">Your IMC is: @ViewBag.Imc</p>
+        <p style="margin-bottom: 0em" class="@ViewBag.ImcColor">Result: @ViewBag.ImcCategory</p>
+    </div>
 }
 
-<br />
-<br />
-<div style="background-color: transparent; padding: 20px; border-radius: 8px;">
-    <p style="color: white; font-size: 18px; line-height: 1.6;">
-        BMI, or Body Mass Index, is a measurement used to assess whether a person has a healthy body weight for their height.<br />
-        It is calculated by dividing a person's weight in kilograms by the square of their height in meters.
-    </p>
 
-    <p style="color: white; font-size: 18px; line-height: 1.6;">
-        <strong>The formula is:</strong><br />
-        <code style="background-color: #555; padding: 5px; color: #fff; font-family: monospace;">
-            BMI = weight (kg) / height (m)<sup>2</sup>
-        </code>
-    </p>
+<div class="view-text">
+    <div style="background-color: transparent; padding: 20px; border-radius: 8px;">
+        <p style="color: white; font-size: 18px; line-height: 1.6;">
+            BMI, or Body Mass Index, is a measurement used to assess whether a person has a healthy body weight for their height.<br />
+            It is calculated by dividing a person's weight in kilograms by the square of their height in meters.
+        </p>
 
-    <p style="color: white; font-size: 18px; line-height: 1.6;">
-        The result is categorized into different ranges:
-    </p>
+        <p style="color: white; font-size: 18px; line-height: 1.6;">
+            <strong>The formula is:</strong><br />
+            <code style="background-color: #555; padding: 5px; color: #fff; font-family: monospace;">
+                BMI = weight (kg) / height (m)<sup>2</sup>
+            </code>
+        </p>
 
-    <ul style="color: white; font-size: 18px;">
-        <li><strong>Underweight:</strong> BMI less than 18.5</li>
-        <li><strong>Normal weight:</strong> BMI between 18.5 and 24.9</li>
-        <li><strong>Overweight:</strong> BMI between 25 and 29.9</li>
-        <li><strong>Obesity:</strong> BMI 30 or higher</li>
-    </ul>
+        <p style="color: white; font-size: 18px; line-height: 1.6;">
+            The result is categorized into different ranges:
+        </p>
 
-    <p style="color: white; font-size: 18px; line-height: 1.6;">
-        While BMI is a useful screening tool, it doesn't directly measure body fat or account for factors like muscle mass or distribution of fat.
-    </p>
+        <ul style="color: white; font-size: 18px;">
+            <li><strong>Underweight:</strong> BMI less than 18.5</li>
+            <li><strong>Normal weight:</strong> BMI between 18.5 and 24.9</li>
+            <li><strong>Overweight:</strong> BMI between 25 and 29.9</li>
+            <li><strong>Obesity:</strong> BMI 30 or higher</li>
+        </ul>
+
+        <p style="color: white; font-size: 18px; line-height: 1.6;">
+            While BMI is a useful screening tool, it doesn't directly measure body fat or account for factors like muscle mass or distribution of fat.
+        </p>
+    </div>
+
 </div>
-
-<@* style>
-    #imc thead, #imc tr, #imc th, #imc td {background-color:white;}
-</style>
-
-<table border="1" id="imc" >
-    <thead>
-        <tr>
-            <th>Category</th>
-            <th>IMC Range</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Underweight</td>
-            <td>&lt; 18.5</td>
-        </tr>
-        <tr>
-            <td>Normal Weight</td>
-            <td>18.5 to 24.9</td>
-        </tr>
-        <tr>
-            <td>Overweight</td>
-            <td>25 to 29.9</td>
-        </tr>
-        <tr>
-            <td>Obesity Grade I</td>
-            <td>30 to 34.9</td>
-        </tr>
-        <tr>
-            <td>Obesity Grade II</td>
-            <td>35 to 39.9</td>
-        </tr>
-        <tr>
-            <td>Morbid Obesity</td>
-            <td> greater than or equal to 40</td>
-        </tr>
-    </tbody>
-</table> *@
-
-
-
-
-

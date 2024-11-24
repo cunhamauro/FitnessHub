@@ -1,52 +1,73 @@
 ﻿@{
-    ViewData["Title"] = "Daily Calories Intake Calculator";
+    ViewData["Title"] = "Daily Caloric Intake Calculator";
 }
 
-<h2>Daily Calories Intake Calculator</h2>
+<div class="container d-flex justify-content-center mt-5">
+    <div class="col-lg-3 col-md-3 col-sm-8 mx-2 mb-1">
+        <div class="card">
+            <div style="text-align: center; font-size: 2em; font-weight: bold" class="card-header">
+                Daily Calories Intake Calculator
+                <div class="text-muted mb-1" style="font-size:1rem">Fill out the details to calculate your daily calorie intake</div>
+            </div>
+            <div class="card-body" style="padding: 0">
+                <form method="post">
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold" for="height">Height (cm):</label>
+                        <input style="color:black" type="number" name="height" id="height" placeholder="Enter height in centimeters" required class="form-control" />
+                    </div>
 
-<form method="post">
-    <label style="color:white" for="height">Height (cm):</label>
-    <input style="color:black" type="number" name="height" id="height" placeholder="Enter height in centimeters" required />
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold" for="weight">Weight (kg):</label>
+                        <input style="color:black" type="number" name="weight" id="weight" placeholder="Enter weight in kilograms" required class="form-control" />
+                    </div>
 
-    <label style="color:white" for="weight">Weight (kg):</label>
-    <input style="color:black" type="number" name="weight" id="weight" placeholder="Enter weight in kilograms" required /><br /><br />
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold">Gender:</label><br />
+                        <input type="radio" name="genre" value="Male" id="male" checked />
+                        <label for="male" style="color:black">Male</label>
+                        <br />
+                        <input type="radio" name="genre" value="Female" id="female" />
+                        <label for="female" style="color:black">Female</label>
+                    </div>
 
-    <label style="color:white">Gender:</label>
-    <input type="radio" name="genre" value="Male" id="male" checked />
-    <label for="male" style="color:white">Male</label>
-    
-    <input type="radio" name="genre" value="Female" id="female" />
-    <label for="female" style="color:white">Female</label><br /><br />
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold" for="age">Age:</label>
+                        <input style="color:black" type="number" name="age" id="age" required placeholder="Enter your age" class="form-control" />
+                    </div>
 
-    <label style="color:white" for="age">Age:</label>
-    <input style="color:black" type="number" name="age" id="age" required placeholder="Enter your age" required /><br /><br />
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold">Objective:</label><br />
+                        <input type="radio" name="objective" value="maintain" id="maintain" checked />
+                        <label for="maintain" style="color:black">Maintain Weight</label>
+                        <br />
+                        <input type="radio" name="objective" value="lose weight" id="loseWeight" />
+                        <label for="loseWeight" style="color:black">Lose Weight</label>
+                        <br />
+                        <input type="radio" name="objective" value="gain muscle" id="gainMuscle" />
+                        <label for="gainMuscle" style="color:black">Gain Muscle</label>
+                    </div>
 
-    <label style="color:white">Objective:</label>
-    <input type="radio" name="objective" value="maintain" id="maintain" checked />
-    <label for="maintain" style="color:white">Maintain Weight</label>
+                    <div class="form-group" style="padding: 1rem">
+                        <label style="color:black; font-weight:bold">Activity Level:</label><br />
+                        <input type="radio" name="activityLevel" value="low" id="low" checked />
+                        <label for="low" style="color:black">Low</label>
+                        <br />
+                        <input type="radio" name="activityLevel" value="moderate" id="moderate" />
+                        <label for="moderate" style="color:black">Moderate</label>
+                        <br />
+                        <input type="radio" name="activityLevel" value="high" id="high" />
+                        <label for="high" style="color:black">High</label>
+                    </div>
 
-    <input type="radio" name="objective" value="lose weight" id="loseWeight" />
-    <label for="loseWeight" style="color:white">Lose Weight</label>
-
-    <input type="radio" name="objective" value="gain muscle" id="gainMuscle" />
-    <label for="gainMuscle" style="color:white">Gain Muscle</label><br /><br />
-
-    <label style="color:white">Activity Level:</label>
-    <input type="radio" name="activityLevel" value="low" id="low" checked />
-    <label for="low" style="color:white">Low</label>
-
-    <input type="radio" name="activityLevel" value="moderate" id="moderate" />
-    <label for="moderate" style="color:white">Moderate</label>
-
-    <input type="radio" name="activityLevel" value="high" id="high" />
-    <label for="high" style="color:white">High</label><br /><br />
-
-    <button type="submit">Calculate</button>
-</form>
-
-@if (ViewBag.DailyCalories != null)
-{
-    <div style="color:white; margin-top: 20px;">
-        <strong>Calculated Daily Calories: </strong> @ViewBag.DailyCalories kcal
+                    <button type="submit" class="btn btn-primary" style="margin: 1rem"><i class="fa-solid fa-calculator me-2"></i>Calculate</button>
+                </form>
+            </div>
+            @if (ViewBag.DailyCalories != null)
+            {
+                <div class="card-footer" style="color: whitesmoke; font-size: 1.3em">
+                    <strong>Calculated Daily Calories: </strong> @ViewBag.DailyCalories kcal
+                </div>
+            }
+        </div>
     </div>
-}
+</div>

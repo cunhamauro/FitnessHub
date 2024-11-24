@@ -388,9 +388,18 @@ namespace FitnessHub.Controllers
             return RedirectToAction(nameof(ActiveClientMemberships));
         }
 
-        [Authorize(Roles = "Client")]
         public async Task<IActionResult> SignUp(int id)
         {
+            if (!this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login","Account");
+            }
+
+            if (!this.User.IsInRole("Client"))
+            {
+                return NotAuthorized();
+            }
+
             List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
 
             List<SelectListItem> selectMembership = new();
@@ -809,5 +818,11 @@ namespace FitnessHub.Controllers
         {
             return View("DisplayMessage", new DisplayMessageViewModel { Title = "User not found", Message = "Looks like this user skipped leg day!" });
         }
+
+        public IActionResult NotAuthorized()
+        {
+            return View("DisplayMessage", new DisplayMessageViewModel { Title = "Not authorized", Message = $"You haven't warmed up enough for this!" });
+        }
+
     }
 }

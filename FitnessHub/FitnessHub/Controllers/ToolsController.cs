@@ -64,6 +64,33 @@ namespace FitnessHub.Controllers
 
             ViewBag.Imc = Math.Round(imc, 2); ;
 
+            string imcCategory = "";
+            string imcColor = "";
+
+            if (imc < 18.5)
+            {
+                imcCategory = "Underweight";
+                imcColor = "text-yellow";
+            }
+            else if (imc >= 18.5 && imc < 25)
+            {
+                imcCategory = "Normal weight";
+                imcColor = "text-success";
+            }
+            else if (imc >= 25 && imc < 30)
+            {
+                imcCategory = "Overweight";
+                imcColor = "text-orange";
+            }
+            else
+            {
+                imcCategory = "Obesity";
+                imcColor = "text-red";
+            }
+
+            ViewBag.ImcCategory = imcCategory;
+            ViewBag.ImcColor = imcColor;
+
             return View();
         }
 

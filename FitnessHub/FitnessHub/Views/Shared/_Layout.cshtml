@@ -30,8 +30,22 @@
     <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/27.1.48/fluent.css" />
     <!-- Syncfusion ASP.NET Core controls scripts -->
     <script src="https://cdn.syncfusion.com/ej2/27.1.48/dist/ej2.min.js"></script>
-@*     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.6/signalr.min.js"></script>
- *@
+
+    <style>
+        .e-rating-container .e-rating-item-container.e-rating-selected .e-rating-icon, .e-rating-container .e-rating-item-container.e-rating-intermediate .e-rating-icon {
+            background: linear-gradient(to right, gold var(--rating-value), transparent var(--rating-value)) !important;
+            background-clip: text !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-stroke: 1px #00000000 !important;
+        }
+
+        .e-rating-container .e-rating-item-container .e-rating-icon {
+            -webkit-text-fill-color: rgb(145 145 145 / 34%) !important;
+            -webkit-text-stroke: 1px #6e6e6e !important;
+            background: none !important;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -77,9 +91,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Available"><span>Gyms</span></a>
                                 </li>
-                                <li class="nav-item">
+@*                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
-                                </li>
+                                </li> *@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                                 </li>
@@ -122,9 +136,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Gyms" asp-action="Available"><span>Gyms</span></a>
                             </li>
-                            <li class="nav-item">
+@*                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Memberships" asp-action="Available"><span>Memberships</span></a>
-                            </li>
+                            </li> *@
                             <li class="nav-item">
                                 <a class="nav-link text-light" asp-area="" asp-controller="Classes" asp-action="Available"><span>Classes</span></a>
                             </li>

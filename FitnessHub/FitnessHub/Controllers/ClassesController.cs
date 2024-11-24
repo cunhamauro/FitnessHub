@@ -1518,8 +1518,6 @@ namespace FitnessHub.Controllers
 
         #endregion
 
-        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
-        [AllowAnonymous]
         public async Task<IActionResult> Available()
         {
             var categories = await _classCategoryRepository.GetCategoriesSelectListAsync();
@@ -1531,8 +1529,6 @@ namespace FitnessHub.Controllers
             return View(types);
         }
 
-        [Authorize(Roles = "Client, Admin, MasterAdmin, Instructor, Employee")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetClassesByCategory(int? categoryId)
         {
             var types = await _classTypeRepository.GetAll()
