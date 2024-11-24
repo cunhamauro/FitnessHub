@@ -23,6 +23,13 @@
                     <button type="submit" class="btn btn-primary" style="margin: 1rem"><i class="fa-solid fa-calculator me-2"></i>Calculate</button>
                 </form>
             </div>
+            @if (ViewBag.Imc != null)
+            {
+                <div class="card-footer" style="font-size: 1.3em; font-weight: bold;">
+                    <p style="margin-bottom: 0em; color:whitesmoke">Your IMC is: <span class="@ViewBag.ImcColor">@ViewBag.Imc</span></p>
+                    <p style="margin-bottom: 0em; color:whitesmoke">Result: <span class="@ViewBag.ImcColor">@ViewBag.ImcCategory</span></p>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -42,14 +49,6 @@
     }
 
 </style>
-
-@if (ViewBag.Imc != null)
-{
-    <div class="card-footer mb-3" style="font-size: 1.3em; font-weight: bold; background-color: #ffffffc4">
-        <p style="margin-bottom: 0em" class="@ViewBag.ImcColor">Your IMC is: @ViewBag.Imc</p>
-        <p style="margin-bottom: 0em" class="@ViewBag.ImcColor">Result: @ViewBag.ImcCategory</p>
-    </div>
-}
 
 
 <div class="view-text">
