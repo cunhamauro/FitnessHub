@@ -255,7 +255,7 @@ namespace FitnessHub.Controllers
                 await _ticketRepository.UpdateAsync(ticket);
 
                 string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
-                string body = _mailHelper.GetEmailTemplate($"Ticket Answered", @$"Hey, {ticket.Client.FirstName}, the Ticket ({ticket.Title}) you opened at {ticket.DateOpened} as been answered by our {role} <span style=""font-weight: bold"">{user.FullName}</span>.", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+                string body = _mailHelper.GetEmailTemplate($"Ticket Answered", @$"Hey, {ticket.Client.FirstName}, the Ticket ({ticket.Title}) you opened at {ticket.DateOpened} as been answered by our {role} <span style=""font-weight: bold"">{user.FullName}</span>.", "Check our available classes");
                 Response response = await _mailHelper.SendEmailAsync(ticket.Client.Email, "Ticket answered", body, null, null);
             }
             return RedirectToAction("OpenTicket", new { id = id });
@@ -301,7 +301,7 @@ namespace FitnessHub.Controllers
             await _ticketRepository.UpdateAsync(ticket);
 
             string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
-            string body = _mailHelper.GetEmailTemplate($"Ticket Closed", @$"Hey, {ticket.Client.FirstName}, the Ticket ({ticket.Title}) you opened at {ticket.DateOpened} as been closed at {DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm")}", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+            string body = _mailHelper.GetEmailTemplate($"Ticket Closed", @$"Hey, {ticket.Client.FirstName}, the Ticket ({ticket.Title}) you opened at {ticket.DateOpened} as been closed at {DateTime.UtcNow.ToString("dd-MM-yyyy HH:mm")}", "Check our available classes");
             Response response = await _mailHelper.SendEmailAsync(ticket.Client.Email, "Ticket closed", body, null, null);
 
             return RedirectToAction(nameof(ClientTickets));
@@ -617,7 +617,7 @@ namespace FitnessHub.Controllers
 
                     await _requestInstructorHistoryRepository.CreateAsync(requestHistory);
 
-                    return RedirectToAction(nameof(MyRequests));
+                    return RedirectToAction("ClientHistory","Account");
                 }
                 catch (Exception ex)
                 {
@@ -769,24 +769,28 @@ namespace FitnessHub.Controllers
         public async Task<IActionResult> AssignInstructor(int id)
         {
             var employee = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name) as Employee;
+
             if (employee == null)
             {
                 return EmployeeNotFound();
             }
 
             var gym = await _gymRepository.GetByIdAsync(employee.GymId.Value);
+
             if (gym == null)
             {
                 return GymNotFound();
             }
 
-            var request = await _requestInstructorRepository.GetByIdWithClientAndGym(id);
+            var request = await _requestInstructorRepository.GetRequestByIdWithClient(id);
+
             if (request == null)
             {
                 return RequestNotFound();
             }
 
             var client = await _userHelper.GetUserByIdAsync(request.Client.Id);
+
             if (client == null)
             {
                 return ClientNotFound();
@@ -833,7 +837,7 @@ namespace FitnessHub.Controllers
                     return InstructorNotFound();
                 }
 
-                var request = await _requestInstructorRepository.GetByIdWithClientAndGym(model.RequestId);
+                var request = await _requestInstructorRepository.GetRequestByIdWithClient(model.RequestId);
                 if (request == null)
                 {
                     return RequestNotFound();
@@ -876,7 +880,7 @@ namespace FitnessHub.Controllers
 
                     string assignmentsUrl = Url.Action("ClientsAssignments", "Communication");
 
-                    string body = _mailHelper.GetEmailTemplate($"Client Request Assignment", @$"Hey, {instructor.FirstName}, you were assigned to the client <span style=""font-weight: bold"">{client.FullName} [{client.Email}]</span>.", @$"Check your other <a href=""{assignmentsUrl}"">client assignments</a>");
+                    string body = _mailHelper.GetEmailTemplate($"Client Request Assignment", @$"Hey, {instructor.FirstName}, you were assigned to the client <span style=""font-weight: bold"">{client.FullName} [{client.Email}]</span>.", "Check your other client assignments");
 
                     Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Client assigned", body, null, null);
 

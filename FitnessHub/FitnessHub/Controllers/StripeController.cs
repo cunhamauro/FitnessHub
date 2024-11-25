@@ -163,7 +163,7 @@ namespace FitnessHub.Controllers
                             await _clientMembershipHistoryRepository.UpdateAsync(record);
 
                             string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
-                            string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have signed up for the membership plan <span style=""font-weight: bold"">{membership.Name}</span>. Enjoy it!", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+                            string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have signed up for the membership plan <span style=""font-weight: bold"">{membership.Name}</span>. Enjoy it!", "Check our available classes");
                             Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership sign up", body, null, null);
                         }
                         else

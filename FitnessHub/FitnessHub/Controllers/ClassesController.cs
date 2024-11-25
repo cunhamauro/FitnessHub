@@ -362,7 +362,7 @@ namespace FitnessHub.Controllers
 
                 string classesUrl = Url.Action("InstructorClasses", "Classes");
 
-                string body = _mailHelper.GetEmailTemplate($"{type.Name} Online Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{model.Platform}</span>", @$"Check your other <a href=""{classesUrl}"">scheduled classes</a>");
+                string body = _mailHelper.GetEmailTemplate($"{type.Name} Online Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{model.Platform}</span>", "Check your other scheduled classes");
 
                 Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Online class scheduled", body, null, null);
 
@@ -585,7 +585,7 @@ namespace FitnessHub.Controllers
 
                         string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
 
-                        string body = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {client.FirstName}, your online <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, with Instructor <span style=""font-weight: bold"">{onlineClass.Instructor.FirstName} {onlineClass.Instructor.LastName}</span>, was just cancelled!", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                        string body = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {client.FirstName}, your online <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, with Instructor <span style=""font-weight: bold"">{onlineClass.Instructor.FirstName} {onlineClass.Instructor.LastName}</span>, was just cancelled!", "Check our other available classes");
 
                         Response response = await _mailHelper.SendEmailAsync(client.Email, "Online class cancelled", body, null, null);
                     }
@@ -603,7 +603,7 @@ namespace FitnessHub.Controllers
 
                 string classesUrlInst = Url.Action("InstructorClasses", "Classes");
 
-                string bodyInst = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, was just cancelled!", @$"Check your other <a href=""{classesUrlInst}"">scheduled classes</a>");
+                string bodyInst = _mailHelper.GetEmailTemplate($"{onlineClass.ClassType.Name} Online Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{onlineClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>, was just cancelled!", "Check your other scheduled classes");
 
                 Response responseInst = await _mailHelper.SendEmailAsync(instructor.Email, "Online class cancelled", bodyInst, null, null);
             }
@@ -815,7 +815,7 @@ namespace FitnessHub.Controllers
 
             string classesUrl = Url.Action("InstructorClasses", "Classes");
 
-            string body = _mailHelper.GetEmailTemplate($"{type.Name} Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gym.Data}</span>", @$"Check your other <a href=""{classesUrl}"">scheduled classes</a>");
+            string body = _mailHelper.GetEmailTemplate($"{type.Name} Class Scheduled", @$"Hey, {instructor.FirstName}, you were assigned to a <span style=""font-weight: bold"">{type.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{model.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{model.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gym.Data}</span>", "Check your other scheduled classes");
 
             Response response = await _mailHelper.SendEmailAsync(instructor.Email, "Class scheduled", body, null, null);
 
@@ -1017,7 +1017,7 @@ namespace FitnessHub.Controllers
 
                         string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
 
-                        string body = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {client.FirstName}, your <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, with Instructor <span style=""font-weight: bold"">{gymClass.Instructor.FirstName} {gymClass.Instructor.LastName}</span>, was just cancelled!", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                        string body = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {client.FirstName}, your <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span>, on <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, with Instructor <span style=""font-weight: bold"">{gymClass.Instructor.FirstName} {gymClass.Instructor.LastName}</span>, was just cancelled!", "Check our other available classes");
 
                         Response response = await _mailHelper.SendEmailAsync(client.Email, "Class cancelled", body, null, null);
                     }
@@ -1035,7 +1035,7 @@ namespace FitnessHub.Controllers
 
                 string classesUrlInst = Url.Action("InstructorClasses", "Classes");
 
-                string bodyInst = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, was just cancelled!", @$"Check your other <a href=""{classesUrlInst}"">scheduled classes</a>");
+                string bodyInst = _mailHelper.GetEmailTemplate($"{gymClass.ClassType.Name} Class Cancelled", @$"Hey, {instructor.FirstName}, a class you were assigned to, <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>, was just cancelled!", "Check your other scheduled classes");
 
                 Response responseInst = await _mailHelper.SendEmailAsync(instructor.Email, "Class canceled", bodyInst, null, null);
 

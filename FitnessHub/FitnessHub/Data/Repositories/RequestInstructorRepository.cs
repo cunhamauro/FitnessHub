@@ -18,12 +18,11 @@ namespace FitnessHub.Data.Repositories
             return _context.RequestsIntructor.Where(requests => requests.GymId == gymId).Include(requests => requests.Client).ToList();
         }
 
-        public async Task<RequestInstructor?> GetByIdWithClientAndGym(int id)
+        public async Task<RequestInstructor?> GetRequestByIdWithClient(int id)
         {
             return await _context.RequestsIntructor
                 .Where(request => request.Id == id)
                 .Include(requests => requests.Client)
-                .Include(requests => requests.GymId)
                 .FirstOrDefaultAsync();
         }
 

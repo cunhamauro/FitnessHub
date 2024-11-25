@@ -221,7 +221,7 @@ else
                                     {
                                         <span>Started</span>
                                     }
-                                    else if (item.DateStart != null && item.DateEnd != null && item.DateEnd > DateTime.UtcNow)
+                                    else if (item.DateStart != null && item.DateEnd != null && item.DateEnd < DateTime.UtcNow)
                                     {
                                         <span>Completed</span>
                                     }

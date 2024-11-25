@@ -26,9 +26,12 @@
                 <button type="submit" class="btn btn-primary me-4">
                     <i class="fa-solid fa-check me-2"></i>Save
                 </button>
-                <a asp-action="RecordWeightIndex" class="btn btn-secondary">
-                    <i class="fa-solid fa-chevron-left me-2"></i>Back
-                </a>
+                @if (ViewBag.IndexExists )
+                {
+                    <a asp-action="RecordWeightIndex" class="btn btn-secondary">
+                        <i class="fa-solid fa-chevron-left me-2"></i>Back
+                    </a>
+                }
             </div>
 
         </form>

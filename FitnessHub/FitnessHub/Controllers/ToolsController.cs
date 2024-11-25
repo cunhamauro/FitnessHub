@@ -287,6 +287,14 @@ namespace FitnessHub.Controllers
             {
                 return UserNotFound();
             }
+
+            var progress = await _userRecordWeight.GetWeightProgressAsync(client.Id);
+
+            if (progress.Any())
+            {
+                ViewBag.IndexExists = true;
+            }
+
             return View();
         }
 

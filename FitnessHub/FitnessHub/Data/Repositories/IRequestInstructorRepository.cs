@@ -7,7 +7,7 @@ namespace FitnessHub.Data.Repositories
     {
         List<RequestInstructor> GetAllByGymWithClients(int gymId);
 
-        Task<RequestInstructor?> GetByIdWithClientAndGym(int id);
+        Task<RequestInstructor?> GetRequestByIdWithClient(int id);
 
         Task<bool> ClientHasPendingRequestForGym(string clientId, int gymId);
     }

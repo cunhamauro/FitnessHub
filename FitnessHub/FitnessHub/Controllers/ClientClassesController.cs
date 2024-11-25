@@ -318,7 +318,11 @@ namespace FitnessHub.Controllers
 
             var onlineClasses = await _classRepository.GetAllOnlineClassesInclude();
 
+            onlineClasses = onlineClasses.Where(o => o.DateStart > DateTime.UtcNow).ToList();
+
             var gymClasses = await _classRepository.GetAllGymClassesInclude();
+
+            gymClasses = gymClasses.Where(o => o.DateStart > DateTime.UtcNow).ToList();
 
             if (LocationId > 0)
             {
@@ -470,7 +474,7 @@ namespace FitnessHub.Controllers
             {
                 var onlineClass = await _classRepository.GetOnlineClassByIdIncludeTracked(classId);
 
-                if (onlineClass == null)
+                if (onlineClass == null || onlineClass.DateStart > DateTime.UtcNow)
                 {
                     return ClassNotFound();
                 }
@@ -481,7 +485,7 @@ namespace FitnessHub.Controllers
                     await _classRepository.UpdateAsync(onlineClass);
                     await _registeredInClassesHistoryRepository.CreateAsync(history);
 
-                    body = _mailHelper.GetEmailTemplate($"Registered in {onlineClass.ClassType.Name} Online Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{onlineClass.ClassType.Name} online class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                    body = _mailHelper.GetEmailTemplate($"Registered in {onlineClass.ClassType.Name} Online Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{onlineClass.ClassType.Name} online class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>.", "Check our other available classes");
                     title = "Online class registration";
                 }
             }
@@ -618,7 +622,7 @@ namespace FitnessHub.Controllers
                 gymClass.Clients.Remove(client);
                 await _classRepository.UpdateAsync(gymClass);
 
-                body = _mailHelper.GetEmailTemplate($"Unregistered From {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you unregistered yourself from a <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                body = _mailHelper.GetEmailTemplate($"Unregistered From {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you unregistered yourself from a <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>", "Check our other available classes");
                 title = "Unregistered from class";
 
                 // Waiting list automation
@@ -859,7 +863,7 @@ namespace FitnessHub.Controllers
                         gymClass.Clients.Add(client);
                         await _registeredInClassesHistoryRepository.CreateAsync(history);
 
-                        string body = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were registered by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>!"" in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                        string body = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you were registered by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>!"" in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", "Check our other available classes");
                         string title = "Class registration";
                         Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
 
@@ -916,7 +920,7 @@ namespace FitnessHub.Controllers
                 }
                 await _classRepository.UpdateAsync(gymClass);
             }
-            return RedirectToAction("FindClientByEmail");
+            return RedirectToAction("RegisterClientInClass", "ClientClasses", new { email = model.ClientEmail });
         }
 
         [Authorize(Roles = "Client")]

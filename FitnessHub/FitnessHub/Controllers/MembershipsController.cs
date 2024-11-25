@@ -153,8 +153,6 @@ namespace FitnessHub.Controllers
             return View(models);
         }
 
-        // GET: User Membership
-        [Authorize(Roles = "Client")]
         public async Task<IActionResult> MyMembership(string? userId)
         {
             Client client = new Client();
@@ -163,9 +161,13 @@ namespace FitnessHub.Controllers
             {
                 client = await _userHelper.GetUserAsync(this.User) as Client;
             }
-            else
+            else if(userId != null)
             {
                 client = await _userHelper.GetUserByIdAsync(userId) as Client;
+            }
+            else
+            {
+                return RedirectToAction("Index","Home");
             }
 
             if (client == null)
@@ -322,7 +324,7 @@ namespace FitnessHub.Controllers
                 await _clientMembershipHistoryRepository.CreateAsync(record);
 
                 string classesUrl = Url.Action("AvailableClasses", "ClientClasses");
-                string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have been signed up for a subscription of the membership plan <span style=""font-weight: bold"">{membership.Name}</span> by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", @$"Check our <a href=""{classesUrl}"">available classes</a>");
+                string body = _mailHelper.GetEmailTemplate($"Membership Sign Up", @$"Hey, {client.FirstName}, you have been signed up for a subscription of the membership plan <span style=""font-weight: bold"">{membership.Name}</span> by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", "Check our available classes");
                 Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership sign up", body, null, null);
 
                 return RedirectToAction(nameof(ActiveClientMemberships));
@@ -382,7 +384,7 @@ namespace FitnessHub.Controllers
             var membership = details.Membership;
 
             string membershipsUrl = Url.Action("Available", "Memberships");
-            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", @$"Check our other <a href=""{membershipsUrl}"">available memberships</a>");
+            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by our employee <span style=""font-weight: bold"">{employee.FullName}</span> at <span style=""font-weight: bold"">{gym.Data}</span>!", "Check our other available memberships");
             Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership cancellation", body, null, null);
 
             return RedirectToAction(nameof(ActiveClientMemberships));
@@ -400,6 +402,18 @@ namespace FitnessHub.Controllers
                 return NotAuthorized();
             }
 
+            Client client = await _userHelper.GetUserAsync(this.User) as Client;
+
+            if (client == null)
+            {
+                return UserNotFound();
+            }
+
+            if (await _membershipDetailsRepository.ClientHasMemberShip(this.User))
+            {
+                return RedirectToAction("MyMembership","Memberships");
+            }
+
             List<Membership> memberships = await _membershipRepository.GetAll().Where(m => m.OnOffer == true).ToListAsync();
 
             List<SelectListItem> selectMembership = new();
@@ -411,18 +425,6 @@ namespace FitnessHub.Controllers
                     Text = m.Name,
                     Value = m.Id.ToString(),
                 });
-            }
-
-            Client client = await _userHelper.GetUserAsync(this.User) as Client;
-
-            if (client == null)
-            {
-                return UserNotFound();
-            }
-
-            if (client.MembershipDetailsId == null)
-            {
-                ViewBag.HasMembership = false;
             }
 
             MembershipViewModel model = new();
@@ -586,7 +588,7 @@ namespace FitnessHub.Controllers
             var membership = details.Membership;
 
             string membershipsUrl = Url.Action("Available", "Memberships");
-            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by yourself!", @$"Check our other <a href=""{membershipsUrl}"">available memberships</a>");
+            string body = _mailHelper.GetEmailTemplate($"Membership Canceled", @$"Hey, {client.FirstName}, your subscription to the membership plan <span style=""font-weight: bold"">{membership.Name}</span> was just cancelled by yourself!", "Check our other available memberships");
             Response response = await _mailHelper.SendEmailAsync(client.Email, "Membership cancellation", body, null, null);
 
             return RedirectToAction(nameof(MyMembership));

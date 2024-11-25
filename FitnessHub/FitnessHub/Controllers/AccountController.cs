@@ -889,7 +889,7 @@ namespace FitnessHub.Controllers
 
             ViewBag.Requests = requestsModel;
 
-            List<RegisteredInClassesHistory> records = _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id).ToList();
+            List<RegisteredInClassesHistory> records = _registeredInClassesHistoryRepository.GetAll().Where(c => c.UserId == client.Id && c.Canceled == false).ToList();
 
             List<RegisteredInClassesHistoryViewModel> classes = new();
 

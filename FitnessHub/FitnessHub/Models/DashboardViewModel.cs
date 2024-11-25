@@ -10,8 +10,8 @@ namespace FitnessHub.Models
         [Display(Name = "Clients With Membership")]
         public int ClientsWithMembershipCount { get; set; }
 
-        [Display(Name = "Anual Memberships Revenue")]
-        public decimal AnualMembershipsRevenue { get; set; }
+        [Display(Name = "Annual Memberships Revenue")]
+        public decimal AnnualMembershipsRevenue { get; set; }
 
         [Display(Name = "Gyms")]
         public int GymsCount { get; set; }

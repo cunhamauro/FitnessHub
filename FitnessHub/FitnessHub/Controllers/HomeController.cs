@@ -57,7 +57,7 @@ namespace FitnessHub.Controllers
             {
                 ClientsCount = (await _userHelper.GetUsersByTypeAsync<Client>()).Count,
                 ClientsWithMembershipCount = await _userHelper.ClientsWithMembershipCountAsync(),
-                AnualMembershipsRevenue = await _membershipDetailsRepository.GetAnualMembershipsRevenueAsync(),
+                AnnualMembershipsRevenue = await _membershipDetailsRepository.GetAnualMembershipsRevenueAsync(),
                 GymWithMostMemberShips = await _userHelper.GymWithMostMembershipsAsync(),
                 GymsCount = _gymRepository.GetAll().Count(),
                 EmployeesCount = (await _userHelper.GetUsersByTypeAsync<Employee>()).Count,

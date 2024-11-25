@@ -1,4 +1,5 @@
-﻿using FitnessHub.Data.Entities.GymClasses;
+﻿using FitnessHub.Data.Classes;
+using FitnessHub.Data.Entities.GymClasses;
 using FitnessHub.Data.Entities.Users;
 using FitnessHub.Data.Repositories;
 using FitnessHub.Helpers;
@@ -23,6 +24,7 @@ namespace FitnessHub.Controllers.API
         private readonly IGymHistoryRepository _gymHistoryRepository;
         private readonly IStaffHistoryRepository _staffHistoryRepository;
         private readonly IClassTypeRepository _classTypeRepository;
+        private readonly IMailHelper _mailHelper;
 
         public ClientClassesApiController(
             IUserHelper userHelper,
@@ -32,7 +34,7 @@ namespace FitnessHub.Controllers.API
             IClassHistoryRepository classHistoryRepository,
             IGymHistoryRepository gymHistoryRepository,
             IStaffHistoryRepository staffHistoryRepository,
-            IClassTypeRepository classTypeRepository)
+            IClassTypeRepository classTypeRepository, IMailHelper mailHelper)
         {
             _userHelper = userHelper;
             _membershipDetailsRepository = membershipDetailsRepository;
@@ -42,6 +44,7 @@ namespace FitnessHub.Controllers.API
             _gymHistoryRepository = gymHistoryRepository;
             _staffHistoryRepository = staffHistoryRepository;
             _classTypeRepository = classTypeRepository;
+            _mailHelper = mailHelper;
         }
 
         [HttpPost("[action]")]
@@ -87,6 +90,8 @@ namespace FitnessHub.Controllers.API
                 Canceled = false,
             };
 
+            string classesUrl = Url.Action("AvailableClasses", "Classes");
+
             if (isOnline)
             {
                 var onlineClass = await _classRepository.GetOnlineClassByIdInclude(classId);
@@ -106,6 +111,10 @@ namespace FitnessHub.Controllers.API
                     onlineClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(onlineClass);
                     await _registeredInClassesHistoryRepository.CreateAsync(history);
+
+                    var body = _mailHelper.GetEmailTemplate($"Registered in {onlineClass.ClassType.Name} Online Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{onlineClass.ClassType.Name} online class</span>, scheduled to start at <span style=""font-weight: bold"">{onlineClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{onlineClass.DateEnd.ToLongDateString()}</span> on <span style=""font-weight: bold"">{onlineClass.Platform}</span>.", "Check our other available classes");
+                    var title = "Online class registration";
+                    Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
 
                     return Ok(new { Message = "Registration for online class successfull!" });
                 }
@@ -135,6 +144,10 @@ namespace FitnessHub.Controllers.API
                     gymClass.Clients.Add(client);
                     await _classRepository.UpdateAsync(gymClass);
                     await _registeredInClassesHistoryRepository.CreateAsync(history);
+
+                    var body = _mailHelper.GetEmailTemplate($"Registered in {gymClass.ClassType.Name} Class", @$"Hey, {client.FirstName}, you registered yourself in the <span style=""font-weight: bold"">{gymClass.ClassType.Name} class</span>, scheduled to start at <span style=""font-weight: bold"">{gymClass.DateStart.ToLongDateString()}</span> and finishing at <span style=""font-weight: bold"">{gymClass.DateEnd.ToLongDateString()}</span> at <span style=""font-weight: bold"">{gymClass.Gym.Data}</span>.", @$"Check our other <a href=""{classesUrl}"">available classes</a>");
+                    var title = "Online class registration";
+                    Response response = await _mailHelper.SendEmailAsync(client.Email, $"{title}", body, null, null);
 
                     return Ok(new { Message = "Registration for gym class successfull!" });
                 }
@@ -202,7 +215,7 @@ namespace FitnessHub.Controllers.API
                 return Ok(new { Message = "Client is not registered in any classes" });
             }
 
-            return Ok(clientClassesModel.OrderBy(c => c.DateStart));
+            return Ok(clientClassesModel.Where(c => c.DateStart > DateTime.UtcNow).OrderBy(c => c.DateStart));
         }
 
         [HttpGet("[action]")]
@@ -236,7 +249,7 @@ namespace FitnessHub.Controllers.API
                     return NotFound(new { ErrorMessage = "Class history not found" });
                 }
 
-                var gym = await _gymHistoryRepository.GetByName(classHistory.GymName);
+                var gym = await _gymHistoryRepository.GetByIdAsync(classHistory.GymId.Value);
                 if (gym == null)
                 {
                     return NotFound(new { ErrorMessage = "Gym history not found" });

@@ -53,17 +53,7 @@
                             <br />
                             <div style="font-size: 0.8em !important">
                                 <div class="rating-content">
-                                    @{
-                                        if (Model.Instructor.NumReviews == 0)
-                                        {
                                             <ejs-rating id="rating_@Model.Instructor.Id" value="(double)@Model.Instructor.Rating" readOnly="true"></ejs-rating>
-                                        }
-                                        else
-                                        {
-                                            @Html.Raw("N/A")
-                                            <i class="fa-solid fa-star ms-2"></i>
-                                        }
-                                    }
                                 </div>
                                 <div class="text-nowrap">
                                     (@Model.Instructor.NumReviews reviews)
